@@ -1,106 +1,112 @@
-import 'package:book/constants/styles.dart';
+import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/screens/all_book_screen.dart';
+import 'package:book_mobile/screens/details_screen.dart';
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:book/constants/constants.dart';
+import 'package:provider/provider.dart';
+import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/screens/custom_drawer_screen.dart';
+import 'package:book_mobile/providers/home_provider.dart';
+
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  List<dynamic> trendingBooks = [];
-  List<dynamic> allBooks = [];
-  List<dynamic> audioBooks = [];
-  bool isLoading = true;
-  bool hasError = false;
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  late AnimationController _iconAnimationController;
 
   @override
   void initState() {
     super.initState();
-    fetchAllData();
+    _iconAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    // Fetch data via the provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+        homeProvider.fetchAllData();
+      }
+    });
   }
 
-  Future<void> fetchAllData() async {
-    setState(() {
-      isLoading = true;
-      hasError = false;
-    });
-
-    try {
-      final trendingResponse = await http.get(Uri.parse("https://bookbackend3.bruktiethiotour.com/api/book/last7days"));
-      final allBooksResponse = await http.get(Uri.parse("https://bookbackend3.bruktiethiotour.com/api/book/get-all"));
-      final audioResponse = await http.get(Uri.parse("https://bookbackend3.bruktiethiotour.com/api/book/audio"));
-
-      if (trendingResponse.statusCode == 200 &&
-          allBooksResponse.statusCode == 200 &&
-          audioResponse.statusCode == 200) {
-
-        setState(() {
-          trendingBooks = jsonDecode(trendingResponse.body)['books'];
-          allBooks = jsonDecode(allBooksResponse.body);
-          audioBooks = jsonDecode(audioResponse.body);
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          hasError = true;
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        hasError = true;
-        isLoading = false;
-      });
-    }
+  @override
+  void dispose() {
+    _iconAnimationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final homeProvider = Provider.of<HomeProvider>(context);
+
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Home"),
+        title: const Text("Home"),
         backgroundColor: AppColors.color1,
+        foregroundColor: AppColors.color6,
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : hasError
-              ? Center(child: Text("An error occurred. Please try again."))
+      drawer: SizedBox(
+        width: 250,
+        child: CustomDrawer(
+          iconAnimationController: _iconAnimationController,
+          onItemSelected: (label) {},
+        ),
+      ),
+      body: homeProvider.isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : homeProvider.hasError
+              ? const Center(
+                  child: Text("An error occurred. Please try again."),
+                )
               : SingleChildScrollView(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Trending Books - Horizontal Scroll
-                        Text(
+                        // Trending Books
+                        const Text(
                           "Trending Books",
-                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: AppColors.color3),
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.color3),
                         ),
-                        SizedBox(height: 10),
-                        Container(
-                          height: 200,
+                        const SizedBox(height: 10),
+                        SizedBox(
+                          height: 150,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: trendingBooks.length,
+                            itemCount: homeProvider.trendingBooks.length,
                             itemBuilder: (context, index) {
-                              final book = trendingBooks[index];
+                              final book = homeProvider.trendingBooks[index];
                               return GestureDetector(
                                 onTap: () => Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => DetailsScreen(book: book),
+                                    builder: (context) =>
+                                        BookDetailScreen(book: book),
                                   ),
                                 ),
                                 child: Card(
-                                  child: Container(
-                                    width: 150,
+                                  child: SizedBox(
+                                    width: 100,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Image.network(
-                                          Network.baseUrl+'/${book['imageFilePath']}',
+                                          '${Network.baseUrl}/${book['imageFilePath']}',
                                           fit: BoxFit.cover,
                                           height: 100,
                                           width: 150,
@@ -108,10 +114,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              Text(book['title'], style: TextStyle(fontWeight: FontWeight.bold)),
-                                              Text("Price: ${book['price']}"),
+                                              Text(
+                                                  book['title'] ??
+                                                      "No title available",
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              Text(
+                                                "Price: ${book['price'] ?? 'N/A'}",
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -123,118 +137,156 @@ class _HomeScreenState extends State<HomeScreen> {
                             },
                           ),
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
 
-                        // All Books - Vertical Scroll
-                        Text(
+                        // All Books
+                        const Text(
                           "All Books",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: AppColors.color3),
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.color3),
                         ),
-                        SizedBox(height: 10),
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: allBooks.length,
-                          itemBuilder: (context, index) {
-                            final book = allBooks[index];
-                            return GestureDetector(
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetailsScreen(book: book),
-                                ),
-                              ),
-                              child: Card(
-                                color: AppColors.color2,
-                                child: ListTile(
-                                  leading: Image.network(
-                                    'https://bookbackend3.bruktiethiotour.com/${book['imageFilePath']}',
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  title: Text(book['title'],style: TextStyle(color: AppColors.color3),),
-                                  subtitle: Text("Price: ${book['price']}"),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        SizedBox(height: 20),
-
-                        // Audio Books - Horizontal Scroll
-                        Text(
-                          "Audio Books",
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: AppColors.color3),
-                        ),
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
                         Container(
-                          height: 100,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: audioBooks.length,
-                            itemBuilder: (context, index) {
-                              final audio = audioBooks[index];
-                              return GestureDetector(
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DetailsScreen(book: audio),
-                                  ),
-                                ),
-                                child: Card(
-                                  child: Container(
-                                    width: 200,
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(audio['bookTitle'], style: TextStyle(fontWeight: FontWeight.bold)),
-                                        Text(audio['episode']),
-                                      ],
+                          height: 200,
+                          color: AppColors.color1,
+                          child: SingleChildScrollView(
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: homeProvider.allBooks.length,
+                              // itemCount: homeProvider.allBooks.length,
+                              itemBuilder: (context, index) {
+                                final book = homeProvider.allBooks[index];
+                                return GestureDetector(
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          BookDetailScreen(book: book),
                                     ),
                                   ),
+                                  child: Card(
+                                    color: AppColors.color1,
+                                    child: ListTile(
+                                      leading: Image.network(
+                                        '${Network.baseUrl}/${book['imageFilePath']}',
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      title: Column(
+                                        children: [
+                                          Text(
+                                            book['author'],
+                                            style: const TextStyle(
+                                                color: AppColors.color2),
+                                          ),
+                                          Text(
+                                            book['title'],
+                                            style: const TextStyle(
+                                                color: AppColors.color2),
+                                          ),
+                                          Text(
+                                            "Price: ${book['price']}",
+                                            style: const TextStyle(
+                                                color: AppColors.color3),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AllBooksScreen(),
                                 ),
                               );
                             },
+                            child: const Text("More",
+                                style: TextStyle(color: AppColors.color3)),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Audio Books
+                        const Text(
+                          "Audio Books",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.color3),
+                        ),
+                        const SizedBox(height: 10),
+                        SingleChildScrollView(
+                          child: SizedBox(
+                            height: 150,
+                            child: Card(
+                              color: AppColors.color2,
+                              child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 6, right: 5, top: 10, bottom: 8),
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: homeProvider.audioBooks.length,
+                                  itemBuilder: (context, index) {
+                                    final audioBook =
+                                        homeProvider.audioBooks[index];
+                                    print('Audio book in ui: $audioBook');
+
+                                    return GestureDetector(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              BookDetailScreen(book: audioBook),
+                                        ),
+                                      ),
+                                      child: Card(
+                                        child: Container(
+                                          width: 150,
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              // Image.network(
+                                              //   '${Network.baseUrl}/${audioBook['imageFilePath']}',
+                                              //   fit: BoxFit.cover,
+                                              //   height: 100,
+                                              //   width: 150,
+                                              // ),
+                                              Text(
+                                                  audioBook['bookTitle'] ??
+                                                      "No title",
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              Text(audioBook['episode']),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-    );
-  }
-}
-
-class DetailsScreen extends StatelessWidget {
-  final Map<String, dynamic> book;
-
-  DetailsScreen({required this.book});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(book['title']),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.network('https://bookbackend3.bruktiethiotour.com/${book['imageFilePath']}'),
-            SizedBox(height: 10),
-            Text(
-              book['title'],
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            Text("Price: ${book['price']}"),
-            SizedBox(height: 10),
-            Text(book['description'] ?? "No description available"),
-          ],
-        ),
-      ),
     );
   }
 }

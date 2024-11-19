@@ -1,73 +1,133 @@
 import 'dart:async';
-import 'package:book/constants/styles.dart';
-import 'package:book/screens/home_screen.dart';
-import 'package:book/screens/login_screen.dart';
-import 'package:book/screens/signup_screen.dart';
+import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/screens/home_screen.dart';
+// import 'package:book_mobile/screens/verification_screen.dart';
+import 'package:book_mobile/screens/wellcome_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:book_mobile/providers/login_provider.dart';
+// import 'package:book_mobile/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  AnimationController? _controller;
-  Animation<double>? _animation;
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    _initializeLogin();
+    _setupAnimation();
+    _navigateToNextScreen(context);
+  }
 
-    // Initialize animation controller
+  Future<void> _initializeLogin() async {
+    await Provider.of<LoginProvider>(context, listen: false)
+        .initializeLoginStatus();
+    setState(() {
+      _isInitialized = true;
+    });
+  }
+
+  void _setupAnimation() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
     );
 
-    // Create a scaling animation
-    _animation = CurvedAnimation(
-      parent: _controller!,
-      curve: Curves.easeInOut,
-    );
+    _animation = CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
+    _controller.forward();
+  }
 
-    // Start the animation
-    _controller?.forward();
+  void _navigateToNextScreen(BuildContext context) async {
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    // Navigate to home after 3 seconds
-    Timer(Duration(seconds: 3), () {
-      
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => LoginScreen()),
-      );
+    if (!mounted) return;
 
-    });
-  }   
-   
+    await loginProvider.checkLoginStatus();
+
+    if (loginProvider.isAuthenticated && !loginProvider.isTokenExpired) {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      }
+    } else if (loginProvider.isAuthenticated && loginProvider.isTokenExpired) {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+        );
+      }
+    } else {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
-    _controller?.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.color1, // Change background color as needed
-      body: Center(
-        child: FadeTransition(
-          opacity: _animation!,
-          child: ScaleTransition(
-            scale: _animation!,
-            child: Image.asset(
-              'assets/logo.png', // Path to your logo image
-              width: 150, // Adjust logo size as needed
-            ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              AppColors.color1.withOpacity(0.6),
+              AppColors.color1,
+              AppColors.color1..withOpacity(0.8),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            FadeTransition(
+              opacity: _animation,
+              child: ScaleTransition(
+                scale: _animation,
+                child: const Icon(
+                  Icons.book,
+                  size: 150,
+                  color: AppColors.color3,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Book App',
+              style: TextStyle(
+                fontSize: 30,
+                color: AppColors.color3,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            if (!_isInitialized) ...[
+              const SizedBox(height: 20),
+              const CircularProgressIndicator(),
+            ],
+          ],
         ),
       ),
     );
   }
 }
-
-

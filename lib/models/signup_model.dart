@@ -1,8 +1,6 @@
-// lib/models/signup_model.dart
-
 class SignupModel {
+  final String id;
   final String email;
-  final String password;
   final String fname;
   final String lname;
   final String phone;
@@ -10,11 +8,13 @@ class SignupModel {
   final String country;
   final String role;
   final String bio;
-  final String image;
+  final String? image;
+  final bool is2FAEnabled;
+  final bool isVerified;
 
   SignupModel({
+    required this.id,
     required this.email,
-    required this.password,
     required this.fname,
     required this.lname,
     required this.phone,
@@ -22,14 +22,16 @@ class SignupModel {
     required this.country,
     required this.role,
     required this.bio,
-    required this.image,
+    this.image,
+    this.is2FAEnabled = false,
+    this.isVerified = false,
   });
 
   // Convert to JSON format
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'email': email,
-      'password': password,
       'fname': fname,
       'lname': lname,
       'phone': phone,
@@ -38,6 +40,26 @@ class SignupModel {
       'role': role,
       'bio': bio,
       'image': image,
+      'isTwoStepOn': is2FAEnabled,
+      'isVerified': isVerified,
     };
+  }
+
+  // Convert from JSON format
+  factory SignupModel.fromJson(Map<String, dynamic> json) {
+    return SignupModel(
+      id: json['id'],
+      email: json['email'] ?? "",
+      fname: json['fname'] ?? "",
+      lname: json['lname'] ?? "",
+      phone: json['phone'] ?? '',
+      city: json['city'] ?? "",
+      country: json['country'] ?? '',
+      role: json['role'] ?? '',
+      bio: json['bio'] ?? '',
+      image: json['image'] ?? '',
+      is2FAEnabled: json['isTwoStepOn'] ?? false,
+      isVerified: json['isVerified'] ?? false,
+    );
   }
 }

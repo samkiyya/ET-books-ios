@@ -28,6 +28,10 @@ class AppTextStyles {
     fontSize: 16.0,
     color: AppColors.color3,
   );
+  static const TextStyle hintText = TextStyle(
+    fontSize: 16.0,
+    color: AppColors.color1,
+  );
 
   static const TextStyle caption = TextStyle(
     fontSize: 14.0,
@@ -37,7 +41,7 @@ class AppTextStyles {
   static const TextStyle buttonText = TextStyle(
     fontSize: 18.0,
     fontWeight: FontWeight.bold,
-    color: Colors.white,
+    color: Colors.black,
   );
 }
 

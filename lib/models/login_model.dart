@@ -3,18 +3,33 @@ class UserData {
   final int id;
   final String fname;
   final String lname;
+  final String email;
+  final String token;
+  final String password;
   final String role;
   final String image;
 
-  UserData({required this.id, required this.fname, required this.lname, required this.role, required this.image});
+  UserData({
+    required this.id,
+    required this.fname,
+    required this.lname,
+    required this.email,
+    required this.token,
+    required this.password,
+    required this.role,
+    required this.image,
+  });
 
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
-      id: json['id']?? 0,
-      fname: json['fname']??"",
-      lname: json['lname']??"",
-      role: json['role']??"",
-      image: json['image']??"",
+      id: json['id'] ?? 0,
+      fname: json['fname'] ?? "",
+      lname: json['lname'] ?? "",
+      email: json['email'] ?? "",
+      token: json['token'] ?? "",
+      password: json['password'] ?? "",
+      role: json['role'] ?? "",
+      image: json['image'] ?? "",
     );
   }
 }

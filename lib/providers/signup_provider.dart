@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -11,6 +13,13 @@ class SignupProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   String get successMessage => _successMessage;
+
+  // Method to clear messages
+  void clearMessages() {
+    _errorMessage = '';
+    _successMessage = '';
+    notifyListeners(); // Notify listeners to update the UI
+  }
 
   // Method to handle API submission
   Future<void> signup({
@@ -43,39 +52,47 @@ class SignupProvider with ChangeNotifier {
       'bio': bio,
     };
 
-    // Create a multipart request for uploading image
-    var request = http.MultipartRequest(
-      'POST', 
-      Uri.parse('https://bookbackend3.bruktiethiotour.com/api/user/register')
-    );
-
-    // Add the fields to the request
-    payload.forEach((key, value) {
-      request.fields[key] = value;
-    });
-
-    // Add the image if available
-    if (image != null) {
-      request.files.add(await http.MultipartFile.fromPath('image', image.path));
-    }
-
     try {
-      // Send the request
-      var response = await request.send();
-      
-      // Parse the response
-      var responseBody = await response.stream.bytesToString();
+      final url = Uri.parse('${Network.baseUrl}/api/user/register');
+      var request = http.MultipartRequest('POST', url);
 
-      if (response.statusCode == 201) {
-        _successMessage = 'Signup successful!';
-        print("Response body: $responseBody");
+      // Add the fields to the request
+      request.fields.addAll(payload);
+
+      // Add the image if available
+      if (image != null) {
+        print('Attaching image to request: ${image.path}');
+        request.files
+            .add(await http.MultipartFile.fromPath('image', image.path));
       } else {
-        _errorMessage = 'Failed to submit data: ${response.statusCode}';
-        print("Response body: $responseBody");
+        print('No image provided for the request.');
       }
-    } catch (e) {
-      _errorMessage = 'Error: $e';
-      print("Exception: $e");
+
+      // Send the request
+      var response = await request.send().timeout(const Duration(seconds: 50));
+      var responseBody = await response.stream.bytesToString();
+      final responseData = jsonDecode(responseBody);
+
+      // Handle the response
+      if (response.statusCode == 201) {
+        _successMessage = responseData['message'] ??
+            'You have registered successfully. Please verify your email.';
+        print(responseBody);
+      } else if (response.statusCode == 400) {
+        _errorMessage =
+            responseData['message'] ?? 'Bad request. Please try again.';
+        print(responseBody);
+      } else {
+        _errorMessage = responseData['error'] ?? 'An unknown error occurred.';
+        print(responseBody);
+      }
+    } catch (error) {
+      if (error is TimeoutException) {
+        _errorMessage = 'Request timed out. Please try again later.';
+      } else {
+        _errorMessage = 'An error occurred: $error';
+      }
+      print('Signup error: $_errorMessage');
     } finally {
       _isLoading = false;
       notifyListeners();

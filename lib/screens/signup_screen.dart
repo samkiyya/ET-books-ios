@@ -63,6 +63,12 @@ class _SignupScreenState extends State<SignupScreen> {
           onClose: () {
             Navigator.of(context).pop();
           },
+          onSuccess: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          },
         );
       },
     );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:book_mobile/screens/login_screen.dart';
 
 class CustomMessageModal extends StatelessWidget {
   final String message;
   final String buttonText;
   final String type; // 'success' or 'error'
   final VoidCallback onClose; // Callback for closing the modal
+  final VoidCallback? onSuccess; // Optional Callback for success
 
   const CustomMessageModal({
     super.key,
@@ -13,6 +13,7 @@ class CustomMessageModal extends StatelessWidget {
     required this.buttonText,
     required this.type,
     required this.onClose,
+    this.onSuccess,
   });
 
   @override
@@ -41,29 +42,17 @@ class CustomMessageModal extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
           const SizedBox(height: 24),
-          type == 'success'
-              ? ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: backgroundColor,
-                    backgroundColor: buttonColor, // Text color based on type
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginScreen()),
-                    );
-                  },
-                  child: Text(buttonText),
-                )
-              : ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: backgroundColor,
-                    backgroundColor: buttonColor, // Text color based on type
-                  ),
-                  onPressed: onClose,
-                  child: Text(buttonText),
-                )
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: backgroundColor,
+              backgroundColor: buttonColor, // Text color based on type
+            ),
+            onPressed: type == 'success'
+                ? (onSuccess ??
+                    onClose) // Use onSuccess if provided, else fallback to onClose
+                : onClose,
+            child: Text(buttonText),
+          ),
         ],
       ),
     );

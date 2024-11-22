@@ -49,9 +49,21 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            _scaffoldKey.currentState!.openDrawer();
+          },
+        ),
         title: const Text("Home"),
         backgroundColor: AppColors.color1,
         foregroundColor: AppColors.color6,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {},
+          ),
+        ],
       ),
       drawer: SizedBox(
         width: 250,

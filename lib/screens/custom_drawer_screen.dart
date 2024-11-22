@@ -88,7 +88,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             color: AppColors.color1, // Set color to default text color
           ),
           IconButton(
-            icon: const Icon(Icons.menu,
+            icon: const Icon(Icons.close,
                 size: 40,
                 color: AppColors.color2), // Icon color to default text color
             onPressed: () {

@@ -2,6 +2,8 @@ import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:book_mobile/providers/home_provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
+import 'package:book_mobile/providers/order_status_provider.dart';
+import 'package:book_mobile/providers/profile_provider.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
 import 'package:book_mobile/providers/signup_provider.dart';
 import 'package:book_mobile/screens/home_screen.dart';
@@ -29,14 +31,13 @@ class MyApp extends StatelessWidget {
 
         ChangeNotifierProvider(create: (_) => SignupProvider()),
         ChangeNotifierProvider(
-          create: (context) => LoginProvider(
-              authProvider: Provider.of<AuthProvider>(context, listen: false))
-            ..initializeLoginStatus(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => HomeProvider(),
-        ),
+            create: (context) => LoginProvider(
+                authProvider: Provider.of<AuthProvider>(context, listen: false))
+              ..initializeLoginStatus()),
+        ChangeNotifierProvider(create: (_) => HomeProvider()),
+        ChangeNotifierProvider(create: (_) => OrderStatusProvider()),
         ChangeNotifierProvider(create: (_) => PurchaseOrderProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Signup',
@@ -50,12 +51,13 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         routes: {
           '/': (context) => const SplashScreen(),
-
           '/home': (context) => const HomeScreen(),
           '/forgot-password': (context) => const ForgotPasswordScreen(),
           // '/verify': (context) => const VerificationScreen(),
           '/signup': (context) => const SignupScreen(),
           '/login': (context) => const LoginScreen(),
+          '/splash': (context) => const SplashScreen(),
+          '/profile': (context) => const HomeScreen(),
         },
       ),
     );

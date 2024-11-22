@@ -44,7 +44,7 @@ class HomeProvider with ChangeNotifier {
 
       if (audioResponse.statusCode == 200) {
         audioBooks = jsonDecode(audioResponse.body);
-        print('Audio Books: ${audioResponse.body}');
+        print('Audio Books: Fetched Successfully');
       } else {
         print("Audio books endpoint returned: ${audioResponse.statusCode}");
         audioBooks = []; // Default to empty list

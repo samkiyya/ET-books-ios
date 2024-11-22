@@ -2,15 +2,12 @@ import 'dart:io';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
-import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
 
 class BuyBookScreen extends StatefulWidget {
   final Map<String, dynamic> book;
-
   const BuyBookScreen({super.key, required this.book});
 
   @override
@@ -18,24 +15,23 @@ class BuyBookScreen extends StatefulWidget {
 }
 
 class _BuyBookScreenState extends State<BuyBookScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   final _transactionController = TextEditingController();
   final _bankNameController = TextEditingController();
   File? _receiptImage;
-  final _imagePicker = ImagePicker();
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _receiptImage = File(pickedFile.path);
-      });
-    }
+  String? _selectedBookType; // For dropdown selection
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedBookType = widget.book['bookType'];
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<PurchaseOrderProvider>(context);
+    final orderProvider = Provider.of<PurchaseOrderProvider>(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -76,8 +72,8 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              "Walk into the Shadow",
+                            Text(
+                              widget.book['title'],
                               style: AppTextStyles.heading2,
                             ),
                             const SizedBox(
@@ -105,75 +101,97 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
               const SizedBox(height: 20),
               Stack(
                 children: [
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.transparent, // Transparent color
-                    ),
-                    child: Card(
-                      color: Colors.transparent, // Transparent card color
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 5, // Adds subtle shadow for depth
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Transaction Number
-                            CustomTextField(
-                              label: 'Transaction Number',
-                              controller: _transactionController,
-                              labelText: "Enter Transaction Number",
-                            ),
-                            const SizedBox(height: 10),
+                  Opacity(
+                    opacity: orderProvider.isLoading ? 0.5 : 1,
+                    child: Form(
+                      key: _formKey,
+                      child: Card(
+                        color: Colors.transparent, // Transparent card color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 5, // Adds subtle shadow for depth
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Transaction Number
+                              CustomTextField(
+                                label: 'Transaction Number',
+                                controller: _transactionController,
+                                labelText: "Enter Transaction Number",
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Required'
+                                        : null,
+                              ),
+                              const SizedBox(height: 10),
 
-                            // Bank Name
-                            CustomTextField(
-                              label: 'Bank Name',
-                              controller: _bankNameController,
-                              labelText: "Enter Bank Name",
-                            ),
-                            const SizedBox(height: 10),
+                              // Bank Name
+                              CustomTextField(
+                                label: 'Bank Name',
+                                controller: _bankNameController,
+                                hintText: "Enter Bank Name",
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                        ? 'Required'
+                                        : null,
+                              ),
+                              const SizedBox(height: 10),
 
-                            // Row for Image Upload
-                            Row(
-                              children: [
-                                ElevatedButton(
-                                  onPressed: _pickImage,
-                                  style: ElevatedButton.styleFrom(
-                                    shape: const RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.zero, // Square shape
+                              // Row for Image Upload
+                              Row(
+                                children: [
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      await orderProvider.pickImage();
+                                      setState(() {
+                                        _receiptImage = orderProvider
+                                            .receiptImage; // Sync with provider
+                                      });
+                                    },
+                                    icon: const Icon(Icons.image),
+                                    label: Text(
+                                      _receiptImage == null
+                                          ? 'Upload Receipt Image'
+                                          : 'Change Image',
+                                      style: AppTextStyles.buttonText,
                                     ),
-                                    backgroundColor: AppColors.color6,
                                   ),
-                                  child: Text(
-                                    _receiptImage == null
-                                        ? 'Upload Receipt Image'
-                                        : 'Change Image',
-                                    style: AppTextStyles.buttonText,
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
 
-                                // Display Image or Placeholder
-                                Flexible(
-                                  child: _receiptImage != null
-                                      ? Image.file(
-                                          _receiptImage!,
-                                          height: 100,
-                                          width: 100,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : const Text(
-                                          'No image selected',
-                                          style: AppTextStyles.bodyText,
-                                        ),
-                                ),
-                              ],
-                            ),
-                          ],
+                                  const SizedBox(width: 20),
+
+                                  // Display Image or Placeholder
+                                  Flexible(
+                                      child: orderProvider.receiptImage == null
+                                          ? const Text(
+                                              'No receipt image selected')
+                                          : Image.file(
+                                              orderProvider.receiptImage!,
+                                              fit: BoxFit.cover,
+                                              height: 100)),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              // Dropdown for Book Type
+                              DropdownButton<String>(
+                                hint: const Text("Select Book Type"),
+                                value: _selectedBookType,
+                                items: const [
+                                  DropdownMenuItem(
+                                      value: "audio", child: Text("Audio")),
+                                  DropdownMenuItem(
+                                      value: "pdf", child: Text("PDF")),
+                                ],
+                                onChanged: (value) {
+                                  setState(() {
+                                    _selectedBookType = value;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -186,36 +204,57 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: provider.isLoading
+                    onPressed: orderProvider.isLoading
                         ? null
                         : () async {
-                            if (_transactionController.text.isEmpty ||
-                                _bankNameController.text.isEmpty ||
-                                _receiptImage == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text("All fields are required")),
+                            if (!_formKey.currentState!.validate() ||
+                                orderProvider.receiptImage == null) {
+                              orderProvider.showResponseDialog(
+                                context,
+                                "Please complete all fields and upload a receipt image.",
+                                "OK",
+                                false,
                               );
                               return;
                             }
-                            await provider.purchaseBook(
-                              id: widget.book['id'],
+
+                            await orderProvider.purchaseBook(
+                              id: widget.book['id'].toString(),
                               transactionNumber: _transactionController.text,
                               bankName: _bankNameController.text,
-                              receiptImage: _receiptImage!.path,
-                              token:
-                                  "your_user_token", // Replace with real token
+                              bookType: _selectedBookType ?? '',
+                              context: context,
                             );
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(provider.responseMessage)),
-                            );
+
+                            if (context.mounted) {
+                              orderProvider.showResponseDialog(
+                                context,
+                                orderProvider.errorMessage.isNotEmpty
+                                    ? orderProvider.errorMessage
+                                    : orderProvider.successMessage,
+                                "Close",
+                                orderProvider.errorMessage.isEmpty,
+                              );
+                            }
                           },
+
+                    // if (context.mounted) {
+                    //   ScaffoldMessenger.of(context).showSnackBar(
+                    //     SnackBar(
+                    //         content: Text(provider.responseMessage)),
+                    //   );
+                    // }
+
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.color2,
                     ),
-                    child: provider.isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text("Submit", style: AppTextStyles.buttonText),
+                    child: orderProvider.isLoading || orderProvider.isUploading
+                        ? const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                        : const Text('Submit Order',
+                            style: AppTextStyles.buttonText),
                   ),
                 ),
               ),

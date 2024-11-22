@@ -5,14 +5,14 @@ import 'package:book_mobile/screens/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class AllBooksScreen extends StatefulWidget {
-  const AllBooksScreen({super.key});
+class AllAudioScreen extends StatefulWidget {
+  const AllAudioScreen({super.key});
 
   @override
-  State<AllBooksScreen> createState() => _AllBooksScreenState();
+  State<AllAudioScreen> createState() => _AllAudioScreenState();
 }
 
-class _AllBooksScreenState extends State<AllBooksScreen> {
+class _AllAudioScreenState extends State<AllAudioScreen> {
   String _searchQuery = '';
   String _filterType = 'Book';
 

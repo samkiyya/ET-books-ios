@@ -1,10 +1,15 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/models/order_model.dart';
+import 'package:book_mobile/providers/order_status_provider.dart';
+import 'package:book_mobile/screens/book_reader_screen.dart';
 import 'package:book_mobile/screens/buy_book_screen.dart';
 import 'package:book_mobile/screens/home_screen.dart';
+import 'package:book_mobile/screens/view_order_status_screen.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_nav_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final Map<String, dynamic> book;
@@ -21,27 +26,95 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void _navigateToScreen(BuildContext context, int index) {
     switch (index) {
       case 0:
-        // HomeScreen
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
         break;
-      // case 1:
-      //   // LastReadScreen
-      //   Navigator.push(context, MaterialPageRoute(builder: (context) => LastReadScreen()));
-      //   break;
-      // case 2:
-      //   // ProfileScreen
-      //   Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-      //   break;
       default:
-        // Default to HomeScreen
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
         break;
     }
     setState(() {
       _currentIndex = index;
     });
+  }
+
+  Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
+    final statusProvider =
+        Provider.of<OrderStatusProvider>(context, listen: false);
+
+    try {
+      await statusProvider.fetchOrders();
+      final Order order = statusProvider.orders.firstWhere(
+        (order) => order.orderBook['id'] == widget.book['id'],
+        orElse: () => Order(
+          id: -1, // Default ID for a non-existent order
+          price: '0',
+          bankName: '',
+          type: '',
+          transactionNumber: '',
+          status: '',
+          createdAt: DateTime.now(),
+          orderBook: {},
+          orderUser: {},
+        ),
+      );
+
+      if (order.id != -1) {
+        return {
+          "orderId": order.id,
+          "bookId": order.orderBook['id'],
+          "status": order.status,
+        };
+      }
+    } catch (e) {
+      debugPrint('Error fetching order: $e');
+    }
+
+    return null;
+  }
+
+  void _handleButtonPress(BuildContext context) async {
+    final currentBookId = widget.book['id'];
+    final order = await fetchOrderForCurrentUser();
+
+    if (order != null) {
+      final orderedBookId = order['bookId'];
+
+      if (order['status'] == 'PENDING' && orderedBookId == currentBookId) {
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const OrderStatusScreen()),
+          );
+        }
+      } else if (order['status'] == 'APPROVED' &&
+          orderedBookId == currentBookId) {
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BookReaderScreen(
+                  pdfUrl: '${Network.baseUrl}/${widget.book['pdfFilePath']}',
+                  bookTitle: widget.book['title']),
+            ),
+          );
+        }
+      }
+    } else {
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BuyBookScreen(book: widget.book),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -52,7 +125,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       ),
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -65,12 +137,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
               ),
             ),
           ),
-          // Main content
           SingleChildScrollView(
             child: Column(
               children: [
                 const SizedBox(height: 20),
-                // Image Card
                 Center(
                   child: Card(
                     elevation: 5,
@@ -89,7 +159,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Details Card
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Card(
@@ -148,24 +217,19 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: CustomButton(
-                    text: 'BUY',
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BuyBookScreen(
-                                  book: widget.book, key: UniqueKey())));
-                    },
-                    backgroundColor: AppColors.color2,
-                    borderColor: Colors.transparent,
-                    textStyle: AppTextStyles.buttonText,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Consumer<OrderStatusProvider>(
+                      builder: (context, statusProvider, child) {
+                    return CustomButton(
+                      text: _getButtonText(statusProvider),
+                      onPressed: () => _handleButtonPress(context),
+                      backgroundColor: AppColors.color2,
+                      borderColor: Colors.transparent,
+                      textStyle: AppTextStyles.buttonText,
+                    );
+                  }),
                 ),
               ],
             ),
@@ -179,12 +243,36 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  // Helper method to build detail rows
+  String _getButtonText(OrderStatusProvider statusProvider) {
+    final order = statusProvider.orders.firstWhere(
+      (order) => order.orderBook['id'] == widget.book['id'],
+      orElse: () => Order(
+        id: -1, // Default ID for a non-existent order
+        price: '0',
+        bankName: '',
+        type: '',
+        transactionNumber: '',
+        status: '',
+        createdAt: DateTime.now(),
+        orderBook: {},
+        orderUser: {},
+      ),
+    );
+
+    if (order.id != -1) {
+      if (order.status == 'PENDING') {
+        return 'Check Order Status';
+      } else if (order.status == 'APPROVED') {
+        return 'Read Book';
+      }
+    }
+    return 'BUY';
+  }
+
   Widget _buildDetailRow(String label, dynamic value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             "$label: ",

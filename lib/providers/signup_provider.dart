@@ -4,6 +4,9 @@ import 'dart:io';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
 
 class SignupProvider with ChangeNotifier {
   bool _isLoading = false;
@@ -62,8 +65,21 @@ class SignupProvider with ChangeNotifier {
       // Add the image if available
       if (image != null) {
         print('Attaching image to request: ${image.path}');
-        request.files
-            .add(await http.MultipartFile.fromPath('image', image.path));
+        final mimeType = lookupMimeType(image.path);
+        if (mimeType == null) {
+          _errorMessage = 'Unsupported file type.';
+          _isLoading = false;
+          notifyListeners();
+          return;
+        }
+        final mimeSplit = mimeType.split('/');
+        request.files.add(http.MultipartFile(
+          'image',
+          image.readAsBytes().asStream(),
+          image.lengthSync(),
+          filename: path.basename(image.path),
+          contentType: MediaType(mimeSplit[0], mimeSplit[1]),
+        ));
       } else {
         print('No image provided for the request.');
       }

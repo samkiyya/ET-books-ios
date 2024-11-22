@@ -201,12 +201,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                     style: AppTextStyles.buttonText,
                                   ),
                                 ),
-
                                 const SizedBox(width: 40),
                                 // Image preview (optional)
                                 imageFile != null
                                     ? Image.file(imageFile!,
-                                        height: 100, width: 100)
+                                        height: 100,
+                                        width: 100,
+                                        fit: BoxFit.cover)
                                     : const Text(
                                         'No image selected',
                                         style: AppTextStyles.bodyText,

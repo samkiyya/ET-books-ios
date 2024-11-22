@@ -59,7 +59,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                                 Text(
                                   'Date: ${DateFormat('yyyy-MM-dd HH:mm').format(order.createdAt)}',
                                 ),
-                                Text('Price: \$${order.price}'),
+                                Text('Price: ${order.price} ETB'),
                                 if (order.orderBook.isNotEmpty)
                                   Column(
                                     crossAxisAlignment:

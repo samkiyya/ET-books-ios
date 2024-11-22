@@ -136,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                       fontWeight:
                                                           FontWeight.bold)),
                                               Text(
-                                                "Price: ${book['price'] ?? 'N/A'}",
+                                                "Price: ${book['price'] ?? 'N/A'} ETB",
                                               ),
                                             ],
                                           ),
@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 color: AppColors.color2),
                                           ),
                                           Text(
-                                            "Price: ${book['price']}",
+                                            "Price: ${book['price']} ETB",
                                             style: const TextStyle(
                                                 color: AppColors.color3),
                                           ),

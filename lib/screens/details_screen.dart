@@ -185,23 +185,20 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           _buildDetailRow("Publication Year",
                               widget.book['publicationYear']),
                           _buildDetailRow("Language", widget.book['language']),
-                          _buildDetailRow("Price", widget.book['price']),
+                          _buildDetailRow(
+                              "Price", "${widget.book['price']} ETB"),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Expanded(
                                 child: _buildDetailRow(
-                                  "Rating",
-                                  "${widget.book['rating']} (${widget.book['rateCount']} reviews)",
+                                  "⭐ ",
+                                  "${widget.book['rating']}     (${widget.book['rateCount']} reviews)",
                                 ),
                               ),
                               const VerticalDivider(
-                                width: 20,
-                                thickness: 8,
-                                color: Colors.white, // You can adjust the color
-                              ),
-                              const Expanded(
-                                child: Text('|'),
+                                width: 1,
+                                thickness: 1,
                               ),
                               Expanded(
                                 child: _buildDetailRow(
@@ -285,7 +282,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             child: Text(
               value != null && value.toString().isNotEmpty
                   ? value.toString()
-                  : "N/A",
+                  : "N/A ETB",
               style: const TextStyle(
                 color: AppColors.color3,
               ),

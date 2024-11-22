@@ -2,6 +2,7 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/home_provider.dart';
 import 'package:book_mobile/screens/details_screen.dart';
+import 'package:book_mobile/widgets/animated_search_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,44 +49,123 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
             Row(
               children: [
                 Expanded(
-                  child: TextField(
+                  child: AnimatedSearchTextField(
                     onChanged: (value) {
                       setState(() {
                         _searchQuery = value;
                       });
                     },
-                    decoration: const InputDecoration(
-                      labelText: "Search",
-                      border: OutlineInputBorder(),
+                  ),
+                ),
+                // Filter Buttons (Book / Author)
+              ],
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.color1,
+                        AppColors.color2
+                      ], // Gradient colors
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.color5
+                            .withOpacity(0.5), // Shadow for 3D effect
+                        offset: const Offset(3, 3), // Position of shadow
+                        blurRadius: 6, // Blur for soft edges
+                      ),
+                      BoxShadow(
+                        color: AppColors.color3
+                            .withOpacity(0.5), // Light shadow for highlight
+                        offset: const Offset(-2, -2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _filterType = 'Book';
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors
+                          .transparent, // Make background transparent to use gradient
+                      shadowColor: Colors.transparent, // Disable default shadow
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12), // Button size
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      "Search By Books",
+                      style: AppTextStyles.buttonText
+                          .copyWith(color: AppColors.color3),
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                // Filter Buttons (Book / Author)
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _filterType = 'Book';
-                        });
-                      },
-                      child: const Text("Books"),
+                const SizedBox(width: 20),
+                // Second Button
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        AppColors.color2,
+                        AppColors.color1,
+                      ], // Gradient colors
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _filterType = 'Author';
-                        });
-                      },
-                      child: const Text("Authors"),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.color5
+                            .withOpacity(0.5), // Shadow for 3D effect
+                        offset: const Offset(3, 3),
+                        blurRadius: 6,
+                      ),
+                      BoxShadow(
+                        color: AppColors.color5
+                            .withOpacity(0.5), // Light shadow for highlight
+                        offset: const Offset(-2, -2),
+                        blurRadius: 4,
+                      ),
+                    ],
+                    borderRadius: BorderRadius.circular(12), // Rounded corners
+                  ),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _filterType = 'Author';
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ],
+                    child: Text(
+                      "Search By Authors",
+                      style: AppTextStyles.buttonText
+                          .copyWith(color: AppColors.color3),
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             // Scrollable Book List
             Expanded(
               child: ListView.builder(
@@ -100,6 +180,7 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                       ),
                     ),
                     child: Card(
+                      color: AppColors.color1,
                       child: ListTile(
                         leading: Image.network(
                           '${Network.baseUrl}/${book['imageFilePath']}',
@@ -107,8 +188,22 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                           height: 50,
                           fit: BoxFit.cover,
                         ),
-                        title: Text(book['title']),
-                        subtitle: Text("Price: ${book['price']}"),
+                        title: Column(
+                          children: [
+                            Text(
+                              book['author'],
+                              style: const TextStyle(color: AppColors.color2),
+                            ),
+                            Text(
+                              book['title'],
+                              style: const TextStyle(color: AppColors.color2),
+                            ),
+                            Text(
+                              "Price: ${book['price']} ETB",
+                              style: const TextStyle(color: AppColors.color3),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );

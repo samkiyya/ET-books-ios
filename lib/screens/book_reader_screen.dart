@@ -95,99 +95,102 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.bookTitle),
-        actions: [
-          if (!_isLoading)
-            PopupMenuButton<String>(
-              onSelected: (value) {
-                setState(() {
-                  if (value == 'Light Theme') {
-                    _theme = 'light';
-                  } else if (value == 'Dark Theme') {
-                    _theme = 'dark';
-                  } else if (value == 'Sepia Theme') {
-                    _theme = 'sepia';
-                  }
-                  _savePreferences();
-                });
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                    value: 'Light Theme', child: Text('Light Theme')),
-                const PopupMenuItem(
-                    value: 'Dark Theme', child: Text('Dark Theme')),
-                const PopupMenuItem(
-                    value: 'Sepia Theme', child: Text('Sepia Theme')),
-              ],
-            ),
-        ],
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _localFilePath == null
-              ? const Center(child: Text('Failed to load PDF'))
-              : Container(
-                  color: _getBackgroundColor(),
-                  child: PDFView(
-                    filePath: _localFilePath,
-                    enableSwipe: true,
-                    swipeHorizontal: true,
-                    autoSpacing: true,
-                    pageFling: true,
-                    onRender: (pages) {
-                      setState(() {
-                        _totalPages = pages!;
-                      });
-                    },
-                    onViewCreated: (PDFViewController controller) {
-                      _pdfViewController = controller;
-                    },
-                    onPageChanged: (currentPage, totalPages) {
-                      setState(() {
-                        _currentPage = currentPage!;
-                      });
-                    },
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.bookTitle),
+          actions: [
+            if (!_isLoading)
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  setState(() {
+                    if (value == 'Light Theme') {
+                      _theme = 'light';
+                    } else if (value == 'Dark Theme') {
+                      _theme = 'dark';
+                    } else if (value == 'Sepia Theme') {
+                      _theme = 'sepia';
+                    }
+                    _savePreferences();
+                  });
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                      value: 'Light Theme', child: Text('Light Theme')),
+                  const PopupMenuItem(
+                      value: 'Dark Theme', child: Text('Dark Theme')),
+                  const PopupMenuItem(
+                      value: 'Sepia Theme', child: Text('Sepia Theme')),
+                ],
+              ),
+          ],
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _localFilePath == null
+                ? const Center(child: Text('Failed to load PDF'))
+                : Container(
+                    color: _getBackgroundColor(),
+                    child: PDFView(
+                      filePath: _localFilePath,
+                      enableSwipe: true,
+                      swipeHorizontal: true,
+                      autoSpacing: true,
+                      pageFling: true,
+                      onRender: (pages) {
+                        setState(() {
+                          _totalPages = pages!;
+                        });
+                      },
+                      onViewCreated: (PDFViewController controller) {
+                        _pdfViewController = controller;
+                      },
+                      onPageChanged: (currentPage, totalPages) {
+                        setState(() {
+                          _currentPage = currentPage!;
+                        });
+                      },
+                    ),
+                  ),
+        bottomNavigationBar: !_isLoading
+            ? BottomAppBar(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Page ${_currentPage + 1} of $_totalPages',
+                        style: TextStyle(color: _getTextColor()),
+                      ),
+                      Row(
+                        children: [
+                          IconButton(
+                            icon:
+                                Icon(Icons.arrow_back, color: _getTextColor()),
+                            onPressed: () async {
+                              final previousPage =
+                                  (_currentPage - 1).clamp(0, _totalPages - 1);
+                              await _pdfViewController.setPage(previousPage);
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward,
+                                color: _getTextColor()),
+                            onPressed: () async {
+                              final nextPage =
+                                  (_currentPage + 1).clamp(0, _totalPages - 1);
+                              await _pdfViewController.setPage(nextPage);
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-      bottomNavigationBar: !_isLoading
-          ? BottomAppBar(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Page ${_currentPage + 1} of $_totalPages',
-                      style: TextStyle(color: _getTextColor()),
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back, color: _getTextColor()),
-                          onPressed: () async {
-                            final previousPage =
-                                (_currentPage - 1).clamp(0, _totalPages - 1);
-                            await _pdfViewController.setPage(previousPage);
-                          },
-                        ),
-                        IconButton(
-                          icon:
-                              Icon(Icons.arrow_forward, color: _getTextColor()),
-                          onPressed: () async {
-                            final nextPage =
-                                (_currentPage + 1).clamp(0, _totalPages - 1);
-                            await _pdfViewController.setPage(nextPage);
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : null,
+              )
+            : null,
+      ),
     );
   }
 }

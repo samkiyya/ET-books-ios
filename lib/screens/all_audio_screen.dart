@@ -34,88 +34,90 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
       return false;
     }).toList();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("All Books"),
-        backgroundColor: AppColors.color1,
-        foregroundColor: AppColors.color6,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            // Search Box
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value;
-                      });
-                    },
-                    decoration: const InputDecoration(
-                      labelText: "Search",
-                      border: OutlineInputBorder(),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("All Books"),
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              // Search Box
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value;
+                        });
+                      },
+                      decoration: const InputDecoration(
+                        labelText: "Search",
+                        border: OutlineInputBorder(),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                // Filter Buttons (Book / Author)
-                Row(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _filterType = 'Book';
-                        });
-                      },
-                      child: const Text("Books"),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _filterType = 'Author';
-                        });
-                      },
-                      child: const Text("Authors"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            // Scrollable Book List
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredBooks.length,
-                itemBuilder: (context, index) {
-                  final book = filteredBooks[index];
-                  return GestureDetector(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BookDetailScreen(book: book),
+                  const SizedBox(width: 10),
+                  // Filter Buttons (Book / Author)
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _filterType = 'Book';
+                          });
+                        },
+                        child: const Text("Books"),
                       ),
-                    ),
-                    child: Card(
-                      child: ListTile(
-                        leading: Image.network(
-                          '${Network.baseUrl}/${book['imageFilePath']}',
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        ),
-                        title: Text(book['title']),
-                        subtitle: Text("Price: ${book['price']}"),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            _filterType = 'Author';
+                          });
+                        },
+                        child: const Text("Authors"),
                       ),
-                    ),
-                  );
-                },
+                    ],
+                  ),
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 10),
+              // Scrollable Book List
+              Expanded(
+                child: ListView.builder(
+                  itemCount: filteredBooks.length,
+                  itemBuilder: (context, index) {
+                    final book = filteredBooks[index];
+                    return GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BookDetailScreen(book: book),
+                        ),
+                      ),
+                      child: Card(
+                        child: ListTile(
+                          leading: Image.network(
+                            '${Network.baseUrl}/${book['imageFilePath']}',
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                          ),
+                          title: Text(book['title']),
+                          subtitle: Text("Price: ${book['price']}"),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

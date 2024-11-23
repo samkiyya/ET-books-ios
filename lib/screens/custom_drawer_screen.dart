@@ -77,6 +77,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   // App Bar with Logo and Hamburger Icon
   Widget _buildAppBar() {
     return AppBar(
+      leading: const Icon(Icons.menu, size: 40, color: AppColors.color1),
       backgroundColor: Colors.transparent,
       elevation: 0,
       title: Row(

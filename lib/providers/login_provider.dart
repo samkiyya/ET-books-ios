@@ -56,6 +56,18 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loginWithGoogle() async {
+    final authProvider = AuthProvider();
+    await authProvider.loginWithGoogle();
+    notifyListeners();
+  }
+
+  Future<void> loginWithFacebook() async {
+    final authProvider = AuthProvider();
+    await authProvider.loginWithFacebook();
+    notifyListeners();
+  }
+
   // Validate token
   Future<bool> _isTokenValid(String token) async {
     try {

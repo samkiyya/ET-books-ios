@@ -119,123 +119,126 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.book['title']),
-      ),
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.color2,
-                  AppColors.color1,
-                ],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.book['title']),
+        ),
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    AppColors.color2,
+                    AppColors.color1,
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
-          ),
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                Center(
-                  child: Card(
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        '${Network.baseUrl}/${widget.book['imageFilePath']}',
-                        height: 200,
-                        width: 200,
-                        fit: BoxFit.cover,
+            SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Center(
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(15),
+                        child: Image.network(
+                          '${Network.baseUrl}/${widget.book['imageFilePath']}',
+                          height: 200,
+                          width: 200,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Card(
-                    color: AppColors.color1,
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Title: ${widget.book['title']}",
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.color3,
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Card(
+                      color: AppColors.color1,
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Title: ${widget.book['title']}",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.color3,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          _buildDetailRow("Author", widget.book['author']),
-                          _buildDetailRow("Publication Year",
-                              widget.book['publicationYear']),
-                          _buildDetailRow("Language", widget.book['language']),
-                          _buildDetailRow(
-                              "Price", "${widget.book['price']} ETB"),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: _buildDetailRow(
-                                  "⭐ ",
-                                  "${widget.book['rating']}     (${widget.book['rateCount']} reviews)",
+                            const SizedBox(height: 10),
+                            _buildDetailRow("Author", widget.book['author']),
+                            _buildDetailRow("Publication Year",
+                                widget.book['publicationYear']),
+                            _buildDetailRow(
+                                "Language", widget.book['language']),
+                            _buildDetailRow(
+                                "Price", "${widget.book['price']} ETB"),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: _buildDetailRow(
+                                    "⭐ ",
+                                    "${widget.book['rating']}     (${widget.book['rateCount']} reviews)",
+                                  ),
                                 ),
-                              ),
-                              const VerticalDivider(
-                                width: 1,
-                                thickness: 1,
-                              ),
-                              Expanded(
-                                child: _buildDetailRow(
-                                    "Pages", widget.book['pages']),
-                              )
-                            ],
-                          ),
-                          _buildDetailRow("Status", widget.book['status']),
-                          _buildDetailRow(
-                              "Description", widget.book['description']),
-                        ],
+                                const VerticalDivider(
+                                  width: 1,
+                                  thickness: 1,
+                                ),
+                                Expanded(
+                                  child: _buildDetailRow(
+                                      "Pages", widget.book['pages']),
+                                )
+                              ],
+                            ),
+                            _buildDetailRow("Status", widget.book['status']),
+                            _buildDetailRow(
+                                "Description", widget.book['description']),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Consumer<OrderStatusProvider>(
-                      builder: (context, statusProvider, child) {
-                    return CustomButton(
-                      text: _getButtonText(statusProvider),
-                      onPressed: () => _handleButtonPress(context),
-                      backgroundColor: AppColors.color2,
-                      borderColor: Colors.transparent,
-                      textStyle: AppTextStyles.buttonText,
-                    );
-                  }),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Consumer<OrderStatusProvider>(
+                        builder: (context, statusProvider, child) {
+                      return CustomButton(
+                        text: _getButtonText(statusProvider),
+                        onPressed: () => _handleButtonPress(context),
+                        backgroundColor: AppColors.color2,
+                        borderColor: Colors.transparent,
+                        textStyle: AppTextStyles.buttonText,
+                      );
+                    }),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => _navigateToScreen(context, index),
+          ],
+        ),
+        bottomNavigationBar: CustomBottomNavigationBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => _navigateToScreen(context, index),
+        ),
       ),
     );
   }

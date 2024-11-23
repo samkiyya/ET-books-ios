@@ -2,20 +2,21 @@ import 'dart:convert';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/models/login_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
   static const String _baseUrl = Network.baseUrl;
   String? _token;
-  bool _isAuthenticated = false;
   final bool _is2FARequired = false;
   UserData? _userData;
   String? _userId;
   bool _isLoggingOut = false;
 
   String? get token => _token;
-  bool get isAuthenticated => _isAuthenticated;
+  bool get isAuthenticated => _token != null;
   bool get is2FARequired => _is2FARequired;
   UserData? get userData => _userData;
   String? get userId => _userId;
@@ -25,13 +26,90 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loginWithGoogle() async {
+    try {
+      final googleSignIn = GoogleSignIn();
+      final googleUser = await googleSignIn.signIn();
+      if (googleUser != null) {
+        final googleSignInAccount = googleUser as GoogleSignInAccount;
+        final googleAuth = await googleUser.authentication;
+
+        final response = await http.post(
+          Uri.parse('$_baseUrl/api/auth/google/callback'),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: json.encode({
+            'id_token': googleAuth.idToken!,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          await _storeToken(data['userToken']);
+          await loadUserData();
+        }
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> loginWithFacebook() async {
+    try {
+      final result = await FacebookAuth.instance.login();
+      if (result.status == LoginStatus.success) {
+        final accessToken = result.accessToken!;
+        final response = await http.post(
+          Uri.parse('$_baseUrl/api/auth/facebook/callback'),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: json.encode({
+            'access_token': accessToken.token!,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          await _storeToken(data['userToken']);
+          await loadUserData();
+        }
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> _storeToken(String token) async {
+    _token = token;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userToken', token);
+    notifyListeners();
+  }
+
+  Future<String> _handleCallback(String callbackUrl) async {
+    final response = await http.get(Uri.parse(callbackUrl));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      return data['userToken'];
+    } else {
+      throw Exception('Callback failed');
+    }
+  }
+
+  Future<void> loadTokenFromStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
+    notifyListeners();
+  }
+
   /// Load token and user data from shared preferences
   Future<void> loadUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    _isAuthenticated = _token != null;
 
-    if (_isAuthenticated) {
+    if (isAuthenticated) {
       String? userDataJson = prefs.getString('userId');
       if (userDataJson != null) {
         _userData = UserData.fromJson(jsonDecode(userDataJson));
@@ -49,7 +127,6 @@ class AuthProvider with ChangeNotifier {
 
     _token = null;
     _userData = null;
-    _isAuthenticated = false;
     notifyListeners();
   }
 
@@ -57,6 +134,7 @@ class AuthProvider with ChangeNotifier {
   Future<void> logout() async {
     if (_isLoggingOut) return;
     _isLoggingOut = true;
+    _token = null;
     try {
       // Logout the user from the server
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -204,4 +282,8 @@ class AuthProvider with ChangeNotifier {
       throw Exception("Failed to reset password: $e");
     }
   }
+}
+
+extension on AccessToken {
+  get token => null;
 }

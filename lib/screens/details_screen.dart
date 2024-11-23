@@ -26,11 +26,15 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void _navigateToScreen(BuildContext context, int index) {
     switch (index) {
       case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        Navigator.pushNamed(context, '/home');
         break;
+      case 1:
+        Navigator.pushNamed(context, '/profile');
+        break;
+      case 2:
+        Navigator.pushNamed(context, '/allAudio');
+        break;
+
       default:
         Navigator.pushReplacement(
           context,

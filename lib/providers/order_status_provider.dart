@@ -54,7 +54,7 @@ class OrderStatusProvider with ChangeNotifier {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = prefs.getString('userToken');
       if (_token == null || _token!.isEmpty) {
-        _errorMessage = 'Authentication required. Please log in.';
+        _errorMessage = 'Authentication required. Please log in First.';
         _isLoading = false;
         notifyListeners();
         return;
@@ -79,13 +79,16 @@ class OrderStatusProvider with ChangeNotifier {
         _successMessage =
             responseBody['message'] ?? 'Orders fetched successfully.';
       } else {
-        _errorMessage = 'Failed to fetch orders: ${response.statusCode}';
+        _errorMessage = 'Failed to fetch orders your order status.';
+        print(
+            'Failed to fetch orders: ${response.body} Status code: ${response.statusCode}');
       }
     } catch (error) {
       if (error is SocketException) {
         _errorMessage = 'No internet connection. Please check your network.';
       } else {
-        _errorMessage = 'Failed to fetch orders: $error';
+        _errorMessage = 'Failed to fetch orders. Please try again later.';
+        print('Failed to fetch orders: $error');
       }
     } finally {
       _isLoading = false;

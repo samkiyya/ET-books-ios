@@ -77,7 +77,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
   // App Bar with Logo and Hamburger Icon
   Widget _buildAppBar() {
     return AppBar(
-      leading: const Icon(Icons.menu, size: 40, color: AppColors.color1),
+      leading: const Icon(Icons.menu, size: 40, color: AppColors.color3),
       backgroundColor: Colors.transparent,
       elevation: 0,
       title: Row(
@@ -105,12 +105,45 @@ class _CustomDrawerState extends State<CustomDrawer> {
   // Handle item selection from the drawer
   void _onItemSelected(String label, AuthProvider authProvider) {
     switch (label) {
+      case 'Audio Book':
+        // Audio Book
+        _audioBook(context);
+        break;
+      case 'Downloaded':
+        // Downloaded
+        break;
+      case 'My Books':
+        // My Books
+        break;
+      case 'Notification':
+        // Notification
+        break;
+      case 'Subscribe':
+        // Subscribe
+        break;
+      case 'Author':
+        // Author
+        break;
+      case 'Share App':
+        // Share App
+        break;
+      case 'Share Code':
+        // Share Code
+        break;
+      case 'Settings':
+        // Settings
+        break;
+      case 'Contact Us':
+        // Contact Us
+        break;
+
       case 'Enable 2FA':
         _enable2FA(context);
         break;
       case 'Logout':
         _logout(context);
         break;
+
       default:
         widget.onItemSelected?.call(label);
     }
@@ -159,5 +192,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
             .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
+  }
+
+  void _audioBook(BuildContext context) {
+    Navigator.pushNamed(context, '/allAudio');
   }
 }

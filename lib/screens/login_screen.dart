@@ -4,10 +4,10 @@ import 'package:book_mobile/screens/signup_screen.dart';
 import 'package:book_mobile/screens/forgot_password_screen.dart'; // Add your Forgot Password Screen import
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
+import 'package:book_mobile/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
-import 'package:book_mobile/providers/auth_provider.dart'; // Import for social login provider
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -26,15 +26,43 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<LoginProvider>(context, listen: false)
-          .addListener(_handleLoginResponse);
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      if (loginProvider != null) {
+        loginProvider.addListener(_handleLoginResponse);
+      }
     });
+  }
+
+// Show success or error dialog
+  void _showResponseDialog(
+      BuildContext context, String message, String buttonText, bool isSuccess) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomMessageModal(
+          message: message,
+          buttonText: buttonText,
+          type: isSuccess ? 'success' : 'error',
+          onClose: () {
+            Navigator.of(context).pop();
+            if (isSuccess) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              );
+            }
+          },
+        );
+      },
+    );
   }
 
   @override
   void dispose() {
-    Provider.of<LoginProvider>(context, listen: false)
-        .removeListener(_handleLoginResponse);
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+
+    if (loginProvider != null) {
+      loginProvider.removeListener(_handleLoginResponse);
+    }
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -42,30 +70,53 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _handleLoginResponse() {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-    if (loginProvider.isAuthenticated) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+
+    if (loginProvider.successMessage.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showResponseDialog(
+          context,
+          loginProvider.successMessage,
+          "Close",
+          true,
+        );
+
+        // Delay navigation to HomeScreen until the dialog is closed
+        loginProvider.clearMessages();
+      });
+    } else if (loginProvider.isAuthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      });
     } else if (loginProvider.errorMessage.isNotEmpty) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Login Error'),
-            content: Text(loginProvider.errorMessage),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  loginProvider.clearError();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showResponseDialog(
+          context,
+          loginProvider.errorMessage,
+          "Retry",
+          false,
+        );
+        loginProvider.clearMessages();
+      });
     }
+  }
+
+  String? _validateField(String key, String value) {
+    if (value.isEmpty) {
+      return 'Please enter your $key';
+    }
+    if (key == 'email') {
+      final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+      if (!emailRegex.hasMatch(value)) {
+        return 'Please enter a valid email';
+      }
+    }
+    if (key == 'password' && value.length < 6) {
+      return 'Password must be at least 6 characters long.';
+    }
+
+    return null; // No errors
   }
 
   @override
@@ -122,9 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hintText: "Enter your Email",
                                 icon: Icons.email,
                                 validator: (value) =>
-                                    value == null || value.isEmpty
-                                        ? 'Please enter your email'
-                                        : null,
+                                    _validateField('email', value!),
                               ),
                               const SizedBox(height: 20),
                               // Password field
@@ -132,12 +181,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                 controller: _passwordController,
                                 label: 'Password',
                                 hintText: "Enter your password",
-                                icon: Icons.lock,
-                                obscureText: true,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _hidePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: AppColors.color1,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _hidePassword = !_hidePassword;
+                                    });
+                                  },
+                                ),
+                                obscureText: _hidePassword,
                                 validator: (value) =>
-                                    value == null || value.isEmpty
-                                        ? 'Please enter your password'
-                                        : null,
+                                    _validateField('password', value!),
                               ),
                               // Forgot Password
                               Align(
@@ -190,21 +249,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onPressed: () async {
                                       try {
                                         await loginProvider.loginWithGoogle();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content:
-                                                Text('Logged in with Google'),
-                                          ),
-                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content:
+                                                  Text('Logged in with Google'),
+                                            ),
+                                          );
+                                        }
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content:
-                                                Text('Google Login Failed: $e'),
-                                          ),
-                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Google Login Failed: $e'),
+                                            ),
+                                          );
+                                        }
                                       }
                                     },
                                     backgroundColor: Colors.red,
@@ -216,21 +279,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onPressed: () async {
                                       try {
                                         await loginProvider.loginWithFacebook();
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content:
-                                                Text('Logged in with Facebook'),
-                                          ),
-                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Logged in with Facebook'),
+                                            ),
+                                          );
+                                        }
                                       } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Facebook Login Failed: $e'),
-                                          ),
-                                        );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Facebook Login Failed: $e'),
+                                            ),
+                                          );
+                                        }
                                       }
                                     },
                                     backgroundColor: Colors.blue,

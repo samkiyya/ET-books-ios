@@ -6,6 +6,8 @@ import 'package:book_mobile/providers/order_status_provider.dart';
 import 'package:book_mobile/providers/profile_provider.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
 import 'package:book_mobile/providers/signup_provider.dart';
+import 'package:book_mobile/screens/all_audio_screen.dart';
+// import 'package:book_mobile/screens/author_screen.dart';
 import 'package:book_mobile/screens/home_screen.dart';
 import 'package:book_mobile/screens/login_screen.dart';
 import 'package:book_mobile/screens/forgot_password_screen.dart';
@@ -59,6 +61,8 @@ class MyApp extends StatelessWidget {
           '/login': (context) => const LoginScreen(),
           '/splash': (context) => const SplashScreen(),
           '/profile': (context) => const HomeScreen(),
+          '/allAudio': (context) => const AllAudioScreen(),
+          // '/author': (context) => const AuthorScreen(),
         },
       ),
     );

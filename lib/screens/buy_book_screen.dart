@@ -21,12 +21,12 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
   final _bankNameController = TextEditingController();
   File? _receiptImage;
 
-  String? _selectedBookType; // For dropdown selection
+  String? _validateField(String key, String value) {
+    if (value.isEmpty) {
+      return 'Please enter your $key';
+    }
 
-  @override
-  void initState() {
-    super.initState();
-    _selectedBookType = widget.book['bookType'];
+    return null; // No errors
   }
 
   @override
@@ -123,10 +123,8 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                   label: 'Transaction Number',
                                   controller: _transactionController,
                                   labelText: "Enter Transaction Number",
-                                  validator: (value) =>
-                                      value == null || value.isEmpty
-                                          ? 'Required'
-                                          : null,
+                                  validator: (value) => _validateField(
+                                      'Transaction Number', value!),
                                 ),
                                 const SizedBox(height: 10),
 
@@ -136,29 +134,33 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                   controller: _bankNameController,
                                   hintText: "Enter Bank Name",
                                   validator: (value) =>
-                                      value == null || value.isEmpty
-                                          ? 'Required'
-                                          : null,
+                                      _validateField('Bank Name', value!),
                                 ),
                                 const SizedBox(height: 10),
 
                                 // Row for Image Upload
                                 Row(
                                   children: [
-                                    TextButton.icon(
-                                      onPressed: () async {
-                                        await orderProvider.pickImage();
-                                        setState(() {
-                                          _receiptImage = orderProvider
-                                              .receiptImage; // Sync with provider
-                                        });
-                                      },
-                                      icon: const Icon(Icons.image),
-                                      label: Text(
-                                        _receiptImage == null
-                                            ? 'Upload Receipt Image'
-                                            : 'Change Image',
-                                        style: AppTextStyles.buttonText,
+                                    Expanded(
+                                      child: TextButton.icon(
+                                        onPressed: () async {
+                                          await orderProvider.pickImage();
+                                          setState(() {
+                                            _receiptImage = orderProvider
+                                                .receiptImage; // Sync with provider
+                                          });
+                                        },
+                                        icon: const Icon(Icons.image,
+                                            color: AppColors.color3),
+                                        label: Text(
+                                          _receiptImage == null
+                                              ? 'Upload Receipt Image'
+                                              : 'Change Image',
+                                          style:
+                                              AppTextStyles.buttonText.copyWith(
+                                            color: AppColors.color3,
+                                          ),
+                                        ),
                                       ),
                                     ),
 
@@ -166,33 +168,25 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
 
                                     // Display Image or Placeholder
                                     Flexible(
-                                        child:
-                                            orderProvider.receiptImage == null
-                                                ? const Text(
-                                                    'No receipt image selected')
-                                                : Image.file(
-                                                    orderProvider.receiptImage!,
-                                                    fit: BoxFit.cover,
-                                                    height: 100)),
+                                        child: orderProvider.receiptImage ==
+                                                null
+                                            ? const Text(
+                                                'No receipt image selected',
+                                                style: TextStyle(
+                                                    color: AppColors.color3),
+                                              )
+                                            : Image.file(
+                                                orderProvider.receiptImage!,
+                                                fit: BoxFit.cover,
+                                                height: 100)),
                                   ],
                                 ),
-                                const SizedBox(height: 10),
+                                if (_receiptImage == null)
+                                  const Text(
+                                    'Please upload a receipt image.',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
                                 // Dropdown for Book Type
-                                DropdownButton<String>(
-                                  hint: const Text("Select Book Type"),
-                                  value: _selectedBookType,
-                                  items: const [
-                                    DropdownMenuItem(
-                                        value: "audio", child: Text("Audio")),
-                                    DropdownMenuItem(
-                                        value: "pdf", child: Text("PDF")),
-                                  ],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedBookType = value;
-                                    });
-                                  },
-                                ),
                               ],
                             ),
                           ),
@@ -210,14 +204,11 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                       onPressed: orderProvider.isLoading
                           ? null
                           : () async {
-                              if (!_formKey.currentState!.validate() ||
-                                  orderProvider.receiptImage == null) {
-                                orderProvider.showResponseDialog(
-                                  context,
-                                  "Please complete all fields and upload a receipt image.",
-                                  "OK",
-                                  false,
-                                );
+                              if (!_formKey.currentState!.validate()) {
+                                return;
+                              }
+                              if (_receiptImage == null) {
+                                // Show an error message under the image upload section
                                 return;
                               }
 
@@ -225,7 +216,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                 id: widget.book['id'].toString(),
                                 transactionNumber: _transactionController.text,
                                 bankName: _bankNameController.text,
-                                bookType: _selectedBookType ?? '',
+                                bookType: widget.book['type'].toString(),
                                 context: context,
                               );
 
@@ -240,14 +231,6 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                 );
                               }
                             },
-
-                      // if (context.mounted) {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     SnackBar(
-                      //         content: Text(provider.responseMessage)),
-                      //   );
-                      // }
-
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.color2,
                       ),

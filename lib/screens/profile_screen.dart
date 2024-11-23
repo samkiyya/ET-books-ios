@@ -38,7 +38,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CircleAvatar(
                       radius: 50,
                       backgroundImage: NetworkImage(
-                        userProfile['imageFilePath'] ?? 'default_image_url',
+                        userProfile['imageFilePath'] ??
+                            'https://xsgames.co/randomusers/avatar.php?g=pixel',
                       ),
                     ),
                     const SizedBox(height: 10),

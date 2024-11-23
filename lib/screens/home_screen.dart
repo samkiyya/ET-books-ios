@@ -1,5 +1,6 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/screens/all_book_screen.dart';
+import 'package:book_mobile/screens/audo_detail_screen.dart';
 import 'package:book_mobile/screens/details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -277,8 +278,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      BookDetailScreen(
-                                                          book: audioBook),
+                                                      AudioDetailScreen(
+                                                          audioBook: audioBook),
                                                 ),
                                               ),
                                               child: Card(
@@ -292,19 +293,24 @@ class _HomeScreenState extends State<HomeScreen>
                                                             .start,
                                                     children: [
                                                       // Audio Book Title
-                                                      Text(
-                                                        audioBook[
-                                                                'bookTitle'] ??
-                                                            "No title",
-                                                        style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold,
+                                                      Expanded(
+                                                        child: Text(
+                                                          audioBook[
+                                                                  'bookTitle'] ??
+                                                              "No title",
+                                                          style:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                          ),
                                                         ),
                                                       ),
 
                                                       // Audio Book Episode
-                                                      Text(
-                                                          audioBook['episode']),
+                                                      Flexible(
+                                                        child: Text(audioBook[
+                                                            'episode']),
+                                                      ),
                                                     ],
                                                   ),
                                                 ),

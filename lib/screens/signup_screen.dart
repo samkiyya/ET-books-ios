@@ -6,7 +6,6 @@ import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:book_mobile/widgets/modal.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -18,6 +17,8 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool _hidePassword = true;
+  File? _profileImage; // Hide password by default
 
   // Form field controllers
   final Map<String, TextEditingController> controllers = {
@@ -31,21 +32,49 @@ class _SignupScreenState extends State<SignupScreen> {
     'Bio': TextEditingController(),
   };
   String selectedRole = 'AUTHOR'; // Default role
-  File? imageFile; // To store the selected image file
+  File? imageFile;
 
-  // Image picker instance
-  final ImagePicker _picker = ImagePicker();
-
-  // Function to pick image from gallery or camera
-  Future<void> _pickImage() async {
-    final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        imageFile = File(pickedFile.path); // Save the selected image
-      });
+  String? _validateField(String key, String value) {
+    if (key != 'phone' && value.isEmpty) {
+      return '$key cannot be empty';
     }
+    if (key == 'Email' &&
+        !RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]+").hasMatch(value)) {
+      return 'Enter a valid email';
+    }
+    if (key == 'Phone' && value.isNotEmpty) {
+      if (key == 'Phone' &&
+          !RegExp(r"^(?:[+0]9)?[0-9]{10,13}$").hasMatch(value)) {
+        return 'Enter numbers only (10-13 digits)';
+      }
+    }
+    if (key == 'Password' && value.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+    if (key == 'Phone' && value.isNotEmpty && value.length < 10 ||
+        key == 'Phone' && value.length > 13) {
+      return 'Phone number must be at least 10 and at most 13 characters long';
+    }
+    if (key == 'Country' && value.length < 3) {
+      return 'Country must be at least 3 characters long';
+    }
+    if (key == 'City' && value.length < 3) {
+      return 'City must be at least 3 characters long';
+    }
+    if (key == 'First Name' && value.length < 3) {
+      return 'First Name must be at least 3 characters long';
+    }
+    if (key == 'Last Name' && value.length < 3) {
+      return 'Last Name must be at least 3 characters long';
+    }
+    if (key == 'Bio' && value.length < 10) {
+      return 'Bio must be at least 10 characters long';
+    }
+    if (key == 'role' && value.isEmpty) {
+      return 'Role must be selected';
+    }
+
+    return null; // No errors
   }
 
   // Show success or error dialog
@@ -132,7 +161,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           signupProvider.clearMessages();
                         });
                       }
-      
+
                       return SingleChildScrollView(
                         child: Form(
                           key: _formKey,
@@ -143,6 +172,26 @@ class _SignupScreenState extends State<SignupScreen> {
                                 return CustomTextField(
                                   controller: entry.value,
                                   labelText: entry.key,
+                                  validator: (value) =>
+                                      _validateField(entry.key, value!),
+                                  suffixIcon: entry.key == 'Password'
+                                      ? IconButton(
+                                          icon: Icon(
+                                            _hidePassword
+                                                ? Icons.visibility_off
+                                                : Icons.visibility,
+                                            color: AppColors.color1,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _hidePassword = !_hidePassword;
+                                            });
+                                          },
+                                        )
+                                      : null,
+                                  obscureText: entry.key == 'Password'
+                                      ? _hidePassword
+                                      : false,
                                 );
                               }),
                               const SizedBox(height: 20),
@@ -156,14 +205,14 @@ class _SignupScreenState extends State<SignupScreen> {
                                       selectedRole = newValue!;
                                     });
                                   },
-                                  items: <String>[
-                                    'AUTHOR',
-                                    'USER'
-                                  ].map<DropdownMenuItem<String>>((String value) {
+                                  items: <String>['AUTHOR', 'USER']
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(left: 10),
+                                        padding:
+                                            const EdgeInsets.only(left: 10),
                                         child: Text(value,
                                             style: AppTextStyles.hintText),
                                       ),
@@ -187,32 +236,35 @@ class _SignupScreenState extends State<SignupScreen> {
                               // Image Upload Button
                               Row(
                                 children: [
-                                  ElevatedButton(
-                                    onPressed: _pickImage,
-                                    style: ElevatedButton.styleFrom(
-                                        shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius
-                                              .zero, // No rounding for rectangular shape
-                                        ),
-                                        backgroundColor: AppColors.color6),
-                                    child: Text(
-                                      imageFile == null
-                                          ? 'Upload Image'
+                                  TextButton.icon(
+                                    onPressed: () async {
+                                      await signupProvider.pickProfileImage();
+                                      setState(() {
+                                        _profileImage = signupProvider
+                                            .profileImage; // Sync with provider
+                                      });
+                                    },
+                                    icon: const Icon(Icons.image,
+                                        color: AppColors.color3),
+                                    label: Text(
+                                      _profileImage == null
+                                          ? 'Upload profile Image'
                                           : 'Change Image',
-                                      style: AppTextStyles.buttonText,
+                                      style: AppTextStyles.bodyText,
                                     ),
                                   ),
                                   const SizedBox(width: 40),
                                   // Image preview (optional)
-                                  imageFile != null
-                                      ? Image.file(imageFile!,
-                                          height: 100,
-                                          width: 100,
-                                          fit: BoxFit.cover)
-                                      : const Text(
-                                          'No image selected',
-                                          style: AppTextStyles.bodyText,
-                                        ),
+                                  Flexible(
+                                      child: signupProvider.profileImage == null
+                                          ? const Text(
+                                              'No profile image selected',
+                                              style: AppTextStyles.caption,
+                                            )
+                                          : Image.file(
+                                              signupProvider.profileImage!,
+                                              fit: BoxFit.cover,
+                                              height: 100))
                                 ],
                               ),
                               const SizedBox(height: 20),
@@ -225,23 +277,27 @@ class _SignupScreenState extends State<SignupScreen> {
                                       onPressed: () {
                                         if (_formKey.currentState!.validate()) {
                                           signupProvider.signup(
-                                            email:
-                                                controllers['Email']!.text.trim(),
+                                            email: controllers['Email']!
+                                                .text
+                                                .trim(),
                                             password: controllers['Password']!
                                                 .text
                                                 .trim(),
                                             fname:
                                                 controllers['First Name']!.text,
-                                            lname: controllers['Last Name']!.text,
+                                            lname:
+                                                controllers['Last Name']!.text,
                                             phone: controllers['Phone']!.text,
                                             city: controllers['City']!.text,
-                                            country: controllers['Country']!.text,
+                                            country:
+                                                controllers['Country']!.text,
                                             role: selectedRole,
                                             bio: controllers['Bio']!.text,
-                                            image: imageFile,
+                                            context: context,
                                           );
                                         } else {
-                                          print("Error: Form validation failed.");
+                                          print(
+                                              "Error: Form validation failed.");
                                         }
                                       },
                                       backgroundColor: AppColors.color2,

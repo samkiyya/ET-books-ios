@@ -83,49 +83,51 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.color1.withOpacity(0.6),
-              AppColors.color1,
-              AppColors.color1..withOpacity(0.8),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.color1.withOpacity(0.6),
+                AppColors.color1,
+                AppColors.color1..withOpacity(0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FadeTransition(
-              opacity: _animation,
-              child: ScaleTransition(
-                scale: _animation,
-                child: const Icon(
-                  Icons.book,
-                  size: 150,
-                  color: AppColors.color3,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FadeTransition(
+                opacity: _animation,
+                child: ScaleTransition(
+                  scale: _animation,
+                  child: const Icon(
+                    Icons.book,
+                    size: 150,
+                    color: AppColors.color3,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Book App',
-              style: TextStyle(
-                fontSize: 30,
-                color: AppColors.color3,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            if (!_isInitialized) ...[
               const SizedBox(height: 20),
-              const CircularProgressIndicator(),
+              const Text(
+                'Book App',
+                style: TextStyle(
+                  fontSize: 30,
+                  color: AppColors.color3,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (!_isInitialized) ...[
+                const SizedBox(height: 20),
+                const CircularProgressIndicator(),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

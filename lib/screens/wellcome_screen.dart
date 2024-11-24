@@ -9,68 +9,70 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppColors.color1.withOpacity(0.6),
-              AppColors.color1,
-              AppColors.color1..withOpacity(0.8),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                AppColors.color1.withOpacity(0.6),
+                AppColors.color1,
+                AppColors.color1..withOpacity(0.8),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Welcome Back',
-              style: AppTextStyles.heading1,
-            ),
-            const SizedBox(height: 50),
-            // Sign In button
-            SizedBox(
-              width: 350,
-              child: CustomButton(
-                text: 'LOG IN',
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) => const LoginScreen()),
-                  // );
-                },
-                backgroundColor: Colors.transparent,
-                borderColor: AppColors.color3,
-                textStyle: AppTextStyles.buttonText,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Welcome Back',
+                style: AppTextStyles.heading1,
               ),
-            ),
-            const SizedBox(height: 40),
-            // Sign Up button
-            SizedBox(
-              width: 350,
-              child: CustomButton(
-                text: 'SIGN UP',
-                onPressed: () {
-                  Navigator.pushNamed(context, '/signup');
+              const SizedBox(height: 50),
+              // Sign In button
+              SizedBox(
+                width: 350,
+                child: CustomButton(
+                  text: 'LOG IN',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/login');
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => const LoginScreen()),
+                    // );
+                  },
+                  backgroundColor: Colors.transparent,
+                  borderColor: AppColors.color3,
+                  textStyle: AppTextStyles.buttonText,
+                ),
+              ),
+              const SizedBox(height: 40),
+              // Sign Up button
+              SizedBox(
+                width: 350,
+                child: CustomButton(
+                  text: 'SIGN UP',
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/signup');
 
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) => const SignupScreen()),
-                  // );
-                },
-                backgroundColor: AppColors.color2,
-                borderColor: AppColors.color3,
-                textStyle: AppTextStyles.buttonText,
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => const SignupScreen()),
+                    // );
+                  },
+                  backgroundColor: AppColors.color2,
+                  borderColor: AppColors.color3,
+                  textStyle: AppTextStyles.buttonText,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -12,12 +12,14 @@ class LoginProvider with ChangeNotifier {
   LoginProvider({required this.authProvider});
   bool _isLoading = false;
   String _errorMessage = '';
+  String _successMessage = '';
   String? _token;
   bool _isAuthenticated = false;
   bool _is2FARequired = false;
 
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
+  String get successMessage => _successMessage;
   String? get token => _token;
   bool get is2FARequired => _is2FARequired;
   bool get isAuthenticated => _isAuthenticated;
@@ -56,6 +58,16 @@ class LoginProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> loginWithGoogle() async {
+    await authProvider.loginWithGoogle();
+    notifyListeners();
+  }
+
+  Future<void> loginWithFacebook() async {
+    await authProvider.loginWithFacebook();
+    notifyListeners();
+  }
+
   // Validate token
   Future<bool> _isTokenValid(String token) async {
     try {
@@ -91,8 +103,11 @@ class LoginProvider with ChangeNotifier {
         final userId = loginResponse.userData.id;
 
         await authProvider.setUserId(userId.toString());
+        _successMessage = 'you had Login successful!';
+      } else if (response.statusCode == 401) {
+        _errorMessage = 'Authorizaation failed. Please try again.';
       } else {
-        _errorMessage = 'Invalid email or password. Please try again.';
+        _errorMessage = 'Invalid credentials. Please try again.';
       }
     } catch (error) {
       _errorMessage = 'An error occurred: $error';
@@ -109,10 +124,10 @@ class LoginProvider with ChangeNotifier {
     await prefs.setString('userId', authProvider.userId!);
   }
 
-  // Clear error message
-  void clearError() {
+  void clearMessages() {
     _errorMessage = '';
-    notifyListeners();
+    _successMessage = '';
+    notifyListeners(); // Notify listeners to update the UI
   }
 
   bool tokenExpirationCheck(String? token) {

@@ -48,45 +48,47 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Enter a new password to reset your password.',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _newPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'New Password',
-                border: OutlineInputBorder(),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Reset Password')),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Enter a new password to reset your password.',
+                style: TextStyle(fontSize: 16.0),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            if (_message != null)
-              Text(
-                _message!,
-                style: TextStyle(
-                  color: _message!.startsWith('Failed')
-                      ? Colors.red
-                      : Colors.green,
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _newPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'New Password',
+                  border: OutlineInputBorder(),
                 ),
               ),
-            const SizedBox(height: 16.0),
-            if (_isLoading)
-              const Center(child: CircularProgressIndicator())
-            else
-              ElevatedButton(
-                onPressed: _resetPassword,
-                child: const Text('Reset Password'),
-              ),
-          ],
+              const SizedBox(height: 16.0),
+              if (_message != null)
+                Text(
+                  _message!,
+                  style: TextStyle(
+                    color: _message!.startsWith('Failed')
+                        ? Colors.red
+                        : Colors.green,
+                  ),
+                ),
+              const SizedBox(height: 16.0),
+              if (_isLoading)
+                const Center(child: CircularProgressIndicator())
+              else
+                ElevatedButton(
+                  onPressed: _resetPassword,
+                  child: const Text('Reset Password'),
+                ),
+            ],
+          ),
         ),
       ),
     );

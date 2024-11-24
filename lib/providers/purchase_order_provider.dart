@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -83,7 +84,7 @@ class PurchaseOrderProvider with ChangeNotifier {
       // Check for image validation
       if (!_isValidImage(_receiptImage!)) {
         _errorMessage =
-            'Only jpeg, jpg, png, and gif files are allowed, and the image size should be <= 10MB.';
+            'Invalid image format or size. Only JPEG, JPG, PNG, and GIF images under 10MB are allowed.';
         _isLoading = false;
         _isUploading = false;
         notifyListeners();
@@ -95,7 +96,7 @@ class PurchaseOrderProvider with ChangeNotifier {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = prefs.getString('userToken');
       if (_token == null || _token!.isEmpty) {
-        _errorMessage = 'Authentication failed. Please log in again.';
+        _errorMessage = 'Authentication error. Please log in and try again.';
         _token = null;
         _isLoading = false;
         _isUploading = false;
@@ -123,7 +124,7 @@ class PurchaseOrderProvider with ChangeNotifier {
 // Add receipt image
       final mimeType = lookupMimeType(_receiptImage!.path)!;
       if (mimeType.isEmpty) {
-        _errorMessage = 'Unsupported file type.';
+        _errorMessage = 'Unsupported file type. Please upload a valid image.';
         _isLoading = false;
         _isUploading = false;
         notifyListeners();
@@ -141,18 +142,23 @@ class PurchaseOrderProvider with ChangeNotifier {
       if (response.statusCode == 201) {
         final responseBody = await response.stream.bytesToString();
         final parsedResponse = json.decode(responseBody);
-        _successMessage = parsedResponse['message'] ?? 'Purchase successful!';
+        _successMessage = parsedResponse['message'] ??
+            'Your Order submitted successfuly, please check the order status!';
       } else {
         final responseBody = await response.stream.bytesToString();
-        _errorMessage =
-            'Failed to upload order: ${response.statusCode} - $responseBody';
+        _errorMessage = 'Failed to submit the order, please try again';
+        print(
+            'Failed to submit the order, please try again ${response.statusCode} - $responseBody');
       }
     } catch (error) {
-      if (error is SocketException) {
+      if (error is TimeoutException) {
+        _errorMessage = 'Request timed out. Please try again later.';
+      } else if (error is SocketException) {
         _errorMessage = 'No internet connection. Please check your network.';
         print('Error: $error');
       } else {
-        _errorMessage = 'Failed to purchase: $error';
+        _errorMessage = 'An error occurred. Please try again.';
+        print('Error: $error');
       }
     } finally {
       _isLoading = false;

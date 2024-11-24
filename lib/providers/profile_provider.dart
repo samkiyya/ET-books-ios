@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -5,6 +6,7 @@ import 'dart:convert';
 class ProfileProvider with ChangeNotifier {
   String? _token;
   Map<String, dynamic>? _userProfile;
+  final baseUrl = Network.baseUrl;
 
   Map<String, dynamic>? get userProfile => _userProfile;
 
@@ -15,7 +17,7 @@ class ProfileProvider with ChangeNotifier {
 
   // Fetch user profile
   Future<void> fetchUserProfile() async {
-    final url = Uri.parse('https://your-api-url.com/api/user/my-profile');
+    final url = Uri.parse('$baseUrl/api/user/my-profile');
     final response = await http.get(
       url,
       headers: {'Authorization': 'Bearer $_token'},

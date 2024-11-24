@@ -4,21 +4,39 @@ import 'dart:io';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as path;
+import 'package:mime/mime.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class SignupProvider with ChangeNotifier {
   bool _isLoading = false;
   String _errorMessage = '';
   String _successMessage = '';
+  File? _profileImage;
+  bool _isUploading = false;
 
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
   String get successMessage => _successMessage;
+  final ImagePicker _picker = ImagePicker();
+  File? get profileImage => _profileImage;
+  bool get isUploading => _isUploading;
 
   // Method to clear messages
   void clearMessages() {
     _errorMessage = '';
     _successMessage = '';
     notifyListeners(); // Notify listeners to update the UI
+  }
+
+  Future<void> pickProfileImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      _profileImage = File(pickedFile.path);
+      notifyListeners();
+    }
   }
 
   // Method to handle API submission
@@ -32,7 +50,7 @@ class SignupProvider with ChangeNotifier {
     required String country,
     required String role,
     required String bio,
-    required File? image,
+    required BuildContext context,
   }) async {
     _isLoading = true;
     _errorMessage = '';
@@ -52,26 +70,57 @@ class SignupProvider with ChangeNotifier {
       'bio': bio,
     };
 
+    // Check internet connection
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      _errorMessage = 'No internet connection. Please check your network.';
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
     try {
+      _isUploading = true;
+      notifyListeners();
+      if (_profileImage != null && !_isValidImage(_profileImage!)) {
+        _errorMessage =
+            'Invalid image. Ensure the file is jpeg, jpg, png, or gif and is less than 10MB.';
+        _isLoading = false;
+        _isUploading = false;
+        notifyListeners();
+        return;
+      }
       final url = Uri.parse('${Network.baseUrl}/api/user/register');
       var request = http.MultipartRequest('POST', url);
 
       // Add the fields to the request
       request.fields.addAll(payload);
+      if (_profileImage != null) {
+        // Add the image if available
+        final mimeType = lookupMimeType(_profileImage!.path)!;
+        if (mimeType.isEmpty) {
+          _errorMessage = 'Unsupported file type.';
+          _isLoading = false;
+          _isUploading = false;
+          notifyListeners();
+          return;
+        }
+        final mimeSplit = mimeType.split('/');
 
-      // Add the image if available
-      if (image != null) {
-        print('Attaching image to request: ${image.path}');
-        request.files
-            .add(await http.MultipartFile.fromPath('image', image.path));
-      } else {
-        print('No image provided for the request.');
+        request.files.add(http.MultipartFile(
+          'image',
+          _profileImage!.readAsBytes().asStream(),
+          _profileImage!.lengthSync(),
+          filename: Uri.encodeComponent(path.basename(_profileImage!.path)),
+          contentType: MediaType(mimeSplit[0], mimeSplit[1]),
+        ));
       }
-
       // Send the request
-      var response = await request.send().timeout(const Duration(seconds: 50));
+      // var response = await request.send().timeout(const Duration(seconds: 50));
+      var response = await request.send();
       var responseBody = await response.stream.bytesToString();
       final responseData = jsonDecode(responseBody);
+      print(responseBody);
 
       // Handle the response
       if (response.statusCode == 201) {
@@ -80,10 +129,11 @@ class SignupProvider with ChangeNotifier {
         print(responseBody);
       } else if (response.statusCode == 400) {
         _errorMessage =
-            responseData['message'] ?? 'Bad request. Please try again.';
+            responseData['message'] ?? 'Bad request. Please check your inputs.';
         print(responseBody);
       } else {
-        _errorMessage = responseData['error'] ?? 'An unknown error occurred.';
+        _errorMessage = responseData['error'] ??
+            'Unexpected error occurred. please try again.';
         print(responseBody);
       }
     } catch (error) {
@@ -95,7 +145,25 @@ class SignupProvider with ChangeNotifier {
       print('Signup error: $_errorMessage');
     } finally {
       _isLoading = false;
+      _isUploading = false;
       notifyListeners();
     }
+  }
+
+  bool _isValidImage(File image) {
+    // Validate image size
+    int maxSize = 10 * 1024 * 1024; // 10 MB
+    if (image.lengthSync() > maxSize) {
+      return false;
+    }
+
+    // Validate image type (extension)
+    List<String> validExtensions = ['.jpeg', '.jpg', '.png', '.gif'];
+    String extension = path.extension(image.path).toLowerCase();
+    if (!validExtensions.contains(extension)) {
+      return false;
+    }
+
+    return true;
   }
 }

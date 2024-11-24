@@ -5,9 +5,11 @@ import 'package:book_mobile/screens/forgot_password_screen.dart'; // Add your Fo
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:book_mobile/widgets/modal.dart';
+import 'package:book_mobile/widgets/square_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -221,7 +223,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 50),
+                              const SizedBox(height: 20),
                               // Login button
                               loginProvider.isLoading
                                   ? const Center(
@@ -242,11 +244,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                               const SizedBox(height: 30),
                               // Social Login Buttons
-                              Column(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CustomButton(
-                                    text: 'Login with Google',
-                                    onPressed: () async {
+                                  SquareTile(
+                                    imagePath: 'assets/images/g_logo.png',
+                                    onTap: () async {
                                       try {
                                         await loginProvider.loginWithGoogle();
                                         if (context.mounted) {
@@ -257,6 +260,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   Text('Logged in with Google'),
                                             ),
                                           );
+                                        }
+                                        // Check if user is authenticated after Facebook login and navigate
+
+                                        if (loginProvider.isAuthenticated) {
+                                          if (context.mounted) {
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      const HomeScreen()),
+                                            );
+                                          }
                                         }
                                       } catch (e) {
                                         if (context.mounted) {
@@ -270,13 +285,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       }
                                     },
-                                    backgroundColor: Colors.red,
-                                    textStyle: AppTextStyles.buttonText,
                                   ),
-                                  const SizedBox(height: 20),
-                                  CustomButton(
-                                    text: 'Login with Facebook',
-                                    onPressed: () async {
+                                  const SizedBox(width: 40),
+                                  SquareTile(
+                                    imagePath: 'assets/images/fb_logo.png',
+                                    onTap: () async {
                                       try {
                                         await loginProvider.loginWithFacebook();
                                         if (context.mounted) {
@@ -287,6 +300,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   'Logged in with Facebook'),
                                             ),
                                           );
+                                        }
+                                        // Check if user is authenticated after Facebook login and navigate
+
+                                        if (loginProvider.isAuthenticated) {
+                                          if (context.mounted) {
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      const HomeScreen()),
+                                            );
+                                          }
                                         }
                                       } catch (e) {
                                         if (context.mounted) {
@@ -300,12 +325,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       }
                                     },
-                                    backgroundColor: Colors.blue,
-                                    textStyle: AppTextStyles.buttonText,
-                                  ),
+                                  )
                                 ],
                               ),
-                              const SizedBox(height: 50),
+                              const SizedBox(height: 20),
                               // Signup prompt
                               TextButton(
                                 onPressed: () {

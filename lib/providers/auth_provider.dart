@@ -11,6 +11,8 @@ class AuthProvider with ChangeNotifier {
   static const String _baseUrl = Network.baseUrl;
   String? _token;
   final bool _is2FARequired = false;
+  AccessToken? _accessToken;
+
   UserData? _userData;
   String? _userId;
   bool _isLoggingOut = false;
@@ -28,11 +30,28 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> loginWithGoogle() async {
     try {
-      final googleSignIn = GoogleSignIn();
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser != null) {
-        final googleSignInAccount = googleUser as GoogleSignInAccount;
-        final googleAuth = await googleUser.authentication;
+      final GoogleSignIn googleSignIn = GoogleSignIn(
+        clientId:
+            '7696739887-377654pcvnpco15a1cv9etv4a6l8og13.apps.googleusercontent.com',
+        scopes: <String>[
+          'email',
+          'https://www.googleapis.com/auth/contacts.readonly',
+          // Required for ID Token
+        ],
+      );
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      print('Google User: ${googleUser.toString()}');
+      if (googleUser == null) {
+        print('Google Sign-In was canceled.');
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      if (googleAuth.idToken != null) {
+        print('google Access Token: ${googleAuth.accessToken}');
+        print('Google ID Token: ${googleAuth.idToken}');
 
         final response = await http.post(
           Uri.parse('$_baseUrl/api/auth/google/callback'),
@@ -40,17 +59,23 @@ class AuthProvider with ChangeNotifier {
             'Content-Type': 'application/json',
           },
           body: json.encode({
-            'id_token': googleAuth.idToken!,
+            'id_token': googleAuth.idToken!.toString(),
           }),
         );
-
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
+          print('User Token: ${data['userToken']}');
+          print('Data from callback is: $data');
           await _storeToken(data['userToken']);
           await loadUserData();
+        } else {
+          print('Failed to authenticate with server: ${response.body}');
         }
+      } else {
+        throw Exception('Google ID Token is null');
       }
     } catch (e) {
+      print('Error during Google Sign-In: $e');
       rethrow;
     }
   }
@@ -59,21 +84,23 @@ class AuthProvider with ChangeNotifier {
     try {
       final result = await FacebookAuth.instance.login();
       if (result.status == LoginStatus.success) {
-        final accessToken = result.accessToken!;
-        final response = await http.post(
-          Uri.parse('$_baseUrl/api/auth/facebook/callback'),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: json.encode({
-            'access_token': accessToken.token!,
-          }),
-        );
+        _accessToken = result.accessToken!;
+        if (_accessToken != null) {
+          final response = await http.post(
+            Uri.parse('$_baseUrl/api/auth/facebook/callback'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              'access_token': _accessToken,
+            }),
+          );
 
-        if (response.statusCode == 200) {
-          final data = json.decode(response.body);
-          await _storeToken(data['userToken']);
-          await loadUserData();
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            await _storeToken(data['userToken']);
+            await loadUserData();
+          }
         }
       }
     } catch (e) {
@@ -282,8 +309,4 @@ class AuthProvider with ChangeNotifier {
       throw Exception("Failed to reset password: $e");
     }
   }
-}
-
-extension on AccessToken {
-  get token => null;
 }

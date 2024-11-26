@@ -63,7 +63,9 @@ class _HomeScreenState extends State<HomeScreen>
           actions: [
             IconButton(
               icon: const Icon(Icons.notifications),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushNamed(context, '/notifications');
+              },
             ),
           ],
         ),

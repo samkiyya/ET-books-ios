@@ -1,5 +1,6 @@
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -116,6 +117,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         // My Books
         break;
       case 'Notification':
+        _notification(context);
         // Notification
         break;
       case 'Subscribe':
@@ -125,12 +127,14 @@ class _CustomDrawerState extends State<CustomDrawer> {
         // Author
         break;
       case 'Share App':
+        shareApp(context);
         // Share App
         break;
       case 'Share Code':
         // Share Code
         break;
       case 'Settings':
+        _settings(context);
         // Settings
         break;
       case 'Contact Us':
@@ -167,6 +171,27 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
+  void shareApp(BuildContext context) {
+    const appPackageName =
+        'com.example.bookmobile'; // Replace with your app's package name
+
+    const shareText = '''
+Check out this amazing app! Download it here:
+https://play.google.com/store/apps/details?id=$appPackageName
+''';
+
+    try {
+      Share.share(
+        shareText,
+        subject: 'Download My App',
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error sharing the app: $e')),
+      );
+    }
+  }
+
   // Logout logic
   void _logout(BuildContext context) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -196,5 +221,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   void _audioBook(BuildContext context) {
     Navigator.pushNamed(context, '/allAudio');
+  }
+
+  void _notification(BuildContext context) {
+    Navigator.pushNamed(context, '/notification');
+  }
+
+  void _settings(BuildContext context) {
+    Navigator.pushNamed(context, '/settings');
   }
 }

@@ -15,8 +15,9 @@ class NotificationProvider with ChangeNotifier {
 
   // Fetch notifications from the API
   Future<void> loadNotifications() async {
-    if (!_notificationsEnabled)
-      return; // Skip fetching if notifications are disabled
+    if (!_notificationsEnabled) {
+      return;
+    } // Skip fetching if notifications are disabled
 
     try {
       final response = await http.get(Uri.parse(apiUrl));

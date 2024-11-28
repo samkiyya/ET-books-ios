@@ -30,6 +30,11 @@ dependencies:
   audioplayers: ^6.1.0
   flutter_local_notifications: ^18.0.1
   workmanager: ^0.5.2
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+  syncfusion_flutter_pdfviewer: ^27.2.4
+  syncfusion_flutter_core: ^27.2.4
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:

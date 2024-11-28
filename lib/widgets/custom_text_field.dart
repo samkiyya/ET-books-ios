@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final String? labelText;
   final String? hintText;
   final IconData? icon;
+  final IconData? prefixIcon;
   final IconButton? suffixIcon;
   final bool obscureText;
   final String? Function(String?)? validator;
@@ -21,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.validator,
     this.suffixIcon,
+    this.prefixIcon,
   });
 
   @override
@@ -42,6 +44,9 @@ class CustomTextField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
+            prefixIcon: prefixIcon != null
+                ? Icon(prefixIcon, color: AppColors.color1)
+                : null,
             labelStyle: const TextStyle(color: AppColors.color3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -49,7 +54,7 @@ class CustomTextField extends StatelessWidget {
             filled: true,
             fillColor: AppColors.color5,
             suffixIcon:
-                icon != null ? Icon(icon, color: AppColors.color1) : suffixIcon,
+                icon != null ? Icon(icon, color: AppColors.color3) : suffixIcon,
             labelText: labelText,
             hintText: hintText,
             hintStyle: const TextStyle(color: AppColors.color1),

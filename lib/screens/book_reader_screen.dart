@@ -1,17 +1,18 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_pdfview/flutter_pdfview.dart';
+import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:syncfusion_flutter_core/theme.dart';
 
 class BookReaderScreen extends StatefulWidget {
-  final String pdfUrl; // URL of the PDF book
+  final String pdfPath; // URL of the PDF book
   final String bookTitle;
 
   const BookReaderScreen({
     super.key,
-    required this.pdfUrl,
+    required this.pdfPath,
     required this.bookTitle,
   });
 
@@ -22,37 +23,55 @@ class BookReaderScreen extends StatefulWidget {
 class _BookReaderScreenState extends State<BookReaderScreen> {
   String? _localFilePath;
   bool _isLoading = true;
-  int _totalPages = 0;
-  int _currentPage = 0;
-  late PDFViewController _pdfViewController;
   late SharedPreferences _prefs;
   String _theme = 'light';
+  bool _isAppBarVisible = true;
+  bool _isBottomNavVisible = true;
+  late PdfViewerController _pdfViewerController;
+  String _scrollDirection = 'vertical';
+  final GlobalKey<SfPdfViewerState> _pdfViewerStateKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
+    _pdfViewerController = PdfViewerController();
     _loadPreferences();
-    _downloadAndSavePdf();
+    _downloadOrLoadPdf();
   }
 
   void _loadPreferences() async {
     _prefs = await SharedPreferences.getInstance();
     setState(() {
       _theme = _prefs.getString('theme') ?? 'light';
+      _scrollDirection = _prefs.getString('scrollDirection') ?? 'vertical';
     });
   }
 
   void _savePreferences() {
     _prefs.setString('theme', _theme);
+    _prefs.setString('scrollDirection', _scrollDirection);
   }
 
+  // Method to check if the pdfPath is local or a network URL and handle accordingly
+  Future<void> _downloadOrLoadPdf() async {
+    if (widget.pdfPath.startsWith('http://') ||
+        widget.pdfPath.startsWith('https://')) {
+      // If URL is a network URL, download the PDF
+      await _downloadAndSavePdf();
+    } else {
+      // If it's a local path, just load the PDF
+      _loadLocalPdf(widget.pdfPath);
+    }
+  }
+
+  // Download and save the PDF from the network
   Future<void> _downloadAndSavePdf() async {
     try {
       final tempDir = await getTemporaryDirectory();
       final filePath =
           '${tempDir.path}/${widget.bookTitle.replaceAll(" ", "_")}.pdf';
 
-      final response = await http.get(Uri.parse(widget.pdfUrl));
+      final response = await http.get(Uri.parse(widget.pdfPath));
 
       if (response.statusCode == 200) {
         final file = File(filePath);
@@ -75,6 +94,14 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
     }
   }
 
+  // Load the local PDF
+  void _loadLocalPdf(String filePath) {
+    setState(() {
+      _localFilePath = filePath;
+      _isLoading = false;
+    });
+  }
+
   Color _getOverlayColor() {
     switch (_theme) {
       case 'dark':
@@ -90,6 +117,15 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
     return _theme == 'dark' ? Colors.white : Colors.black;
   }
 
+  void _toggleAppBarVisibility() {
+    setState(() {
+      _isAppBarVisible = !_isAppBarVisible;
+      _isBottomNavVisible = !_isBottomNavVisible;
+      print(
+          '_isAppBarVisible: $_isAppBarVisible, _isBottomNavVisible: $_isBottomNavVisible');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -99,34 +135,64 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
         ),
         child: Scaffold(
           backgroundColor: _getOverlayColor(),
-          appBar: AppBar(
-            title: Text(widget.bookTitle),
-            actions: [
-              if (!_isLoading)
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    setState(() {
-                      if (value == 'Light Theme') {
-                        _theme = 'light';
-                      } else if (value == 'Dark Theme') {
-                        _theme = 'dark';
-                      } else if (value == 'Sepia Theme') {
-                        _theme = 'sepia';
-                      }
-                      _savePreferences();
-                    });
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                        value: 'Light Theme', child: Text('Light Theme')),
-                    const PopupMenuItem(
-                        value: 'Dark Theme', child: Text('Dark Theme')),
-                    const PopupMenuItem(
-                        value: 'Sepia Theme', child: Text('Sepia Theme')),
+          appBar: _isAppBarVisible
+              ? AppBar(
+                  title: Text(widget.bookTitle),
+                  actions: <Widget>[
+                    IconButton(
+                        onPressed: () {
+                          if (_pdfViewerController.zoomLevel > 1) {
+                            _pdfViewerController.zoomLevel =
+                                _pdfViewerController.zoomLevel - 0.5;
+                          }
+                        },
+                        icon: const Icon(Icons.zoom_out)),
+                    IconButton(
+                      onPressed: () {
+                        double newZoomLevel =
+                            _pdfViewerController.zoomLevel + 0.5;
+                        if (newZoomLevel <= 4) {
+                          _pdfViewerController.zoomLevel = newZoomLevel;
+                        }
+                      },
+                      icon: const Icon(Icons.zoom_in),
+                    ),
+                    if (!_isLoading)
+                      PopupMenuButton<String>(
+                        onSelected: (value) {
+                          setState(() {
+                            if (value == 'Light Theme') {
+                              _theme = 'light';
+                            } else if (value == 'Dark Theme') {
+                              _theme = 'dark';
+                            } else if (value == 'Sepia Theme') {
+                              _theme = 'sepia';
+                            } else if (value == 'Vertical Scroll') {
+                              _scrollDirection = 'vertical';
+                            } else if (value == 'Horizontal Scroll') {
+                              _scrollDirection = 'horizontal';
+                            }
+                            _savePreferences();
+                          });
+                        },
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                              value: 'Light Theme', child: Text('Light Theme')),
+                          const PopupMenuItem(
+                              value: 'Dark Theme', child: Text('Dark Theme')),
+                          const PopupMenuItem(
+                              value: 'Sepia Theme', child: Text('Sepia Theme')),
+                          const PopupMenuItem(
+                              value: 'Vertical Scroll',
+                              child: Text('Vertical Scroll')),
+                          const PopupMenuItem(
+                              value: 'Horizontal Scroll',
+                              child: Text('Horizontal Scroll')),
+                        ],
+                      ),
                   ],
-                ),
-            ],
-          ),
+                )
+              : null,
           body: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _localFilePath == null
@@ -134,62 +200,64 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
                   : Stack(
                       children: [
                         // PDF Viewer
-                        PDFView(
-                          filePath: _localFilePath,
-                          enableSwipe: true,
-                          swipeHorizontal: true,
-                          autoSpacing: true,
-                          pageFling: true,
-                          onRender: (pages) {
-                            setState(() {
-                              _totalPages = pages!;
-                            });
-                          },
-                          onViewCreated: (PDFViewController controller) {
-                            _pdfViewController = controller;
-                          },
-                          onPageChanged: (currentPage, totalPages) {
-                            setState(() {
-                              _currentPage = currentPage!;
-                            });
-                          },
-                        ),
-                        IgnorePointer(
-                          child: Container(
-                            color: _getOverlayColor(),
+                        SfPdfViewerTheme(
+                          data: SfPdfViewerThemeData(
+                            backgroundColor: _theme == 'dark'
+                                ? Colors.black
+                                : _theme == 'sepia'
+                                    ? const Color(0xFFE6D4B4)
+                                    : Colors.white,
+                          ),
+                          child: SfPdfViewer.file(
+                            File(_localFilePath!),
+                            controller: _pdfViewerController,
+                            scrollDirection: _scrollDirection == 'vertical'
+                                ? PdfScrollDirection.vertical
+                                : PdfScrollDirection.horizontal,
+                            key: _pdfViewerStateKey,
+                            canShowPageLoadingIndicator: true,
                           ),
                         ),
+                        //  Container(
+                        //   color: _getOverlayColor(),
+                        // ),
+                        // Transparent overlay to capture gestures
+                        if (!_isAppBarVisible || !_isBottomNavVisible)
+                          Positioned.fill(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _toggleAppBarVisibility();
+                                });
+                              }, // Capture taps
+                              child: Container(
+                                color: _getOverlayColor(), // Ensure visibility
+                              ),
+                            ),
+                          ),
                       ],
                     ),
-          bottomNavigationBar: !_isLoading
+          bottomNavigationBar: _isBottomNavVisible && !_isLoading
               ? BottomAppBar(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Page ${_currentPage + 1} of $_totalPages',
-                          style: TextStyle(color: _getTextColor()),
-                        ),
                         Row(
                           children: [
                             IconButton(
                               icon: Icon(Icons.arrow_back,
                                   color: _getTextColor()),
                               onPressed: () async {
-                                final previousPage = (_currentPage - 1)
-                                    .clamp(0, _totalPages - 1);
-                                await _pdfViewController.setPage(previousPage);
+                                _pdfViewerController.previousPage();
                               },
                             ),
                             IconButton(
                               icon: Icon(Icons.arrow_forward,
                                   color: _getTextColor()),
                               onPressed: () async {
-                                final nextPage = (_currentPage + 1)
-                                    .clamp(0, _totalPages - 1);
-                                await _pdfViewController.setPage(nextPage);
+                                _pdfViewerController.nextPage();
                               },
                             ),
                           ],

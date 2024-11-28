@@ -28,9 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-      if (loginProvider != null) {
-        loginProvider.addListener(_handleLoginResponse);
-      }
+      loginProvider.addListener(_handleLoginResponse);
     });
   }
 
@@ -61,9 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    if (loginProvider != null) {
-      loginProvider.removeListener(_handleLoginResponse);
-    }
+    loginProvider.removeListener(_handleLoginResponse);
+
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();

@@ -111,9 +111,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
         _audioBook(context);
         break;
       case 'Downloaded':
+        _downloaded(context);
         // Downloaded
         break;
       case 'My Books':
+        _myBooks(context);
         // My Books
         break;
       case 'Notification':
@@ -121,6 +123,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         // Notification
         break;
       case 'Subscribe':
+        _subscription(context);
         // Subscribe
         break;
       case 'Author':
@@ -223,8 +226,20 @@ https://play.google.com/store/apps/details?id=$appPackageName
     Navigator.pushNamed(context, '/allAudio');
   }
 
+  void _downloaded(BuildContext context) {
+    Navigator.pushNamed(context, '/downloaded');
+  }
+
+  void _myBooks(BuildContext context) {
+    Navigator.pushNamed(context, '/my-books');
+  }
+
   void _notification(BuildContext context) {
     Navigator.pushNamed(context, '/notification');
+  }
+
+  void _subscription(BuildContext context) {
+    Navigator.pushNamed(context, '/subscription-tier');
   }
 
   void _settings(BuildContext context) {

@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:book_mobile/providers/login_provider.dart';
+import 'package:book_mobile/screens/demo_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +9,7 @@ import 'package:http/http.dart' as http;
 
 const String taskName = "backgroundTask";
 const String apiUrl = 'https://building.abyssiniasoftware.com/api.php';
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final FlutterLocalNotificationsPlugin flip = FlutterLocalNotificationsPlugin();
 
@@ -49,7 +52,7 @@ void callbackDispatcher() {
             'New Notification', // Title
             'You have a new notification.', // Body
             androidNotificationDetails,
-            payload: jsonEncode(data), // Pass API data as payload
+            payload: payload, // Pass API data as payload
           );
         }
         print('Fetched API data: $data');
@@ -93,15 +96,27 @@ Future<void> initializeBackgroundService(LoginProvider loginProvider) async {
         // Handle notification data as needed
         // Perform actions based on notification data
         // Example: Show a snackbar or navigate to a specific screen
-
-        // Navigate to notification details
-        print('Navigate to Notification Details Screen');
-      } else {
-        // Check login status and navigate accordingly
-        // Example: Show a login prompt or navigate to a login screen
-        // Example: Show a snackbar or navigate to a login screen
-        // Navigate to login
-        print('Navigate to Login Screen');
+        // Use named routing to navigate to a specific screen
+        if (data['status'] == true) {
+          final tenant = Tenant.fromJson(data);
+          // Use navigatorKey to navigate when the app is in the background
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+                builder: (context) => TenantDetailScreen(
+                      tenant: tenant,
+                    ) // Navigate to tenant detail screen
+                ),
+          );
+          // Navigate to notification details
+          print('Navigate to Notification Details Screen');
+        } else {
+          // Check login status and navigate accordingly
+          // Example: Show a login prompt or navigate to a login screen
+          // Example: Show a snackbar or navigate to a login screen
+          navigatorKey.currentState?.pushNamed('/login');
+          // Navigate to login
+          print('Navigate to Login Screen');
+        }
       }
     },
   );
@@ -126,7 +141,10 @@ void scheduleBackgroundTask() {
     taskName,
     taskName,
     inputData: <String, dynamic>{},
-    initialDelay: const Duration(minutes: 15),
+    initialDelay: const Duration(seconds: 5),
+    frequency: const Duration(
+      minutes: 15,
+    ),
     constraints: Constraints(
       networkType: NetworkType.connected,
       requiresBatteryNotLow: true,

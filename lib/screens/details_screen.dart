@@ -103,7 +103,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => BookReaderScreen(
-                  pdfUrl: '${Network.baseUrl}/${widget.book['pdfFilePath']}',
+                  pdfPath: '${Network.baseUrl}/${widget.book['pdfFilePath']}',
                   bookTitle: widget.book['title']),
             ),
           );

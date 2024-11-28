@@ -32,9 +32,11 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _initializeLogin() async {
     await Provider.of<LoginProvider>(context, listen: false)
         .initializeLoginStatus();
-    setState(() {
-      _isInitialized = true;
-    });
+    if (context.mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    }
   }
 
   void _setupAnimation() {
@@ -53,6 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     await loginProvider.checkLoginStatus();
+    if (!mounted) return;
 
     if (loginProvider.isAuthenticated && !loginProvider.isTokenExpired) {
       if (context.mounted) {

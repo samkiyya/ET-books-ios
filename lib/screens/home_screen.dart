@@ -67,6 +67,26 @@ class _HomeScreenState extends State<HomeScreen>
                 Navigator.pushNamed(context, '/notifications');
               },
             ),
+            Container(
+              height: 40,
+              width: 40,
+              decoration: const BoxDecoration(
+                color: AppColors.color2,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  icon: const Icon(
+                    Icons.person,
+                    size: 35,
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                ),
+              ),
+            ),
           ],
         ),
         drawer: SizedBox(

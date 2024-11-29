@@ -42,6 +42,31 @@ class UpdateProfileProvider with ChangeNotifier {
       // Handle success response, you can parse any success data here if needed.
       _isLoading = false;
       notifyListeners();
+    } else if (response.statusCode == 400) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'Bad Request: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 401) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'Unauthorized: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 403) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'Forbiden you are Unauthorized: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'User Not Found: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 500) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'Internal Server Error: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
     } else {
       // Handle error response
       _errorMessage = 'Failed to update profile: ${response.statusCode}';
@@ -64,6 +89,26 @@ class UpdateProfileProvider with ChangeNotifier {
 
     if (response.statusCode == 204) {
       // Handle success response (Account deleted)
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 401) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'Unauthorized: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 403) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'Forbiden you are Unauthorized: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'User Not Found: ${response.statusCode}';
+      _isLoading = false;
+      notifyListeners();
+    } else if (response.statusCode == 500) {
+      // Handle unauthorized response (Token expired)
+      _errorMessage = 'Internal Server Error: ${response.statusCode}';
       _isLoading = false;
       notifyListeners();
     } else {

@@ -1,5 +1,6 @@
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/services/book_service.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
 class DownloadedBooksScreen extends StatelessWidget {
@@ -21,7 +22,38 @@ class DownloadedBooksScreen extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
+            // Handle error state
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  'Error loading books: ${snapshot.error}',
+                  style: AppTextStyles.bodyText,
+                ),
+              );
+            }
             final books = snapshot.data ?? [];
+            if (books.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      'No downloaded books available.',
+                      style: AppTextStyles.bodyText,
+                    ),
+                    CustomButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/my-books');
+                      },
+                      text: 'Go to your Books',
+                      textStyle: AppTextStyles.buttonText.copyWith(
+                        color: AppColors.color3,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
             print('downloaded book detail: $books');
             return ListView.builder(
               itemCount: books.length,

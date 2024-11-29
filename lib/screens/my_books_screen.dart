@@ -106,9 +106,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                     icon: const Icon(Icons.download,
                                         color: AppColors.color3),
                                     onPressed: () async {
-                                      await BookService.downloadBook(
+                                      await BookService.downloadAndOpenBook(
                                           order.id,
                                           "${Network.baseUrl}/${book['pdfFilePath']}",
+                                          book['title'],
                                           context);
                                       setState(() {});
                                     },

@@ -216,25 +216,20 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
                                 : PdfScrollDirection.horizontal,
                             key: _pdfViewerStateKey,
                             canShowPageLoadingIndicator: true,
+                            onTap: (details) {
+                              _toggleAppBarVisibility();
+                            },
                           ),
                         ),
-                        //  Container(
-                        //   color: _getOverlayColor(),
-                        // ),
-                        // Transparent overlay to capture gestures
-                        if (!_isAppBarVisible || !_isBottomNavVisible)
-                          Positioned.fill(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _toggleAppBarVisibility();
-                                });
-                              }, // Capture taps
-                              child: Container(
-                                color: _getOverlayColor(), // Ensure visibility
-                              ),
-                            ),
+
+                        GestureDetector(
+                          behavior: HitTestBehavior.translucent,
+                          onTap: () => print("Handle Tap event!!"),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width,
+                            height: MediaQuery.of(context).size.height,
                           ),
+                        ),
                       ],
                     ),
           bottomNavigationBar: _isBottomNavVisible && !_isLoading

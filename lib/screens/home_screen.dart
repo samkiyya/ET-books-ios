@@ -1,7 +1,7 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/screens/all_book_screen.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
-import 'package:book_mobile/screens/details_screen.dart';
+import 'package:book_mobile/screens/book_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/constants/styles.dart';

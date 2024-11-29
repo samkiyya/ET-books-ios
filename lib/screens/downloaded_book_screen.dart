@@ -11,10 +11,16 @@ class DownloadedBooksScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Downloaded Books'),
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
         ),
         body: FutureBuilder<List<Map<String, dynamic>>>(
           future: BookService.getDownloadedBooks(),
           builder: (context, snapshot) {
+            // Handle loading state
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
             final books = snapshot.data ?? [];
             print('downloaded book detail: $books');
             return ListView.builder(

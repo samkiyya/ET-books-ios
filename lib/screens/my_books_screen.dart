@@ -1,6 +1,7 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/services/book_service.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Available Books'),
+          foregroundColor: AppColors.color6,
+          backgroundColor: AppColors.color1,
           actions: [
             IconButton(
               icon: const Icon(Icons.download_done),
@@ -55,7 +58,26 @@ class _DownloadScreenState extends State<DownloadScreen> {
         body: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : approvedOrders.isEmpty
-                ? const Center(child: Text('No approved books available.'))
+                ? Center(
+                    child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'No approved orders found.',
+                        style: AppTextStyles.bodyText,
+                      ),
+                      const SizedBox(height: 24.0),
+                      CustomButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/allEbook');
+                        },
+                        text: 'Go to Books',
+                        textStyle: AppTextStyles.buttonText.copyWith(
+                          color: AppColors.color3,
+                        ),
+                      ),
+                    ],
+                  ))
                 : ListView.builder(
                     itemCount: approvedOrders.length,
                     itemBuilder: (context, index) {

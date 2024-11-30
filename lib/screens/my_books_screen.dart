@@ -1,4 +1,5 @@
 import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
@@ -33,6 +34,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     final orderProvider = Provider.of<OrderStatusProvider>(context);
 
     // Filter only approved orders
@@ -43,7 +46,13 @@ class _DownloadScreenState extends State<DownloadScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Available Books'),
+          title: Text(
+            'Available Books',
+            style: AppTextStyles.heading2.copyWith(
+              color: AppColors.color6,
+            ),
+          ),
+          centerTitle: true,
           foregroundColor: AppColors.color6,
           backgroundColor: AppColors.color1,
           actions: [
@@ -56,7 +65,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
           ],
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
             : approvedOrders.isEmpty
                 ? Center(
                     child: Column(
@@ -66,7 +79,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                         'No approved orders found.',
                         style: AppTextStyles.bodyText,
                       ),
-                      const SizedBox(height: 24.0),
+                      SizedBox(height: height * 0.01081),
                       CustomButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/allEbook');
@@ -75,6 +88,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                         textStyle: AppTextStyles.buttonText.copyWith(
                           color: AppColors.color3,
                         ),
+                        borderColor: AppColors.color3,
                       ),
                     ],
                   ))

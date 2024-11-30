@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:flutter/material.dart';
 
 class DownloadProgressDialog extends StatelessWidget {
@@ -12,13 +13,15 @@ class DownloadProgressDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return AlertDialog(
       title: const Text('Downloading...'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           LinearProgressIndicator(value: progress),
-          const SizedBox(height: 16),
+          SizedBox(height: height * 0.0072072),
           Text('${(progress * 100).toStringAsFixed(0)}%'),
         ],
       ),

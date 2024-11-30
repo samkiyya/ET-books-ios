@@ -1,4 +1,5 @@
 import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/home_provider.dart';
 import 'package:book_mobile/screens/book_details_screen.dart';
@@ -20,6 +21,8 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
   @override
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context);
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
 
     // Filter the books based on the search query and selected filter type
     var filteredBooks = homeProvider.allBooks.where((book) {
@@ -38,12 +41,16 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("All Books"),
+          title: Text(
+            "All Books",
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
+          ),
+          centerTitle: true,
           backgroundColor: AppColors.color1,
           foregroundColor: AppColors.color6,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(width * 0.03),
           child: Column(
             children: [
               // Search Box
@@ -61,7 +68,7 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                   // Filter Buttons (Book / Author)
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: height * 0.03),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -103,8 +110,9 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                             .transparent, // Make background transparent to use gradient
                         shadowColor:
                             Colors.transparent, // Disable default shadow
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12), // Button size
+                        padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02,
+                            vertical: height * 0.01), // Button size
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -116,7 +124,7 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 20),
+                  SizedBox(width: width * 0.02),
                   // Second Button
                   Container(
                     decoration: BoxDecoration(
@@ -154,8 +162,8 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02, vertical: height * 0.01),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -169,7 +177,7 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: height * 0.03),
               // Scrollable Book List
               Expanded(
                 child: ListView.builder(
@@ -186,11 +194,21 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                       child: Card(
                         color: AppColors.color1,
                         child: ListTile(
-                          leading: Image.network(
-                            '${Network.baseUrl}/${book['imageFilePath']}',
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              '${Network.baseUrl}/${book['imageFilePath']}',
+                              width: width * 0.2,
+                              fit: BoxFit.cover,
+                              errorBuilder: (BuildContext context, Object error,
+                                  StackTrace? stackTrace) {
+                                return Icon(
+                                  Icons.broken_image, // Alternative icon
+                                  size: width * 0.2,
+                                  color: Colors.grey,
+                                );
+                              },
+                            ),
                           ),
                           title: Column(
                             children: [

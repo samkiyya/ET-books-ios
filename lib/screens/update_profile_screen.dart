@@ -1,165 +1,233 @@
+import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/providers/profile_provider.dart';
 import 'package:book_mobile/providers/update_profile_provider.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class UpdateProfileScreen extends StatelessWidget {
+class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
 
   @override
+  State<UpdateProfileScreen> createState() => _UpdateProfileScreenState();
+}
+
+class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
+  final fnameController = TextEditingController();
+  final lnameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final bioController = TextEditingController();
+  final cityController = TextEditingController();
+  final countryController = TextEditingController();
+
+  bool isLoading = true; // To track profile loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserProfile();
+  }
+
+  Future<void> _fetchUserProfile() async {
+    final profileProvider =
+        Provider.of<ProfileProvider>(context, listen: false);
+    await profileProvider.loadToken();
+    await profileProvider.fetchUserProfile();
+    if (profileProvider.userProfile != null) {
+      // Pre-fill controllers with user data
+      final profile = profileProvider.userProfile!;
+      fnameController.text = profile['fname'] ?? '';
+      lnameController.text = profile['lname'] ?? '';
+      phoneController.text = profile['phone'] ?? '';
+      bioController.text = profile['bio'] ?? '';
+      cityController.text = profile['city'] ?? '';
+      countryController.text = profile['country'] ?? '';
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final fnameController = TextEditingController();
-    final lnameController = TextEditingController();
-    final phoneController = TextEditingController();
-    final bioController = TextEditingController();
-    final cityController = TextEditingController();
-    final countryController = TextEditingController();
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
 
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(Icons.arrow_back),
           ),
           title: Text(
-            'Edit Profile',
-            style: Theme.of(context).textTheme.titleLarge,
+            'Edit your Profile',
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
           ),
+          centerTitle: true,
         ),
         body: Consumer<UpdateProfileProvider>(
           builder: (context, provider, child) {
-            return FutureBuilder<String?>(
-              future: _getTokenFromSharedPreferences(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (snapshot.hasError ||
-                    !snapshot.hasData ||
-                    snapshot.data!.isEmpty) {
-                  return const Center(
-                      child: Text('Authentication error. Please log in.'));
-                }
-
-                final token = snapshot.data!;
-
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        // Profile Picture with Edit Icon
-                        Stack(
-                          children: [
-                            const SizedBox(
-                              width: 120,
-                              height: 120,
-                              child: ClipOval(
-                                child: Icon(Icons.person),
-                                //Image.asset(
-                                //'assets/images/profile.png', // Replace with your image path
-                                // fit: BoxFit.cover,
-                                // ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () {
-                                  // Add your image picker logic here
-                                },
-                                child: Container(
-                                  width: 35,
-                                  height: 35,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.black,
-                                    size: 20,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+              child: Column(
+                children: [
+                  // Profile Picture with Edit Icon
+                  Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: width * 0.2,
+                        backgroundImage: const NetworkImage(
+                          'https://xsgames.co/randomusers/avatar.php?g=pixel',
                         ),
-                        const SizedBox(height: 30),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            // Add your image picker logic here
+                          },
+                          child: Container(
+                            width: width * 0.1,
+                            height: height * 0.051,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: AppColors.color3,
+                              size: width * 0.09,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: height * 0.03),
 
-                        // Form Fields
-                        Form(
-                          child: Column(
-                            children: [
-                              CustomTextField(
-                                controller: fnameController,
-                                labelText: 'Full Name',
-                                prefixIcon: Icons.person,
-                              ),
-                              const SizedBox(height: 8),
-
-                              CustomTextField(
-                                controller: lnameController,
-                                labelText: 'Last Name',
-                                prefixIcon: Icons.person,
-                              ),
-
-                              const SizedBox(height: 8),
-                              CustomTextField(
-                                controller: phoneController,
-                                labelText: 'Phone Number',
-                                prefixIcon: Icons.phone,
-                              ),
-
-                              const SizedBox(height: 8),
-                              CustomTextField(
-                                controller: bioController,
-                                labelText: 'Bio',
-                                prefixIcon: Icons.info,
-                              ),
-
-                              const SizedBox(height: 8),
-                              CustomTextField(
-                                controller: cityController,
-                                labelText: 'City',
-                                prefixIcon: Icons.location_city,
-                              ),
-
-                              const SizedBox(height: 8),
-                              CustomTextField(
-                                controller: countryController,
-                                labelText: 'Country',
-                                prefixIcon: Icons.flag,
-                              ),
-
-                              const SizedBox(height: 30),
-
-                              // Submit Button
-                              SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
+                  // Form Fields
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.04),
+                      child: Form(
+                        child: Column(
+                          children: [
+                            CustomTextField(
+                              controller: fnameController,
+                              labelText: 'First Name',
+                              prefixIcon: Icons.person,
+                            ),
+                            SizedBox(height: height * 0.0036),
+                            CustomTextField(
+                              controller: lnameController,
+                              labelText: 'Last Name',
+                              prefixIcon: Icons.person,
+                            ),
+                            SizedBox(height: height * 0.0036),
+                            CustomTextField(
+                              controller: phoneController,
+                              labelText: 'Phone Number',
+                              prefixIcon: Icons.phone,
+                            ),
+                            SizedBox(height: height * 0.0036),
+                            CustomTextField(
+                              controller: bioController,
+                              labelText: 'Bio',
+                              prefixIcon: Icons.info,
+                            ),
+                            SizedBox(height: height * 0.0036),
+                            CustomTextField(
+                              controller: cityController,
+                              labelText: 'City',
+                              prefixIcon: Icons.location_city,
+                            ),
+                            SizedBox(height: height * 0.0036),
+                            CustomTextField(
+                              controller: countryController,
+                              labelText: 'Country',
+                              prefixIcon: Icons.flag,
+                            ),
+                            SizedBox(height: height * 0.0036),
+                            provider.isLoading
+                                ? const Center(
+                                    child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white)),
+                                  )
+                                : CustomButton(
+                                    backgroundColor: AppColors.color2,
+                                    borderColor: AppColors.color3,
+                                    text: 'Save Changes',
+                                    onPressed: () async {
+                                      // Trigger profile update
+                                      await provider.updateProfile(
+                                        fname: fnameController.text.isNotEmpty
+                                            ? fnameController.text
+                                            : '',
+                                        lname: lnameController.text.isNotEmpty
+                                            ? lnameController.text
+                                            : '',
+                                        phone: phoneController.text.isNotEmpty
+                                            ? phoneController.text
+                                            : '',
+                                        bio: bioController.text.isNotEmpty
+                                            ? bioController.text
+                                            : '',
+                                        city: cityController.text.isNotEmpty
+                                            ? cityController.text
+                                            : '',
+                                        country:
+                                            countryController.text.isNotEmpty
+                                                ? countryController.text
+                                                : '',
+                                      );
+                                      if (!provider.isLoading &&
+                                          provider.errorMessage.isEmpty) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                              content: Text(
+                                                  'Profile updated successfully!')),
+                                        );
+                                      } else if (provider
+                                          .errorMessage.isNotEmpty) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                              content:
+                                                  Text(provider.errorMessage)),
+                                        );
+                                      }
+                                    },
+                                    textStyle: AppTextStyles.buttonText,
+                                  ),
+                            SizedBox(height: height * 0.01351),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Joined on: Jan 1, 2022',
+                                  style: AppTextStyles.bodyText
+                                      .copyWith(fontSize: width * 0.04),
+                                ),
+                                ElevatedButton(
                                   onPressed: () async {
-                                    // Trigger profile update
-                                    await provider.updateProfile(
-                                      token: token,
-                                      fname: fnameController.text,
-                                      lname: lnameController.text,
-                                      phone: phoneController.text,
-                                      bio: bioController.text,
-                                      city: cityController.text,
-                                      country: countryController.text,
-                                    );
+                                    // Trigger account deletion
+                                    await provider.deleteAccount();
                                     if (!provider.isLoading &&
                                         provider.errorMessage.isEmpty) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
                                         const SnackBar(
                                             content: Text(
-                                                'Profile updated successfully!')),
+                                                'Account deleted successfully!')),
                                       );
                                     } else if (provider
                                         .errorMessage.isNotEmpty) {
@@ -172,82 +240,27 @@ class UpdateProfileScreen extends StatelessWidget {
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
+                                    foregroundColor: Colors.red,
                                     backgroundColor:
-                                        Theme.of(context).primaryColor,
+                                        AppColors.color6, // Text color
+                                    elevation: 0,
                                     shape: const StadiumBorder(),
                                   ),
-                                  child: provider.isLoading
-                                      ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
-                                      : const Text('Save Changes'),
+                                  child: const Text('Delete Account'),
                                 ),
-                              ),
-                              const SizedBox(height: 30),
-
-                              // Created Date and Delete Button
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Joined on: Jan 1, 2022',
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                  ElevatedButton(
-                                    onPressed: () async {
-                                      // Trigger account deletion
-                                      await provider.deleteAccount(
-                                          token: token);
-                                      if (!provider.isLoading &&
-                                          provider.errorMessage.isEmpty) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                              content: Text(
-                                                  'Account deleted successfully!')),
-                                        );
-                                      } else if (provider
-                                          .errorMessage.isNotEmpty) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content:
-                                                  Text(provider.errorMessage)),
-                                        );
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.red,
-                                      backgroundColor:
-                                          Colors.red.withOpacity(0.1),
-                                      elevation: 0,
-                                      shape: const StadiumBorder(),
-                                    ),
-                                    child: const Text('Delete Account'),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                );
-              },
+                ],
+              ),
             );
           },
         ),
       ),
     );
-  }
-
-  // Helper function to get the token from SharedPreferences
-  Future<String?> _getTokenFromSharedPreferences() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userToken');
   }
 }

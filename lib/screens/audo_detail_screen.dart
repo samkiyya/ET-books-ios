@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -62,10 +63,18 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.audioBook['episode']),
+          title: Text(
+            widget.audioBook['episode'],
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
+          ),
+          centerTitle: true,
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
         ),
         body: Stack(
           children: [
@@ -83,7 +92,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
             ),
             SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(width * 0.03),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -98,35 +107,42 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                           borderRadius: BorderRadius.circular(15),
                           child: Image.network(
                             '${Network.baseUrl}/${widget.audioBook['imageFilePath']}',
-                            height: 200,
-                            width: 200,
+                            width: width * 0.6,
                             fit: BoxFit.cover,
+                            errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
+                              return Icon(
+                                Icons.broken_image, // Alternative icon
+                                size: width * 0.2,
+                                color: Colors.grey,
+                              );
+                            },
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: height * 0.03),
 
                     // Audio Details
                     Text(
                       "Episode: ${widget.audioBook['episode']}",
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: TextStyle(
+                        fontSize: width * 0.045,
                         fontWeight: FontWeight.bold,
                         color: AppColors.color3,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: height * 0.03),
                     Text(
                       "Book Title: ${widget.audioBook['bookTitle']}",
                       style: const TextStyle(color: AppColors.color3),
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: height * 0.03),
                     Text(
                       "Created At: ${widget.audioBook['createdAt']}",
                       style: const TextStyle(color: AppColors.color3),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: height * 0.03),
 
                     // Audio Player Controls
                     Column(
@@ -144,12 +160,39 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
+                              icon: const Icon(
+                                // _isPlaying ? Icons.pause : Icons.play_arrow,
+                                Icons.skip_previous,
+                                color: AppColors.color3,
+                              ),
+                              iconSize: width * 0.09,
+                              onPressed: () {},
+                            ),
+                            IconButton(
                               icon: Icon(
                                 _isPlaying ? Icons.pause : Icons.play_arrow,
                                 color: AppColors.color3,
                               ),
-                              iconSize: 50,
+                              iconSize: width * 0.09,
                               onPressed: _playPauseAudio,
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                // _isPlaying ? Icons.pause : Icons.play_arrow,
+                                Icons.skip_next,
+                                color: AppColors.color3,
+                              ),
+                              iconSize: width * 0.09,
+                              onPressed: () {},
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                // _isPlaying ? Icons.pause : Icons.play_arrow,
+                                Icons.volume_up,
+                                color: AppColors.color3,
+                              ),
+                              iconSize: width * 0.09,
+                              onPressed: () {},
                             ),
                           ],
                         ),

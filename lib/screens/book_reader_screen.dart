@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_mobile/constants/size.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:path_provider/path_provider.dart';
@@ -128,6 +129,8 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    // double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Theme(
         data: ThemeData(
@@ -194,7 +197,10 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
                 )
               : null,
           body: _isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                  child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ))
               : _localFilePath == null
                   ? const Center(child: Text('Failed to load PDF'))
                   : Stack(
@@ -224,7 +230,7 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
 
                         GestureDetector(
                           behavior: HitTestBehavior.translucent,
-                          onTap: () => print("Handle Tap event!!"),
+                          onTap: () => _toggleAppBarVisibility,
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width,
                             height: MediaQuery.of(context).size.height,
@@ -235,7 +241,7 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
           bottomNavigationBar: _isBottomNavVisible && !_isLoading
               ? BottomAppBar(
                   child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(width * 0.0074),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

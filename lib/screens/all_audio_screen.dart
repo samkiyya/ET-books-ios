@@ -1,4 +1,5 @@
 // import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/home_provider.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
@@ -20,6 +21,8 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
   @override
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context);
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
 
     // Filter the books based on the search query and selected filter type
     var filteredBooks = homeProvider.audioBooks.where((book) {
@@ -38,12 +41,16 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("All Audio Books"),
+          title: Text(
+            "All Audio Books",
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
+          ),
+          centerTitle: true,
           backgroundColor: AppColors.color1,
           foregroundColor: AppColors.color6,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(width * 0.03),
           child: Column(
             children: [
               // Search Box
@@ -61,7 +68,7 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                   // Filter Buttons (Book / Author)
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: height * 0.03),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -103,8 +110,9 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                             .transparent, // Make background transparent to use gradient
                         shadowColor:
                             Colors.transparent, // Disable default shadow
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12), // Button size
+                        padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02,
+                            vertical: height * 0.01), // Button size
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -116,7 +124,7 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 20),
+                  SizedBox(width: width * 0.03),
                   // Second Button
                   Container(
                     decoration: BoxDecoration(
@@ -154,8 +162,8 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02, vertical: height * 0.01),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -169,11 +177,13 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: height * 0.03),
               // Scrollable Book List
               homeProvider.isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
                     )
                   : homeProvider.hasError
                       ? const Center(
@@ -195,10 +205,10 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                                 child: Card(
                                   color: AppColors.color1,
                                   child: ListTile(
-                                    leading: const Icon(
+                                    leading: Icon(
                                       Icons.audio_file,
                                       color: AppColors.color3,
-                                      size: 40,
+                                      size: width * 0.13,
                                     ),
                                     //Image.network(
                                     //   '${Network.baseUrl}/${book['imageFilePath']}',

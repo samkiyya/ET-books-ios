@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/signup_provider.dart';
 import 'package:book_mobile/screens/login_screen.dart';
@@ -105,6 +106,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -119,9 +122,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   AppColors.color2,
                 ]),
               ),
-              child: const Padding(
-                padding: EdgeInsets.only(top: 60.0, left: 22),
-                child: Text(
+              child: Padding(
+                padding: EdgeInsets.only(
+                    top: width * 0.0555556, left: width * 0.02037),
+                child: const Text(
                   'Create Your Account',
                   style: AppTextStyles.heading1,
                 ),
@@ -129,7 +133,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             // Form container
             Padding(
-              padding: const EdgeInsets.only(top: 200.0),
+              padding: EdgeInsets.only(top: height * 0.09),
               child: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
@@ -140,7 +144,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: double.infinity,
                 width: double.infinity,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 18.0, right: 18),
+                  padding: EdgeInsets.only(
+                    left: width * 0.016666,
+                    right: width * 0.016666,
+                  ),
                   child: Consumer<SignupProvider>(
                     builder: (context, signupProvider, child) {
                       // Display dialog based on success or error message
@@ -194,7 +201,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       : false,
                                 );
                               }),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.009),
                               // Role Selection
                               ButtonTheme(
                                 alignedDropdown: true,
@@ -211,20 +218,20 @@ class _SignupScreenState extends State<SignupScreen> {
                                     return DropdownMenuItem<String>(
                                       value: value,
                                       child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 10),
+                                        padding: EdgeInsets.only(
+                                            left: width * 0.009259),
                                         child: Text(value,
                                             style: AppTextStyles.hintText),
                                       ),
                                     );
                                   }).toList(),
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     labelText: 'Who Are You?',
-                                    labelStyle:
-                                        TextStyle(color: AppColors.color3),
-                                    contentPadding:
-                                        EdgeInsets.symmetric(vertical: 10),
-                                    border: OutlineInputBorder(),
+                                    labelStyle: const TextStyle(
+                                        color: AppColors.color3),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: height * 0.0045),
+                                    border: const OutlineInputBorder(),
                                     filled: true,
                                     fillColor: AppColors.color6,
                                   ),
@@ -232,7 +239,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       .color6, // Background color for the dropdown menu
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.009),
                               // Image Upload Button
                               Row(
                                 children: [
@@ -253,7 +260,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       style: AppTextStyles.bodyText,
                                     ),
                                   ),
-                                  const SizedBox(width: 40),
+                                  SizedBox(width: width * 0.037037),
                                   // Image preview (optional)
                                   Flexible(
                                       child: signupProvider.profileImage == null
@@ -264,14 +271,19 @@ class _SignupScreenState extends State<SignupScreen> {
                                           : Image.file(
                                               signupProvider.profileImage!,
                                               fit: BoxFit.cover,
-                                              height: 100))
+                                              height: height * 0.045045))
                                 ],
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.009),
                               // Show loading spinner if the provider is loading
                               signupProvider.isLoading
                                   ? const Center(
-                                      child: CircularProgressIndicator())
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                    )
                                   : CustomButton(
                                       text: 'Sign Up',
                                       onPressed: () {
@@ -301,10 +313,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                         }
                                       },
                                       backgroundColor: AppColors.color2,
-                                      borderColor: Colors.transparent,
+                                      borderColor: AppColors.color3,
                                       textStyle: AppTextStyles.buttonText,
                                     ),
-                              const SizedBox(height: 80),
+                              SizedBox(height: height * 0.036036),
                               // Bottom TextButton for navigation
                               TextButton(
                                 onPressed: () {
@@ -321,15 +333,15 @@ class _SignupScreenState extends State<SignupScreen> {
                                     text: 'Already have an account? ',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontSize: 16,
+                                      fontSize: width * 0.0148148,
                                     ),
-                                    children: const [
+                                    children: [
                                       TextSpan(
                                         text: 'Go to Login',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.color3,
-                                          fontSize: 17,
+                                          fontSize: width * 0.01666,
                                         ),
                                       ),
                                     ],

@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -33,6 +34,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    double height = AppSizes.screenHeight(context);
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return Drawer(
@@ -41,9 +44,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // App Bar with Logo on Left and Hamburger Icon on Right
-          _buildAppBar(),
+          _buildAppBar(context),
 
-          Divider(height: 1, color: AppColors.color5.withOpacity(0.6)),
+          Divider(
+              height: height * 0.00045,
+              color: AppColors.color5.withOpacity(0.6)),
 
           // Drawer List Items
           Expanded(
@@ -65,7 +70,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
           ),
 
-          Divider(height: 1, color: AppColors.color5.withOpacity(0.6)),
+          Divider(
+              height: height * 0.00045,
+              color: AppColors.color5.withOpacity(0.6)),
           Padding(
             padding:
                 EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -76,23 +83,26 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   // App Bar with Logo and Hamburger Icon
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+
     return AppBar(
-      leading: const Icon(Icons.menu, size: 40, color: AppColors.color3),
+      leading:
+          Icon(Icons.menu, size: width * 0.037037, color: AppColors.color3),
       backgroundColor: Colors.transparent,
       elevation: 0,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Icon(
+          Icon(
             Icons.book,
-            size: 40,
+            size: width * 0.1,
             color: AppColors.color1, // Set color to default text color
           ),
           IconButton(
-            icon: const Icon(Icons.close,
-                size: 40,
-                color: AppColors.color2), // Icon color to default text color
+            icon: Icon(Icons.close,
+                size: width * 0.09,
+                color: AppColors.color1), // Icon color to default text color
             onPressed: () {
               // Toggle the drawer when menu icon is pressed
               Scaffold.of(context).closeDrawer();

@@ -1,3 +1,4 @@
+// import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
@@ -21,9 +22,17 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // double width = AppSizes.screenWidth(context);
+    // double height = AppSizes.screenHeight(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text('Notifications',
+            style: AppTextStyles.heading2.copyWith(
+              color: AppColors.color6,
+            )),
+        centerTitle: true,
+        backgroundColor: AppColors.color1,
+        foregroundColor: AppColors.color6,
       ),
       body: Consumer<NotificationProvider>(
         builder: (context, provider, child) {

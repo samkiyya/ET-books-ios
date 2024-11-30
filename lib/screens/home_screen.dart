@@ -1,4 +1,5 @@
 import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/screens/all_book_screen.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
 import 'package:book_mobile/screens/book_details_screen.dart';
@@ -45,6 +46,8 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     final homeProvider = Provider.of<HomeProvider>(context);
 
     return SafeArea(
@@ -52,24 +55,30 @@ class _HomeScreenState extends State<HomeScreen>
         key: _scaffoldKey,
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.menu),
+            icon: Icon(Icons.menu, size: width * 0.12),
             onPressed: () {
               _scaffoldKey.currentState!.openDrawer();
             },
           ),
-          title: const Text("Home"),
+          title: Text(
+            "Home",
+            style: AppTextStyles.heading2.copyWith(
+              color: AppColors.color6,
+            ),
+          ),
+          centerTitle: true,
           backgroundColor: AppColors.color1,
           foregroundColor: AppColors.color6,
           actions: [
             IconButton(
-              icon: const Icon(Icons.notifications),
+              icon: Icon(Icons.notifications, size: width * 0.09),
               onPressed: () {
                 Navigator.pushNamed(context, '/notifications');
               },
             ),
             Container(
-              height: 40,
-              width: 40,
+              height: height * 0.08,
+              width: width * 0.1,
               decoration: const BoxDecoration(
                 color: AppColors.color2,
                 shape: BoxShape.circle,
@@ -77,9 +86,9 @@ class _HomeScreenState extends State<HomeScreen>
               child: Center(
                 child: IconButton(
                   padding: EdgeInsets.zero,
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.person,
-                    size: 35,
+                    size: width * 0.09,
                   ),
                   onPressed: () {
                     Navigator.pushNamed(context, '/profile');
@@ -90,7 +99,7 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
         drawer: SizedBox(
-          width: 250,
+          width: width * .65,
           child: CustomDrawer(
             iconAnimationController: _iconAnimationController,
             onItemSelected: (label) {},
@@ -98,7 +107,9 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         body: homeProvider.isLoading
             ? const Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
               )
             : homeProvider.hasError
                 ? const Center(
@@ -106,22 +117,22 @@ class _HomeScreenState extends State<HomeScreen>
                   )
                 : SingleChildScrollView(
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(width * 0.0074),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Conditionally display Trending Books
                           if (homeProvider.trendingBooks.isNotEmpty) ...[
-                            const Text(
+                            Text(
                               "Trending Books",
                               style: TextStyle(
-                                  fontSize: 20,
+                                  fontSize: width * 0.05,
                                   fontWeight: FontWeight.bold,
                                   color: AppColors.color3),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: height * 0.02),
                             SizedBox(
-                              height: 150,
+                              height: height * 0.2,
                               child: ListView.builder(
                                 scrollDirection: Axis.horizontal,
                                 itemCount: homeProvider.trendingBooks.length,
@@ -138,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     ),
                                     child: Card(
                                       child: SizedBox(
-                                        width: 100,
+                                        width: width * 0.3,
                                         child: Column(
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
@@ -146,12 +157,12 @@ class _HomeScreenState extends State<HomeScreen>
                                             Image.network(
                                               '${Network.baseUrl}/${book['imageFilePath']}',
                                               fit: BoxFit.cover,
-                                              height: 100,
-                                              width: 150,
+                                              height: height * 0.08,
+                                              width: width * 0.2,
                                             ),
                                             Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
+                                              padding: EdgeInsets.all(
+                                                  width * 0.0074),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.start,
@@ -177,22 +188,23 @@ class _HomeScreenState extends State<HomeScreen>
                                 },
                               ),
                             ),
-                            const SizedBox(height: 20),
+                            SizedBox(height: height * 0.02),
                           ],
 
                           // All Books Section
-                          const Text(
+                          Text(
                             "All Books",
                             style: TextStyle(
-                                fontSize: 20,
+                                fontSize: width * 0.05,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.color3),
                           ),
-                          const SizedBox(height: 10),
+                          SizedBox(height: height * 0.0045),
                           Container(
                             height: homeProvider.trendingBooks.isEmpty
-                                ? 350 // Take the space of trending books
-                                : 200, // Normal height
+                                ? height *
+                                    0.5 // Take the space of trending books
+                                : height * 0.3, // Normal height
                             color: AppColors.color1,
                             child: SingleChildScrollView(
                               child: ListView.builder(
@@ -212,11 +224,24 @@ class _HomeScreenState extends State<HomeScreen>
                                     child: Card(
                                       color: AppColors.color1,
                                       child: ListTile(
-                                        leading: Image.network(
-                                          '${Network.baseUrl}/${book['imageFilePath']}',
-                                          width: 50,
-                                          height: 50,
-                                          fit: BoxFit.cover,
+                                        leading: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          child: Image.network(
+                                            '${Network.baseUrl}/${book['imageFilePath']}',
+                                            width: width * 0.2,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (BuildContext context,
+                                                Object error,
+                                                StackTrace? stackTrace) {
+                                              return Icon(
+                                                Icons
+                                                    .broken_image, // Alternative icon
+                                                size: width * 0.2,
+                                                color: Colors.grey,
+                                              );
+                                            },
+                                          ),
                                         ),
                                         title: Column(
                                           children: [
@@ -259,30 +284,31 @@ class _HomeScreenState extends State<HomeScreen>
                                   style: TextStyle(color: AppColors.color3)),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: height * 0.01),
 
                           SingleChildScrollView(
                             child: SizedBox(
-                              height: 150, // Total height for the entire card
+                              height: height *
+                                  0.25, // Total height for the entire card
                               child: Card(
                                 color: AppColors.color2,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
+                                  padding: EdgeInsets.all(width * 0.0074),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       // Audio Books Section Header
-                                      const Text(
+                                      Text(
                                         "Audio Books",
                                         style: TextStyle(
-                                          fontSize: 20,
+                                          fontSize: width * 0.06,
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.color3,
                                         ),
                                       ),
-                                      const SizedBox(height: 10),
+                                      SizedBox(height: height * 0.01),
 
                                       // Horizontal List of Audio Books
                                       Expanded(
@@ -306,9 +332,9 @@ class _HomeScreenState extends State<HomeScreen>
                                               ),
                                               child: Card(
                                                 child: Container(
-                                                  width: 150,
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
+                                                  width: width * 0.3,
+                                                  padding: EdgeInsets.all(
+                                                      width * 0.03),
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment

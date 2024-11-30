@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:book_mobile/providers/profile_provider.dart';
@@ -75,6 +76,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     final profileProvider = Provider.of<ProfileProvider>(context);
     final userProfile = profileProvider.userProfile;
 
@@ -82,14 +85,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
           leading: IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: const Icon(Icons.arrow_back, color: AppColors.color3),
           ),
-          title: const Text(
+          title: Text(
             "My Profile",
-            style: AppTextStyles.heading2,
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
           ),
+          centerTitle: true,
           actions: [
             IconButton(
               onPressed: () => _showLogoutDialog(context),
@@ -100,9 +105,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
         body: userProfile == null
-            ? const Center(child: CircularProgressIndicator()) // Loading state
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              ) // Loading state
             : Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.symmetric(
+                    horizontal: width * 0.0148148,
+                    vertical: height * 0.0072072),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,7 +122,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Stack(
                         children: [
                           CircleAvatar(
-                            radius: 60,
+                            radius: width * 0.2,
                             backgroundImage: NetworkImage(
                               userProfile['imageFilePath'] ??
                                   'https://xsgames.co/randomusers/avatar.php?g=pixel',
@@ -126,57 +137,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 Navigator.pushNamed(context, '/edit-profile');
                               },
                               child: Container(
-                                width: 40,
-                                height: 40,
+                                width: width * 0.1,
+                                height: height * 0.051,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   color: Theme.of(context).primaryColor,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.edit,
                                   color: AppColors.color3,
-                                  size: 20,
+                                  size: width * 0.07,
                                 ),
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 26),
+                      SizedBox(height: height * 0.03),
                       Text(
                         '${userProfile['fname'] ?? 'No first name available'} ${userProfile['lname'] ?? 'No last name available'}',
                         style: AppTextStyles.heading2,
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: height * 0.01),
                       Text(
-                        userProfile['bio'] ?? 'No bio available',
+                        'Bio: ${userProfile['bio'] ?? 'No bio available'}',
                         style: AppTextStyles.bodyText,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: height * 0.01),
                       // Additional profile info
                       Text(
                         'Email: ${userProfile['email'] ?? 'No Email'}',
                         style: AppTextStyles.bodyText,
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: height * 0.01),
 
                       Text(
                         'Phone: ${userProfile['phone'] ?? 'No Phone'}',
                         style: AppTextStyles.bodyText,
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: height * 0.01),
 
                       Text(
                         'Country: ${userProfile['country'] ?? 'Unknown'}',
                         style: AppTextStyles.bodyText,
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: height * 0.01),
 
                       Text(
                         'City: ${userProfile['city'] ?? 'Unknown'}',
                         style: AppTextStyles.bodyText,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: height * 0.03),
                       // Card for Level, Subscription, Followers and Following
                       Card(
                         color: AppColors.color2, // Custom card color
@@ -185,84 +196,86 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         elevation: 5,
                         child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: width * 0.02,
+                              vertical: height * 0.01),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               // Level
                               Column(
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Level',
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: width * 0.045,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     '${userProfile['levelUser']?['name'] ?? 'Unknown'}',
-                                    style: const TextStyle(
-                                      fontSize: 16,
+                                    style: TextStyle(
+                                      fontSize: width * 0.045,
                                     ),
                                   ),
                                 ],
                               ),
-                              const VerticalDivider(
+                              VerticalDivider(
                                 color: Colors.black26,
                                 thickness: 1,
-                                width: 20,
+                                width: width * 0.03,
                               ),
                               // Subscription
                               Column(
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Subscription',
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: width * 0.045,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     '${userProfile['subscription']?['name'] ?? 'Free'}',
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(fontSize: width * 0.045),
                                   ),
                                 ],
                               ),
-                              const VerticalDivider(
+                              VerticalDivider(
                                 color: Colors.black26,
                                 thickness: 1,
-                                width: 20,
+                                width: width * 0.045,
                               ),
                               // Followers
                               Column(
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Followers',
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: width * 0.045,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     '${userProfile['followerCount']?.toInt() ?? 0}',
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(fontSize: width * 0.045),
                                   ),
                                 ],
                               ),
-                              const VerticalDivider(
+                              VerticalDivider(
                                 color: Colors.black26,
                                 thickness: 1,
-                                width: 20,
+                                width: width * 0.045,
                               ),
                               // Following
                               Column(
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Following',
                                     style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: width * 0.045,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Text(
                                     '${userProfile['followingCount']?.toInt() ?? 0}',
-                                    style: const TextStyle(fontSize: 16),
+                                    style: TextStyle(fontSize: width * 0.045),
                                   ),
                                 ],
                               ),

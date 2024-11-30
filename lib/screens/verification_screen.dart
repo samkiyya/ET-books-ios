@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
@@ -28,6 +29,8 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     // Ensure that userData is not null
@@ -35,7 +38,9 @@ class _VerificationScreenState extends State<VerificationScreen> {
     if (userData == null) {
       return const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
         ),
       );
     }
@@ -46,21 +51,21 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(width * 0.0148),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 50),
+              SizedBox(height: height * 0.0225),
               const Text(
                 'Two-Factor Authentication',
                 style: AppTextStyles.heading2,
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: height * 0.009),
               const Text(
                 'Enter the verification code sent to your email:',
                 style: AppTextStyles.bodyText,
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: height * 0.0045),
               TextFormField(
                 controller: codeController,
                 decoration: const InputDecoration(
@@ -70,11 +75,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
                   fillColor: AppColors.color6,
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: height * 0.009),
               Consumer<LoginProvider>(
                 builder: (context, loginProvider, child) {
                   return loginProvider.isLoading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
                       : Center(
                           child: ElevatedButton(
                             onPressed: () async {

@@ -1,3 +1,5 @@
+import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
@@ -47,19 +49,25 @@ class _PasswordRecoveryScreenState extends State<ForgotPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Password Recovery')),
+        appBar: AppBar(
+          title: const Text('Password Recovery'),
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
+        ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(width * 0.0148148),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Enter your email address to receive a password reset link.',
-                style: TextStyle(fontSize: 16.0),
+                style: TextStyle(fontSize: width * 0.0148148),
               ),
-              const SizedBox(height: 16.0),
+              SizedBox(height: height * 0.0072072),
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -68,7 +76,7 @@ class _PasswordRecoveryScreenState extends State<ForgotPasswordScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16.0),
+              SizedBox(height: height * 0.0072072),
               if (_message != null)
                 Text(
                   _message!,
@@ -78,9 +86,13 @@ class _PasswordRecoveryScreenState extends State<ForgotPasswordScreen> {
                         : Colors.green,
                   ),
                 ),
-              const SizedBox(height: 16.0),
+              SizedBox(height: height * 0.0072072),
               if (_isLoading)
-                const Center(child: CircularProgressIndicator())
+                const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
               else
                 ElevatedButton(
                   onPressed: _submitEmail,

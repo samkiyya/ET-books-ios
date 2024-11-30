@@ -1,6 +1,8 @@
+import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/notification_provider.dart';
 
 class NotificationDetailScreen extends StatelessWidget {
   final int notificationIndex;
@@ -9,6 +11,8 @@ class NotificationDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     final notification =
         context.watch<NotificationProvider>().notifications[notificationIndex];
 
@@ -18,18 +22,22 @@ class NotificationDetailScreen extends StatelessWidget {
           notification['title'] ?? 'Notification Details',
           style: const TextStyle(fontSize: 20),
         ),
-        backgroundColor: Colors.blueAccent,
+        centerTitle: true,
+        backgroundColor: AppColors.color1,
+        foregroundColor: AppColors.color6,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.symmetric(
+            horizontal: width * 0.0148148, vertical: height * 0.0072072),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               notification['body'] ?? 'No details available',
-              style: const TextStyle(fontSize: 18, height: 1.5),
+              style: TextStyle(
+                  fontSize: width * 0.016666, height: height * 0.00067567),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: height * 0.009),
             ElevatedButton.icon(
               onPressed: () {
                 // Toggle the read/unread status when clicked
@@ -50,7 +58,7 @@ class NotificationDetailScreen extends StatelessWidget {
                 notification['isRead'] ? 'Mark as Unread' : 'Mark as Read',
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: height * 0.009),
             ElevatedButton.icon(
               onPressed: () async {
                 // Delete the notification

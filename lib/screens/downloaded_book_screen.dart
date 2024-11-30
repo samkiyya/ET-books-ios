@@ -1,3 +1,4 @@
+// import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/services/book_service.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
@@ -8,10 +9,16 @@ class DownloadedBooksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // double width = AppSizes.screenWidth(context);
+    // double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Downloaded Books'),
+          title: Text(
+            'Downloaded Books',
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
+          ),
+          centerTitle: true,
           backgroundColor: AppColors.color1,
           foregroundColor: AppColors.color6,
         ),
@@ -20,7 +27,11 @@ class DownloadedBooksScreen extends StatelessWidget {
           builder: (context, snapshot) {
             // Handle loading state
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              );
             }
             // Handle error state
             if (snapshot.hasError) {
@@ -46,6 +57,7 @@ class DownloadedBooksScreen extends StatelessWidget {
                         Navigator.pushNamed(context, '/my-books');
                       },
                       text: 'Go to your Books',
+                      borderColor: AppColors.color3,
                       textStyle: AppTextStyles.buttonText.copyWith(
                         color: AppColors.color3,
                       ),
@@ -59,13 +71,16 @@ class DownloadedBooksScreen extends StatelessWidget {
               itemCount: books.length,
               itemBuilder: (context, index) {
                 final book = books[index];
-                return ListTile(
-                  leading: const Icon(Icons.book),
-                  title: Text(book['title'], style: AppTextStyles.bodyText),
-                  onTap: () async {
-                    await BookService.openBook(
-                        context, book['id'], book['title']);
-                  },
+                return Card(
+                  color: AppColors.color1,
+                  child: ListTile(
+                    leading: const Icon(Icons.book),
+                    title: Text(book['title'], style: AppTextStyles.bodyText),
+                    onTap: () async {
+                      await BookService.openBook(
+                          context, book['id'], book['title']);
+                    },
+                  ),
                 );
               },
             );

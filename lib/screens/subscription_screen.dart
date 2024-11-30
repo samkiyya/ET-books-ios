@@ -1,4 +1,6 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -70,17 +72,24 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.color1,
-          title: Text('You are subscribing to: ${widget.tier['tier_name']}',
-              style: AppTextStyles.heading2),
+          foregroundColor: AppColors.color6,
+          title: Text(
+            'You are subscribing to: ${widget.tier['tier_name']}',
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
+          ),
+          centerTitle: true,
         ),
         body: Consumer<SubscriptionProvider>(
           builder: (context, provider, child) {
             return Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.symmetric(
+                  horizontal: width * 0.02, vertical: height * 0.01),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,16 +102,17 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02, vertical: height * 0.01),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(height: 8),
+                            SizedBox(height: height * 0.03),
                             Text(
                               'Price: ${provider.subscriptionType == 'yearly' ? 'ETB ${widget.tier['annual_price']}' : 'ETB ${widget.tier['monthly_price']}'} / ${provider.subscriptionType}',
                               style: AppTextStyles.bodyText,
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: height * 0.03),
 
                             // Bank Name Field
                             CustomTextField(
@@ -115,7 +125,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                 _validationErrors['bankName']!,
                                 style: const TextStyle(color: Colors.red),
                               ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: height * 0.03),
                             const Text('Select subscription type',
                                 style: AppTextStyles.bodyText),
 
@@ -142,7 +152,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                   )
                                   .toList(),
                             ),
-                            const SizedBox(height: 25),
+                            SizedBox(height: height * 0.03),
 
                             // Start Date Picker
                             GestureDetector(
@@ -187,7 +197,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                 _validationErrors['startDate']!,
                                 style: const TextStyle(color: Colors.red),
                               ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: height * 0.03),
 
                             // Show Calculated End Date
                             Text(
@@ -196,7 +206,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                   : 'End Date: ${DateFormat('yyyy-MM-dd').format(provider.endDate!)}',
                               style: AppTextStyles.bodyText,
                             ),
-                            const SizedBox(height: 16),
+                            SizedBox(height: height * 0.03),
 
                             // Receipt Image Picker
                             Row(
@@ -216,7 +226,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                     ),
                                   ),
                                 ),
-                                const SizedBox(width: 20),
+                                SizedBox(width: width * 0.03),
                                 // Display Image or Placeholder
                                 Flexible(
                                   child: provider.receiptImage == null
@@ -228,7 +238,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                       : Image.file(
                                           provider.receiptImage!,
                                           fit: BoxFit.cover,
-                                          height: 100,
+                                          height: height * 0.1,
                                         ),
                                 ),
                               ],
@@ -243,43 +253,38 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: height * 0.0072072),
 
-                    // Submit Button Outside Card
-                    Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
+                    provider.isUploading
+                        ? const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          )
+                        : CustomButton(
                             backgroundColor: AppColors.color2,
+                                            borderColor: AppColors.color3,
+
+                            textStyle: AppTextStyles.buttonText,
+                            text: 'Submit Order',
+                            onPressed: () async {
+                              if (!_validateInputs()) {
+                                return; // Validation failed
+                              }
+
+                              await provider.createSubscriptionOrder(
+                                tierId: widget.tier['id'].toString(),
+                                bankName: _bankNameController.text.trim(),
+                                context: context,
+                              );
+
+                              final isSuccess = provider.errorMessage.isEmpty;
+                              final message = isSuccess
+                                  ? provider.successMessage
+                                  : provider.errorMessage;
+
+                              _showDialog(message, isSuccess);
+                            },
                           ),
-                          onPressed: () async {
-                            if (!_validateInputs()) {
-                              return; // Validation failed
-                            }
-
-                            await provider.createSubscriptionOrder(
-                              tierId: widget.tier['id'].toString(),
-                              bankName: _bankNameController.text.trim(),
-                              context: context,
-                            );
-
-                            final isSuccess = provider.errorMessage.isEmpty;
-                            final message = isSuccess
-                                ? provider.successMessage
-                                : provider.errorMessage;
-
-                            _showDialog(message, isSuccess);
-                          },
-                          child: provider.isUploading
-                              ? const CircularProgressIndicator()
-                              : const Text('Submit Order',
-                                  style: AppTextStyles.buttonText),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),

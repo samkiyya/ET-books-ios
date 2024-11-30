@@ -1,5 +1,7 @@
 // tenant_detail_screen.dart
 
+// import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
 import 'package:flutter/material.dart';
 
 // Tenant model to represent the data
@@ -55,10 +57,15 @@ class TenantDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // double width = AppSizes.screenWidth(context);
+    // double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Tenant Details'),
+          title: const Text('Tenant Details'),
+          centerTitle: true,
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),

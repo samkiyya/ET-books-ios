@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/subscription_tiers_provider.dart';
 import 'package:book_mobile/screens/subscription_screen.dart';
@@ -23,19 +24,31 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     final provider = Provider.of<SubscriptionTiersProvider>(context);
 
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.color1,
-          title: const Text('Available Subscription Tiers',
-              style: AppTextStyles.heading2),
+          foregroundColor: AppColors.color6,
+          title: Text(
+            'Available Subscription Tiers',
+            style: AppTextStyles.heading2.copyWith(
+              color: AppColors.color6,
+            ),
+          ),
+          centerTitle: true,
         ),
         body: Builder(
           builder: (context) {
             if (provider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              );
             }
 
             if (provider.hasError) {
@@ -53,8 +66,9 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                 final tier = provider.tiers[index];
 
                 return Card(
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+                  margin: EdgeInsets.symmetric(
+                      vertical: height * 0.00135135,
+                      horizontal: width * 0.0138888),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(15),
                   ),
@@ -62,12 +76,23 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                   shadowColor: Colors.black.withOpacity(0.8),
                   color: AppColors.color1,
                   child: ListTile(
-                      contentPadding: const EdgeInsets.all(10),
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: width * 0.00925925,
+                          vertical: height * 0.0045045),
                       title: Text(tier['tier_name'] ?? 'Unknown Tier',
                           style: AppTextStyles.bodyText),
-                      subtitle: Text(
-                        'Monthly price: \$${tier['monthly_price']}, \nAnnual price: \$${tier['annual_price']}',
-                        style: AppTextStyles.bodyText,
+                      subtitle: Column(
+                        children: [
+                          Text(
+                            'Monthly price: ETB ${tier['monthly_price']}',
+                            style: AppTextStyles.bodyText,
+                          ),
+                          SizedBox(height: height * 0.0045045),
+                          Text(
+                            'Annual price: ETB ${tier['annual_price']}',
+                            style: AppTextStyles.bodyText,
+                          ),
+                        ],
                       ),
                       trailing: ElevatedButton(
                         onPressed: () {
@@ -83,8 +108,9 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                           foregroundColor: AppColors.color3,
                           backgroundColor: AppColors.color2, // Text color
                           elevation: 10, // Shadow effect
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 13, horizontal: 26),
+                          padding: EdgeInsets.symmetric(
+                              vertical: height * 0.00585585,
+                              horizontal: width * 0.024074),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
                                 30), // Rounded corners for 3D effect

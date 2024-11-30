@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/screens/home_screen.dart';
 import 'package:book_mobile/screens/signup_screen.dart';
@@ -119,23 +120,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         body: Stack(
           children: [
             // Gradient background
             Container(
-              height: double.infinity,
-              width: double.infinity,
+              height: height,
+              width: width,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(colors: [
                   AppColors.color1,
                   AppColors.color2,
                 ]),
               ),
-              child: const Padding(
-                padding: EdgeInsets.only(top: 60.0, left: 22),
-                child: Text(
+              child: Padding(
+                padding:
+                    EdgeInsets.only(top: height * 0.09, left: width * 0.04),
+                child: const Text(
                   'Login Page!',
                   style: AppTextStyles.heading1,
                 ),
@@ -143,10 +147,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             // Login form container
             Padding(
-              padding: const EdgeInsets.only(top: 200.0),
+              padding: EdgeInsets.only(top: height * 0.25),
               child: Container(
-                height: double.infinity,
-                width: double.infinity,
+                height: height * .8,
+                width: width,
                 decoration: const BoxDecoration(
                   color: AppColors.color1,
                   borderRadius: BorderRadius.only(
@@ -156,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(18.0),
+                    padding: EdgeInsets.all(width * 0.055),
                     child: Consumer<LoginProvider>(
                       builder: (context, loginProvider, child) {
                         return Form(
@@ -173,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 validator: (value) =>
                                     _validateField('email', value!),
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.02),
                               // Password field
                               CustomTextField(
                                 controller: _passwordController,
@@ -209,21 +213,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     );
                                   },
-                                  child: const Text(
+                                  child: Text(
                                     'Forgot Password?',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.color3,
-                                      fontSize: 16,
+                                      fontSize: width * 0.04,
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.03),
                               // Login button
                               loginProvider.isLoading
                                   ? const Center(
-                                      child: CircularProgressIndicator())
+                                      child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white)))
                                   : CustomButton(
                                       text: 'LOGIN',
                                       onPressed: () {
@@ -235,10 +242,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       },
                                       backgroundColor: AppColors.color2,
-                                      borderColor: Colors.transparent,
+                                      borderColor: AppColors.color3,
                                       textStyle: AppTextStyles.buttonText,
                                     ),
-                              const SizedBox(height: 30),
+                              SizedBox(height: height * 0.07),
                               // Social Login Buttons
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -282,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                       }
                                     },
                                   ),
-                                  const SizedBox(width: 40),
+                                  SizedBox(width: width * 0.1),
                                   SquareTile(
                                     imagePath: 'assets/images/fb_logo.png',
                                     onTap: () async {
@@ -324,7 +331,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   )
                                 ],
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.06),
                               // Signup prompt
                               TextButton(
                                 onPressed: () {
@@ -340,15 +347,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     text: 'Don\'t have an account? ',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontSize: 16,
+                                      fontSize: width * 0.045,
                                     ),
-                                    children: const [
+                                    children: [
                                       TextSpan(
                                         text: 'Sign Up',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.color3,
-                                          fontSize: 17,
+                                          fontSize: width * .055,
                                         ),
                                       ),
                                     ],

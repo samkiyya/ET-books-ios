@@ -2,17 +2,19 @@ import 'dart:convert';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UpdateProfileProvider with ChangeNotifier {
   bool _isLoading = false;
   String _errorMessage = '';
+  String? _token = '';
 
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
+  String get token => _token!;
 
   // Update User Profile
   Future<void> updateProfile({
-    required String token,
     required String fname,
     required String lname,
     required String phone,
@@ -21,13 +23,20 @@ class UpdateProfileProvider with ChangeNotifier {
     required String country,
   }) async {
     _isLoading = true;
+    _errorMessage = '';
+    _token = '';
     notifyListeners();
 
     final url =
         Uri.parse('${Network.baseUrl}/api/manage-user/update-my-account');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
     final response = await http.put(
       url,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $_token',
+        'Content-Type': 'application/json',
+      },
       body: json.encode({
         'fname': fname,
         'lname': lname,
@@ -37,7 +46,11 @@ class UpdateProfileProvider with ChangeNotifier {
         'country': country,
       }),
     );
-
+    print('The token of profile update is: $_token');
+    print('response body is: ${response.body}');
+    print('response status code is: ${response.statusCode}');
+    final responseData = jsonDecode(response.body);
+    print('response data is: $responseData');
     if (response.statusCode == 200) {
       // Handle success response, you can parse any success data here if needed.
       _isLoading = false;
@@ -76,15 +89,19 @@ class UpdateProfileProvider with ChangeNotifier {
   }
 
   // Delete User Account
-  Future<void> deleteAccount({required String token}) async {
+  Future<void> deleteAccount() async {
     _isLoading = true;
+    _errorMessage = '';
+    _token = '';
     notifyListeners();
 
     final url =
         Uri.parse('${Network.baseUrl}/api/manage-user/delete-my-account');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
     final response = await http.delete(
       url,
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {'Authorization': 'Bearer $_token'},
     );
 
     if (response.statusCode == 204) {

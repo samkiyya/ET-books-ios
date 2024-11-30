@@ -1,3 +1,5 @@
+import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
 import 'package:flutter/material.dart';
 
 class AuthorScreen extends StatelessWidget {
@@ -7,18 +9,22 @@ class AuthorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Authors"),
-          backgroundColor: Colors.brown,
+          title: const Text("Authors", style: AppTextStyles.heading2),
+          centerTitle: true,
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
           ),
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(width * 0.0074),
           child: Column(
             children: [
               TextField(
@@ -33,25 +39,25 @@ class AuthorScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: height * 0.009),
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         "Adane Birhanu Gasho",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
+                          fontSize: width * 0.0185,
                           color: Colors.brown,
                         ),
                       ),
-                      const Text(
+                      Text(
                         "I love writing books and narrating them. Check out my books!",
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: width * 0.0148),
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: height * 0.0045),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -65,7 +71,7 @@ class AuthorScreen extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10),
+                      SizedBox(height: height * 0.0045),
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),

@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -32,20 +34,24 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
   @override
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<PurchaseOrderProvider>(context);
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(width * 0.03),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(height: 60),
+                SizedBox(height: height * 0.02),
                 // Book title
-                Text("Buy Your Book",
-                    style: AppTextStyles.heading1
-                        .copyWith(color: AppColors.color2)),
+                Center(
+                  child: Text("Buy Your Book",
+                      style: AppTextStyles.heading2
+                          .copyWith(color: AppColors.color2)),
+                ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: height * 0.04),
                 Card(
                   color: AppColors.color2,
                   elevation: 5,
@@ -53,7 +59,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: EdgeInsets.all(width * 0.03),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -62,13 +68,13 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
                             '${Network.baseUrl}/${widget.book['imageFilePath']}',
-                            height: 150,
-                            width: 100,
+                            height: height * 0.13,
                             fit: BoxFit.cover,
                           ),
                         ),
-                        const SizedBox(
-                            width: 30), // Space between image and text
+                        SizedBox(
+                            width:
+                                width * 0.09), // Space between image and text
                         // Text on the right
                         Expanded(
                           child: Column(
@@ -78,18 +84,19 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                 widget.book['title'],
                                 style: AppTextStyles.heading2,
                               ),
-                              const SizedBox(
-                                  height: 10), // Space between title and rating
+                              SizedBox(
+                                  height: height *
+                                      0.0045), // Space between title and rating
                               Text(
                                 '${widget.book['rating']} ⭐ | ${widget.book['sold']} peoples bought',
                                 style: AppTextStyles.bodyText,
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: height * 0.0045),
                               Text(
                                 'Price: ETB ${widget.book['price']}',
                                 style: AppTextStyles.bodyText,
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: height * 0.0045),
                               Text(
                                   'Publication Year ${widget.book['publicationYear']}',
                                   style: AppTextStyles.bodyText),
@@ -100,7 +107,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: height * 0.02),
                 Stack(
                   children: [
                     Opacity(
@@ -114,7 +121,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                           ),
                           elevation: 5, // Adds subtle shadow for depth
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: EdgeInsets.all(width * 0.0148),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -126,7 +133,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                   validator: (value) => _validateField(
                                       'Transaction Number', value!),
                                 ),
-                                const SizedBox(height: 10),
+                                SizedBox(height: height * 0.0045),
 
                                 // Bank Name
                                 CustomTextField(
@@ -136,7 +143,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                   validator: (value) =>
                                       _validateField('Bank Name', value!),
                                 ),
-                                const SizedBox(height: 10),
+                                SizedBox(height: height * 0.02),
 
                                 // Row for Image Upload
                                 Row(
@@ -164,7 +171,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                       ),
                                     ),
 
-                                    const SizedBox(width: 20),
+                                    SizedBox(width: width * 0.03),
 
                                     // Display Image or Placeholder
                                     Flexible(
@@ -178,7 +185,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                             : Image.file(
                                                 orderProvider.receiptImage!,
                                                 fit: BoxFit.cover,
-                                                height: 100)),
+                                                height: height * 0.09)),
                                   ],
                                 ),
                                 if (_receiptImage == null)
@@ -195,56 +202,49 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: orderProvider.isLoading
-                          ? null
-                          : () async {
-                              if (!_formKey.currentState!.validate()) {
-                                return;
-                              }
-                              if (_receiptImage == null) {
-                                // Show an error message under the image upload section
-                                return;
-                              }
+                SizedBox(height: height * 0.04),
 
-                              await orderProvider.purchaseBook(
-                                id: widget.book['id'].toString(),
-                                transactionNumber: _transactionController.text,
-                                bankName: _bankNameController.text,
-                                bookType: widget.book['type'].toString(),
-                                context: context,
-                              );
+                orderProvider.isLoading || orderProvider.isUploading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : CustomButton(
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate()) {
+                            return;
+                          }
+                          if (_receiptImage == null) {
+                            // Show an error message under the image upload section
+                            return;
+                          }
 
-                              if (context.mounted) {
-                                orderProvider.showResponseDialog(
-                                  context,
-                                  orderProvider.errorMessage.isNotEmpty
-                                      ? orderProvider.errorMessage
-                                      : orderProvider.successMessage,
-                                  "Close",
-                                  orderProvider.errorMessage.isEmpty,
-                                );
-                              }
-                            },
-                      style: ElevatedButton.styleFrom(
+                          await orderProvider.purchaseBook(
+                            id: widget.book['id'].toString(),
+                            transactionNumber: _transactionController.text,
+                            bankName: _bankNameController.text,
+                            bookType: widget.book['type'].toString(),
+                            context: context,
+                          );
+
+                          if (context.mounted) {
+                            orderProvider.showResponseDialog(
+                              context,
+                              orderProvider.errorMessage.isNotEmpty
+                                  ? orderProvider.errorMessage
+                                  : orderProvider.successMessage,
+                              "Close",
+                              orderProvider.errorMessage.isEmpty,
+                            );
+                          }
+                        },
+                        text: 'Submit Order',
+                        textStyle: AppTextStyles.buttonText,
                         backgroundColor: AppColors.color2,
+                        borderColor: AppColors.color3,
                       ),
-                      child: orderProvider.isLoading ||
-                              orderProvider.isUploading
-                          ? const CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            )
-                          : const Text('Submit Order',
-                              style: AppTextStyles.buttonText),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

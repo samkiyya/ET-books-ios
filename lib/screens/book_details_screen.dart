@@ -1,4 +1,5 @@
 import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/models/order_model.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
@@ -29,10 +30,10 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         Navigator.pushNamed(context, '/home');
         break;
       case 1:
-        Navigator.pushNamed(context, '/profile');
+        Navigator.pushNamed(context, '/allAudio');
         break;
       case 2:
-        Navigator.pushNamed(context, '/allAudio');
+        Navigator.pushNamed(context, '/profile');
         break;
 
       default:
@@ -123,10 +124,18 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.book['title']),
+          title: Text(widget.book['title'],
+              style: AppTextStyles.heading2.copyWith(
+                color: AppColors.color6,
+              )),
+          centerTitle: true,
+          foregroundColor: AppColors.color2,
+          backgroundColor: AppColors.color1,
         ),
         body: Stack(
           children: [
@@ -145,7 +154,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             SingleChildScrollView(
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
+                  SizedBox(height: height * 0.009),
                   Center(
                     child: Card(
                       elevation: 5,
@@ -156,16 +165,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         borderRadius: BorderRadius.circular(15),
                         child: Image.network(
                           '${Network.baseUrl}/${widget.book['imageFilePath']}',
-                          height: 200,
-                          width: 200,
+                          height: height * 0.22,
+                          width: width * 0.7,
                           fit: BoxFit.cover,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: height * 0.03),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.03),
                     child: Card(
                       color: AppColors.color1,
                       elevation: 5,
@@ -173,19 +182,19 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(width * 0.02),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Title: ${widget.book['title']}",
-                              style: const TextStyle(
-                                fontSize: 20,
+                              style: TextStyle(
+                                fontSize: width * 0.06,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.color3,
                               ),
                             ),
-                            const SizedBox(height: 10),
+                            SizedBox(height: height * 0.01),
                             _buildDetailRow("Author", widget.book['author']),
                             _buildDetailRow("Publication Year",
                                 widget.book['publicationYear']),
@@ -199,7 +208,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                 Expanded(
                                   child: _buildDetailRow(
                                     "⭐ ",
-                                    "${widget.book['rating']}     (${widget.book['rateCount']} reviews)",
+                                    "${widget.book['rating']}  (${widget.book['rateCount']} reviews)",
                                   ),
                                 ),
                                 const VerticalDivider(
@@ -220,16 +229,16 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: height * 0.03),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    padding: EdgeInsets.symmetric(horizontal: width * 0.03),
                     child: Consumer<OrderStatusProvider>(
                         builder: (context, statusProvider, child) {
                       return CustomButton(
                         text: _getButtonText(statusProvider),
                         onPressed: () => _handleButtonPress(context),
                         backgroundColor: AppColors.color2,
-                        borderColor: Colors.transparent,
+                        borderColor: AppColors.color3,
                         textStyle: AppTextStyles.buttonText,
                       );
                     }),
@@ -275,7 +284,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
 
   Widget _buildDetailRow(String label, dynamic value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: Row(
         children: [
           Text(

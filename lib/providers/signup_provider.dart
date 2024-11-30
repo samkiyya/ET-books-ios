@@ -72,7 +72,7 @@ class SignupProvider with ChangeNotifier {
 
     // Check internet connection
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult == [ConnectivityResult.none]) {
       _errorMessage = 'No internet connection. Please check your network.';
       _isLoading = false;
       notifyListeners();

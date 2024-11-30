@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:flutter/material.dart';
 
 class SquareTile extends StatelessWidget {
@@ -7,10 +8,13 @@ class SquareTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.symmetric(
+            horizontal: width * 0.02, vertical: height * 0.01),
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(16),
@@ -18,7 +22,7 @@ class SquareTile extends StatelessWidget {
         ),
         child: Image.asset(
           imagePath,
-          height: 40,
+          height: height * 0.08,
           fit: BoxFit.cover,
         ),
       ),

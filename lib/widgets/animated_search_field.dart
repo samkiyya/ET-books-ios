@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -16,6 +17,8 @@ class _AnimatedSearchTextFieldState extends State<AnimatedSearchTextField> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return GestureDetector(
       onTap: () {
         if (!opened) {
@@ -26,8 +29,8 @@ class _AnimatedSearchTextFieldState extends State<AnimatedSearchTextField> {
       },
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 500),
-        width: opened ? MediaQuery.of(context).size.width * .9 : 56,
-        height: 56,
+        width: opened ? width * .9 : width * 0.3,
+        height: height * .07,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
           color: AppColors.color6,
@@ -38,7 +41,7 @@ class _AnimatedSearchTextFieldState extends State<AnimatedSearchTextField> {
             if (opened) // Only render Expanded when opened is true
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 16),
+                  padding: EdgeInsets.only(left: width * 0.03),
                   child: TextField(
                     onChanged: (value) {
                       widget.onChanged(value);
@@ -78,11 +81,12 @@ class _AnimatedSearchTextFieldState extends State<AnimatedSearchTextField> {
                   });
                 },
                 child: Padding(
-                  padding: const EdgeInsets.all(18.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: width * 0.06, vertical: height * 0.01),
                   child: Icon(
                     opened ? Icons.close : Icons.search,
                     color: AppColors.color1,
-                    size: 20,
+                    size: width * 0.06,
                   ),
                 ),
               ),

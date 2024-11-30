@@ -16,12 +16,14 @@ class AuthProvider with ChangeNotifier {
   UserData? _userData;
   String? _userId;
   bool _isLoggingOut = false;
+  Map<String, dynamic>? _fbUserData;
 
   String? get token => _token;
   bool get isAuthenticated => _token != null;
   bool get is2FARequired => _is2FARequired;
   UserData? get userData => _userData;
   String? get userId => _userId;
+  Map<String, dynamic>? get fbUserData => _fbUserData;
 
   Future<void> setUserId(String userId) async {
     _userId = userId;
@@ -31,28 +33,35 @@ class AuthProvider with ChangeNotifier {
   Future<void> loginWithGoogle() async {
     try {
       final GoogleSignIn googleSignIn = GoogleSignIn(
-        clientId:
-            '7696739887-377654pcvnpco15a1cv9etv4a6l8og13.apps.googleusercontent.com',
+        //client id is required for web
+        // clientId:
+        //     '7696739887-377654pcvnpco15a1cv9etv4a6l8og13.apps.googleusercontent.com',
         scopes: <String>[
           'email',
-          'https://www.googleapis.com/auth/contacts.readonly',
-          // Required for ID Token
+          'profile',
         ],
       );
+
+      // Sign out first to make sure we don't have any cached credentials
+      await googleSignIn.signOut();
+
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
       print('Google User: ${googleUser.toString()}');
       if (googleUser == null) {
         print('Google Sign-In was canceled.');
         return;
       }
-
+// Get authentication details
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
+      if (googleAuth.idToken == null) {
+        throw Exception('Failed to get ID token');
+      }
 
       if (googleAuth.idToken != null) {
         print('google Access Token: ${googleAuth.accessToken}');
         print('Google ID Token: ${googleAuth.idToken}');
-
+// Make the server call
         final response = await http.post(
           Uri.parse('$_baseUrl/api/auth/google/callback'),
           headers: {
@@ -60,10 +69,13 @@ class AuthProvider with ChangeNotifier {
           },
           body: json.encode({
             'id_token': googleAuth.idToken!.toString(),
+            'email': googleUser.email,
+            'displayName': googleUser.displayName,
           }),
         );
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
+          print('the Data response is: $data');
           print('User Token: ${data['userToken']}');
           print('Data from callback is: $data');
           await _storeToken(data['userToken']);
@@ -76,15 +88,34 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       print('Error during Google Sign-In: $e');
-      rethrow;
+      throw Exception('Google Sign-In failed: ${e.toString()}');
     }
+  }
+
+  String prettyPrint(Map json) {
+    JsonEncoder encoder = const JsonEncoder.withIndent('  ');
+    String pretty = encoder.convert(json);
+    return pretty;
+  }
+
+  void _printCredentials() {
+    print(
+      prettyPrint(_accessToken!.toJson()),
+    );
   }
 
   Future<void> loginWithFacebook() async {
     try {
       final result = await FacebookAuth.instance.login();
+
       if (result.status == LoginStatus.success) {
         _accessToken = result.accessToken!;
+        _printCredentials();
+
+        final userData = await FacebookAuth.instance.getUserData();
+        _fbUserData = userData;
+        notifyListeners();
+
         if (_accessToken != null) {
           final response = await http.post(
             Uri.parse('$_baseUrl/api/auth/facebook/callback'),
@@ -100,12 +131,20 @@ class AuthProvider with ChangeNotifier {
             final data = json.decode(response.body);
             await _storeToken(data['userToken']);
             await loadUserData();
+            notifyListeners();
           }
         }
       }
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<void> fbLogOut() async {
+    await FacebookAuth.instance.logOut();
+    _accessToken = null;
+    _fbUserData = null;
+    notifyListeners();
   }
 
   Future<void> _storeToken(String token) async {

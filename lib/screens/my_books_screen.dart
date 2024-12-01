@@ -34,7 +34,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // double width = AppSizes.screenWidth(context);
+    double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
     final orderProvider = Provider.of<OrderStatusProvider>(context);
 
@@ -96,39 +96,57 @@ class _DownloadScreenState extends State<DownloadScreen> {
                     itemCount: approvedOrders.length,
                     itemBuilder: (context, index) {
                       final order = approvedOrders[index];
-                      final book =
-                          order.orderBook; // Extract book details from order
-                      return ListTile(
-                        leading: Image.network(
-                            "${Network.baseUrl}/${book['imageFilePath']}"),
-                        title: Text(book['title'],
-                            style: AppTextStyles.bodyText), // Book title
-                        trailing: FutureBuilder<bool>(
-                          future: BookService.isBookDownloaded(order.id),
-                          builder: (context, snapshot) {
-                            final isDownloaded = snapshot.data ?? false;
-                            return isDownloaded
-                                ? IconButton(
-                                    icon: const Icon(Icons.read_more,
-                                        color: AppColors.color3),
-                                    onPressed: () async {
-                                      await BookService.openBook(
-                                          context, order.id, book['title']);
-                                    },
-                                  )
-                                : IconButton(
-                                    icon: const Icon(Icons.download,
-                                        color: AppColors.color3),
-                                    onPressed: () async {
-                                      await BookService.downloadAndOpenBook(
-                                          order.id,
-                                          "${Network.baseUrl}/${book['pdfFilePath']}",
-                                          book['title'],
-                                          context);
-                                      setState(() {});
-                                    },
-                                  );
-                          },
+
+                      final book = order.orderBook;
+                      // Extract book details from order
+                      return Card(
+                        color: AppColors.color1,
+                        child: ListTile(
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              "${Network.baseUrl}/${book['imageFilePath']}",
+                              width: width * 0.2,
+                              fit: BoxFit.cover,
+                              errorBuilder: (BuildContext context, Object error,
+                                  StackTrace? stackTrace) {
+                                return Icon(
+                                  Icons.broken_image, // Alternative icon
+                                  size: width * 0.2,
+                                  color: Colors.grey,
+                                );
+                              },
+                            ),
+                          ),
+                          title: Text(book['title'],
+                              style: AppTextStyles.bodyText), // Book title
+                          trailing: FutureBuilder<bool>(
+                            future: BookService.isBookDownloaded(order.id),
+                            builder: (context, snapshot) {
+                              final isDownloaded = snapshot.data ?? false;
+                              return isDownloaded
+                                  ? IconButton(
+                                      icon: const Icon(Icons.read_more,
+                                          color: AppColors.color3),
+                                      onPressed: () async {
+                                        await BookService.openBook(
+                                            context, order.id, book['title']);
+                                      },
+                                    )
+                                  : IconButton(
+                                      icon: const Icon(Icons.download,
+                                          color: AppColors.color3),
+                                      onPressed: () async {
+                                        await BookService.downloadAndOpenBook(
+                                            order.id,
+                                            "${Network.baseUrl}/${book['pdfFilePath']}",
+                                            book['title'],
+                                            context);
+                                        setState(() {});
+                                      },
+                                    );
+                            },
+                          ),
                         ),
                       );
                     },

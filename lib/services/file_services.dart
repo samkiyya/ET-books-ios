@@ -21,4 +21,18 @@ class FileService {
       return {'id': id, 'title': 'Book $id', 'path': file.path};
     }).toList();
   }
+
+  static Future<bool> deleteBook(int bookId) async {
+    try {
+      final path = await getBookPath(bookId);
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+        return true;
+      }
+    } catch (e) {
+      print('Error deleting book: $e');
+    }
+    return false;
+  }
 }

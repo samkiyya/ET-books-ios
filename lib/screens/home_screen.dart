@@ -159,6 +159,17 @@ class _HomeScreenState extends State<HomeScreen>
                                               fit: BoxFit.cover,
                                               height: height * 0.08,
                                               width: width * 0.2,
+                                              errorBuilder:
+                                                  (BuildContext context,
+                                                      Object error,
+                                                      StackTrace? stackTrace) {
+                                                return Icon(
+                                                  Icons
+                                                      .broken_image, // Alternative icon
+                                                  size: width * 0.2,
+                                                  color: Colors.grey,
+                                                );
+                                              },
                                             ),
                                             Padding(
                                               padding: EdgeInsets.all(

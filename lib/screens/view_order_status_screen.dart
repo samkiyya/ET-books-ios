@@ -16,9 +16,14 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
   @override
   void initState() {
     super.initState();
-    final orderProvider =
-        Provider.of<OrderStatusProvider>(context, listen: false);
-    orderProvider.fetchOrders();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final orderProvider =
+            Provider.of<OrderStatusProvider>(context, listen: false);
+        orderProvider.fetchOrders();
+      }
+    });
   }
 
   @override

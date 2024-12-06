@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/models/login_model.dart';
@@ -93,24 +95,47 @@ class LoginProvider with ChangeNotifier {
       final body = jsonEncode({"email": email, "password": password});
 
       final response = await http.post(url, headers: headers, body: body);
-
+      final data = jsonDecode(response.body);
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
         final loginResponse =
             LoginResponse.fromJson(json.decode(response.body));
         _token = loginResponse.userToken;
         _isAuthenticated = true;
-        await _saveTokenToLocalStorage(_token!);
-        final userId = loginResponse.userData.id;
+        if (loginResponse.userData.id > 0) {
+          await authProvider.setUserId(loginResponse.userData.id.toString());
+          await _saveTokenToLocalStorage(_token!);
 
-        await authProvider.setUserId(userId.toString());
-        _successMessage = 'you had Login successful!';
+          _successMessage = 'You have logged in successfully!';
+        } else {
+          _errorMessage = 'Invalid user data returned.';
+          _isAuthenticated = false;
+        }
       } else if (response.statusCode == 401) {
         _errorMessage = 'Authorizaation failed. Please try again.';
+        _isAuthenticated = false;
+      } else if (response.statusCode == 403 &&
+          data['message']?.contains('verify') == true) {
+        _errorMessage = 'Please verify your email before logging in';
+        _isAuthenticated = false;
+        // return false;
       } else {
         _errorMessage = 'Invalid credentials. Please try again.';
+        _isAuthenticated = false;
       }
     } catch (error) {
-      _errorMessage = 'An error occurred: $error';
+      if (error is SocketException) {
+        _errorMessage = 'No internet connection';
+      } else if (error is HttpException) {
+        _errorMessage = 'An error occurred: ${error.message}';
+      } else if (error is FormatException) {
+        _errorMessage = 'Invalid response from server';
+      } else if (error is TimeoutException) {
+        _errorMessage = 'Connection timeout. Please try again.';
+      } else {
+        _errorMessage = 'An error occurred: $error';
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -121,7 +146,10 @@ class LoginProvider with ChangeNotifier {
   Future<void> _saveTokenToLocalStorage(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userToken', token);
-    await prefs.setString('userId', authProvider.userId!);
+
+    if (authProvider.userId != null) {
+      await prefs.setString('userId', authProvider.userId!);
+    }
   }
 
   void clearMessages() {

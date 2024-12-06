@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:mime/mime.dart';
@@ -137,16 +138,29 @@ class SignupProvider with ChangeNotifier {
         print(responseBody);
       }
     } catch (error) {
-      if (error is TimeoutException) {
-        _errorMessage = 'Request timed out. Please try again later.';
-      } else {
-        _errorMessage = 'An error occurred: $error';
-      }
+      _errorMessage = _mapErrorToMessage(error);
+
       print('Signup error: $_errorMessage');
     } finally {
       _isLoading = false;
       _isUploading = false;
       notifyListeners();
+    }
+  }
+
+  String _mapErrorToMessage(dynamic error) {
+    if (error is TimeoutException) {
+      return 'Request timed out. Please try again later.';
+    } else if (error is SocketException) {
+      return 'No internet connection';
+    } else if (error is FormatException) {
+      return 'Invalid response from server. Please try again later.';
+    } else if (error is ClientException) {
+      return 'Failed to connect to the server.';
+    } else if (error is HttpException) {
+      return 'Failed to send request. Please try again later.';
+    } else {
+      return 'An error occurred: $error';
     }
   }
 

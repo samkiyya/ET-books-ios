@@ -78,15 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
           "Close",
           true,
         );
-
-        // Delay navigation to HomeScreen until the dialog is closed
         loginProvider.clearMessages();
-      });
-    } else if (loginProvider.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
       });
     } else if (loginProvider.errorMessage.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -97,6 +89,12 @@ class _LoginScreenState extends State<LoginScreen> {
           false,
         );
         loginProvider.clearMessages();
+      });
+    } else if (loginProvider.isAuthenticated) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
       });
     }
   }

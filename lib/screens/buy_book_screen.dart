@@ -70,6 +70,14 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                             '${Network.baseUrl}/${widget.book['imageFilePath']}',
                             height: height * 0.13,
                             fit: BoxFit.cover,
+                            errorBuilder: (BuildContext context, Object error,
+                                StackTrace? stackTrace) {
+                              return Icon(
+                                Icons.broken_image, // Alternative icon
+                                size: width * 0.2,
+                                color: Colors.grey,
+                              );
+                            },
                           ),
                         ),
                         SizedBox(

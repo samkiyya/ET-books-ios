@@ -2,8 +2,12 @@ import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:book_mobile/providers/profile_provider.dart';
+import 'package:book_mobile/screens/password_change_screen.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
+// import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -283,6 +287,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                       ),
+                      SizedBox(height: height * 0.03),
+                      CustomButton(
+                          text: 'Change Password',
+                          backgroundColor: AppColors.color2,
+                          borderColor: AppColors.color3,
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const PasswordChangeFormScreen()));
+                          },
+                          textStyle: AppTextStyles.buttonText),
                     ],
                   ),
                 ),

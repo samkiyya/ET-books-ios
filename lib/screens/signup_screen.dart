@@ -212,16 +212,22 @@ class _SignupScreenState extends State<SignupScreen> {
                                       selectedRole = newValue!;
                                     });
                                   },
-                                  items: <String>['AUTHOR', 'USER']
-                                      .map<DropdownMenuItem<String>>(
-                                          (String value) {
+                                  items: [
+                                    {'display': 'Author', 'value': 'AUTHOR'},
+                                    {'display': 'Reader', 'value': 'USER'},
+                                  ].map<DropdownMenuItem<String>>(
+                                      (Map<String, String> role) {
                                     return DropdownMenuItem<String>(
-                                      value: value,
+                                      value: role[
+                                          'value'], // Send this value to the backend
                                       child: Padding(
-                                        padding: EdgeInsets.only(
-                                            left: width * 0.009259),
-                                        child: Text(value,
-                                            style: AppTextStyles.hintText),
+                                        padding:
+                                            EdgeInsets.only(left: width * 0.01),
+                                        child: Text(
+                                          role[
+                                              'display']!, // Display this value in the dropdown
+                                          style: AppTextStyles.hintText,
+                                        ),
                                       ),
                                     );
                                   }).toList(),
@@ -239,6 +245,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       .color6, // Background color for the dropdown menu
                                 ),
                               ),
+
                               SizedBox(height: height * 0.009),
                               // Image Upload Button
                               Row(
@@ -260,7 +267,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       style: AppTextStyles.bodyText,
                                     ),
                                   ),
-                                  SizedBox(width: width * 0.037037),
+                                  SizedBox(width: width * 0.037),
                                   // Image preview (optional)
                                   Flexible(
                                       child: signupProvider.profileImage == null
@@ -271,7 +278,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                           : Image.file(
                                               signupProvider.profileImage!,
                                               fit: BoxFit.cover,
-                                              height: height * 0.045045))
+                                              height: height * 0.09))
                                 ],
                               ),
                               SizedBox(height: height * 0.009),
@@ -316,7 +323,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       borderColor: AppColors.color3,
                                       textStyle: AppTextStyles.buttonText,
                                     ),
-                              SizedBox(height: height * 0.036036),
+                              SizedBox(height: height * 0.037),
                               // Bottom TextButton for navigation
                               TextButton(
                                 onPressed: () {
@@ -333,7 +340,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     text: 'Already have an account? ',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontSize: width * 0.0148148,
+                                      fontSize: width * 0.045,
                                     ),
                                     children: [
                                       TextSpan(
@@ -341,7 +348,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.color3,
-                                          fontSize: width * 0.01666,
+                                          fontSize: width * 0.045,
                                         ),
                                       ),
                                     ],

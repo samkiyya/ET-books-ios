@@ -6,6 +6,7 @@ import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -21,7 +22,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final bioController = TextEditingController();
   final cityController = TextEditingController();
   final countryController = TextEditingController();
-
+  String? formattedDate;
   bool isLoading = true; // To track profile loading state
 
   @override
@@ -44,6 +45,15 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       bioController.text = profile['bio'] ?? '';
       cityController.text = profile['city'] ?? '';
       countryController.text = profile['country'] ?? '';
+      // Safely parse createdAt
+      if (profile['createdAt'] != null) {
+        final DateTime joinedOn = DateTime.parse(profile['createdAt']);
+
+        formattedDate = DateFormat('MMM d, yyyy').format(joinedOn);
+        print('User joined on: $joinedOn');
+      } else {
+        print('createdAt is null');
+      }
     }
     setState(() {
       isLoading = false;
@@ -196,6 +206,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                               content: Text(
                                                   'Profile updated successfully!')),
                                         );
+                                        _fetchUserProfile();
+                                        Navigator.of(context).pop();
                                       } else if (provider
                                           .errorMessage.isNotEmpty) {
                                         ScaffoldMessenger.of(context)
@@ -213,7 +225,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  'Joined on: Jan 1, 2022',
+                                  'Joined on: $formattedDate',
                                   style: AppTextStyles.bodyText
                                       .copyWith(fontSize: width * 0.04),
                                 ),

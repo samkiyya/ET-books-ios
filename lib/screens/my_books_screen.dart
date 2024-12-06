@@ -26,9 +26,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
   Future<void> _fetchOrders() async {
     final orderProvider =
         Provider.of<OrderStatusProvider>(context, listen: false);
-    await orderProvider.fetchOrders(); // Fetch orders asynchronously
+    await orderProvider.fetchOrders();
     setState(() {
-      _isLoading = false; // Set loading to false when fetch is complete
+      _isLoading = false;
     });
   }
 
@@ -67,7 +67,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         body: _isLoading
             ? const Center(
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.color3),
                 ),
               )
             : approvedOrders.isEmpty
@@ -118,8 +118,10 @@ class _DownloadScreenState extends State<DownloadScreen> {
                               },
                             ),
                           ),
-                          title: Text(book['title'],
-                              style: AppTextStyles.bodyText), // Book title
+                          title: Text(
+                            book['title'],
+                            style: AppTextStyles.bodyText,
+                          ), // Book title
                           trailing: FutureBuilder<bool>(
                             future: BookService.isBookDownloaded(order.id),
                             builder: (context, snapshot) {

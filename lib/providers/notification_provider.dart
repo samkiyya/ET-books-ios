@@ -1,9 +1,15 @@
 import 'dart:convert';
+import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationProvider with ChangeNotifier {
-  final String apiUrl = 'https://building.abyssiniasoftware.com/api.php';
+  final String fetchUrl = '${Network.baseUrl}/api/notification/my';
+  final String deleteUrl = '${Network.baseUrl}/api/notification/delete';
+  final String toggleReadUrl =
+      '${Network.baseUrl}/api/notification/toggle-read';
+
   List<Map<String, dynamic>> _notifications = [];
   bool _notificationsEnabled = true; // Default to notifications enabled
 
@@ -13,14 +19,32 @@ class NotificationProvider with ChangeNotifier {
   // Getter for notifications enabled/disabled status
   bool get notificationsEnabled => _notificationsEnabled;
 
+  // Fetch token from SharedPreferences
+  Future<String?> _getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('auth_token');
+  }
+
   // Fetch notifications from the API
   Future<void> loadNotifications() async {
-    if (!_notificationsEnabled) {
-      return;
-    } // Skip fetching if notifications are disabled
+    if (!_notificationsEnabled)
+      return; // Skip fetching if notifications are disabled
 
     try {
-      final response = await http.get(Uri.parse(apiUrl));
+      final token = await _getToken();
+      if (token == null) {
+        print('No token found. Cannot fetch notifications.');
+        return;
+      }
+
+      final response = await http.get(
+        Uri.parse(fetchUrl),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == true && data['notifications'] != null) {
@@ -39,20 +63,58 @@ class NotificationProvider with ChangeNotifier {
   // Delete a notification
   Future<void> deleteNotification(String id) async {
     try {
-      _notifications.removeWhere((notification) => notification['id'] == id);
-      notifyListeners();
-      // Implement API call to delete notification on the server if required
+      final token = await _getToken();
+      if (token == null) {
+        print('No token found. Cannot delete notification.');
+        return;
+      }
+
+      final response = await http.delete(
+        Uri.parse('$deleteUrl/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        _notifications.removeWhere((notification) => notification['id'] == id);
+        notifyListeners();
+      } else {
+        print('Failed to delete notification: ${response.body}');
+      }
     } catch (e) {
       print('Error deleting notification: $e');
     }
   }
 
-  // Toggle read/unread status
-  void toggleReadStatus(int index) {
+  // Toggle read/unread status of a notification
+  Future<void> toggleReadStatus(String id) async {
     try {
-      _notifications[index]['isRead'] = !_notifications[index]['isRead'];
-      notifyListeners();
-      // Optionally sync this update with the server
+      final token = await _getToken();
+      if (token == null) {
+        print('No token found. Cannot toggle read status.');
+        return;
+      }
+
+      final response = await http.put(
+        Uri.parse('$toggleReadUrl/$id'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final index = _notifications
+            .indexWhere((notification) => notification['id'] == id);
+        if (index != -1) {
+          _notifications[index]['isRead'] = !_notifications[index]['isRead'];
+          notifyListeners();
+        }
+      } else {
+        print('Failed to toggle read status: ${response.body}');
+      }
     } catch (e) {
       print('Error toggling read status: $e');
     }

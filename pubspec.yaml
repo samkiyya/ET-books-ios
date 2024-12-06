@@ -36,6 +36,10 @@ dependencies:
   syncfusion_flutter_core: ^27.2.4
   encrypt: ^5.0.3
   flutter_launcher_icons: ^0.14.1
+  font_awesome_flutter: ^10.8.0
+  device_info_plus: ^10.1.2
+  permission_handler: ^11.3.1
+  wolt_modal_sheet: ^0.9.4
 
 dev_dependencies:
   flutter_test:

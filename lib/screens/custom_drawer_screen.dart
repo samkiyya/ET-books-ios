@@ -28,8 +28,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
     {'label': 'Share Code', 'icon': Icons.code},
     {'label': 'Settings', 'icon': Icons.settings},
     {'label': 'Contact Us', 'icon': Icons.contact_mail},
+    {'label': 'announecements', 'icon': Icons.announcement},
     {'label': 'Enable 2FA', 'icon': Icons.security},
     {'label': 'Logout', 'icon': Icons.logout},
+    // {'label': 'About', 'icon': Icons.info},
   ];
 
   @override
@@ -117,42 +119,38 @@ class _CustomDrawerState extends State<CustomDrawer> {
   void _onItemSelected(String label, AuthProvider authProvider) {
     switch (label) {
       case 'Audio Book':
-        // Audio Book
         _audioBook(context);
         break;
       case 'Downloaded':
         _downloaded(context);
-        // Downloaded
         break;
       case 'My Books':
         _myBooks(context);
-        // My Books
         break;
       case 'Notification':
         _notification(context);
-        // Notification
         break;
       case 'Subscribe':
         _subscription(context);
-        // Subscribe
         break;
-      case 'Author':
-        // Author
+      case 'announecements':
+        Navigator.pushNamed(context, '/announcements');
         break;
+      // case 'Author':
+      //   // Author
+      //   break;
       case 'Share App':
         shareApp(context);
-        // Share App
         break;
       case 'Share Code':
         // Share Code
         break;
       case 'Settings':
         _settings(context);
-        // Settings
         break;
-      case 'Contact Us':
-        // Contact Us
-        break;
+      // case 'Contact Us':
+      //   _contactUs(context);
+      //   break;
 
       case 'Enable 2FA':
         _enable2FA(context);
@@ -254,5 +252,9 @@ https://play.google.com/store/apps/details?id=$appPackageName
 
   void _settings(BuildContext context) {
     Navigator.pushNamed(context, '/settings');
+  }
+
+  void _contactUs(BuildContext context) {
+    Navigator.pushNamed(context, '/contact-us');
   }
 }

@@ -12,17 +12,21 @@ class AuthProvider with ChangeNotifier {
   String? _token;
   final bool _is2FARequired = false;
   AccessToken? _accessToken;
-
+  bool _isLoading = false;
   UserData? _userData;
   String? _userId;
+  String? _error;
   bool _isLoggingOut = false;
   Map<String, dynamic>? _fbUserData;
 
-  String? get token => _token;
-  bool get isAuthenticated => _token != null;
-  bool get is2FARequired => _is2FARequired;
   UserData? get userData => _userData;
+  String? get token => _token;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+  bool get is2FARequired => _is2FARequired;
   String? get userId => _userId;
+  bool get isAuthenticated => _token != null;
+
   Map<String, dynamic>? get fbUserData => _fbUserData;
 
   Future<void> setUserId(String userId) async {
@@ -224,7 +228,28 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       throw Exception("Logout failed: $e");
     } finally {
+      _token = null;
+      _userData = null;
+      // _is2FARequired = false;
+      _userId = null;
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+
       _isLoggingOut = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> checkAuthStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final userDataString = prefs.getString('userData');
+
+    if (token != null && userDataString != null) {
+      _token = token;
+      _userData = UserData.fromJson(jsonDecode(userDataString));
+      notifyListeners();
     }
   }
 
@@ -244,21 +269,35 @@ class AuthProvider with ChangeNotifier {
   }
 
   /// Send a verification email
-  Future<void> sendVerificationEmail(String email) async {
+  Future<bool> sendVerificationEmail(String email) async {
     try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
       var url = Uri.parse('$_baseUrl/api/user/sendme-verification-email');
       var response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({"email": email}),
       );
-
-      if (response.statusCode != 200) {
+      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        _error = null;
+        return true;
+      } else if (response.statusCode != 200) {
         throw Exception(json.decode(response.body)['message'] ??
             'Failed to send verification email');
+      } else {
+        _error = data['message'] ?? 'Failed to resend verification email';
+        return false;
       }
     } catch (e) {
-      throw Exception("Failed to send verification email: $e");
+      _error = 'Network error occurred';
+      return false;
+      // throw Exception("Failed to send verification email: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -282,25 +321,50 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> verify2FA(String verificationCode, int userId) async {
+  Future<bool> verify2FA(String verificationCode) async {
     try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
       var url = Uri.parse('$_baseUrl/api/user/verify/2fa');
       var response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           "verificationCode": verificationCode,
-          "userId": userId,
+          "userId": _userId,
         }),
       );
+      final data = jsonDecode(response.body);
 
+      if (response.statusCode == 200) {
+        await _handleSuccessfulLogin(data);
+        // _is2FARequired = false;
+        _userId = null;
+        return true;
+      }
       if (response.statusCode != 200) {
         throw Exception(
             json.decode(response.body)['message'] ?? '2FA verification failed');
+      } else {
+        _error = data['message'] ?? 'Two-factor verification failed';
+        return false;
       }
     } catch (e) {
       throw Exception("2FA verification failed: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
+  }
+
+  Future<void> _handleSuccessfulLogin(Map<String, dynamic> data) async {
+    _token = data['userToken'];
+    _userData = UserData.fromJson(data['userData']);
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', _token!);
+    await prefs.setString('userData', jsonEncode(data['userData']));
   }
 
   Future<void> changePassword(String oldPassword, String newPassword) async {
@@ -324,6 +388,28 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       throw Exception("Failed to change password: $e");
+    }
+  }
+
+  Future<void> forgotPassword(String email) async {
+    try {
+      var url = Uri.parse('$_baseUrl/api/user/forgot-password');
+      var response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "email": email,
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception(json.decode(response.body)['message'] ??
+            'Failed to reset password');
+      }
+    } catch (e) {
+      throw Exception("Failed to reset password: $e");
     }
   }
 

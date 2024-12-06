@@ -5,16 +5,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NotificationDetailScreen extends StatelessWidget {
-  final int notificationIndex;
+  final String notificationId; // Changed to String type
 
-  const NotificationDetailScreen({super.key, required this.notificationIndex});
+  const NotificationDetailScreen({super.key, required this.notificationId});
 
   @override
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
-    final notification =
-        context.watch<NotificationProvider>().notifications[notificationIndex];
+    final notification = context
+        .watch<NotificationProvider>()
+        .notifications
+        .firstWhere((notif) =>
+            notif['id'] == notificationId); // Fetch notification by id
 
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +46,7 @@ class NotificationDetailScreen extends StatelessWidget {
                 // Toggle the read/unread status when clicked
                 context
                     .read<NotificationProvider>()
-                    .toggleReadStatus(notificationIndex);
+                    .toggleReadStatus(notificationId); // Pass the id
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(notification['isRead']
@@ -64,7 +67,7 @@ class NotificationDetailScreen extends StatelessWidget {
                 // Delete the notification
                 await context
                     .read<NotificationProvider>()
-                    .deleteNotification(notification['id']);
+                    .deleteNotification(notification['id']); // Pass the id
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Notification deleted.')),

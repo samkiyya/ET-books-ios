@@ -30,7 +30,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         Navigator.pushNamed(context, '/home');
         break;
       case 1:
-        Navigator.pushNamed(context, '/allAudio');
+        Navigator.pushNamed(context, '/filter-book');
         break;
       case 2:
         Navigator.pushNamed(context, '/profile');
@@ -168,6 +168,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           height: height * 0.22,
                           width: width * 0.7,
                           fit: BoxFit.cover,
+                          errorBuilder: (BuildContext context, Object error,
+                              StackTrace? stackTrace) {
+                            return Icon(
+                              Icons.broken_image, // Alternative icon
+                              size: width * 0.2,
+                              color: Colors.grey,
+                            );
+                          },
                         ),
                       ),
                     ),

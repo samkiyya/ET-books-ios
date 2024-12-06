@@ -47,10 +47,10 @@ class _DownloadedBooksScreenState extends State<DownloadedBooksScreen> {
     if (deleted) {
       setState(() {
         _books.removeWhere((book) => book['id'] == bookId);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Book deleted successfully.')),
+        );
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Book deleted successfully.')),
-      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to delete the book.')),

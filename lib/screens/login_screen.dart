@@ -28,9 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-      loginProvider.addListener(_handleLoginResponse);
-    });
+    Provider.of<LoginProvider>(context, listen: false).addListener(_handleLoginResponse);
+  });
   }
 
 // Show success or error dialog
@@ -68,36 +67,31 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLoginResponse() {
-    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+  final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    if (loginProvider.successMessage.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showResponseDialog(
-          context,
-          loginProvider.successMessage,
-          "Close",
-          true,
-        );
-        loginProvider.clearMessages();
-      });
-    } else if (loginProvider.errorMessage.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showResponseDialog(
-          context,
-          loginProvider.errorMessage,
-          "Retry",
-          false,
-        );
-        loginProvider.clearMessages();
-      });
-    } else if (loginProvider.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      });
-    }
+  if (loginProvider.successMessage.isNotEmpty) {
+    _showResponseDialog(
+      context,
+      loginProvider.successMessage,
+      "Close",
+      true,
+    );
+    loginProvider.clearMessages();
+  } else if (loginProvider.isAuthenticated) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
+  } else if (loginProvider.errorMessage.isNotEmpty) {
+    _showResponseDialog(
+      context,
+      loginProvider.errorMessage,
+      "Retry",
+      false,
+    );
+    loginProvider.clearMessages();
   }
+}
+
 
   String? _validateField(String key, String value) {
     if (value.isEmpty) {

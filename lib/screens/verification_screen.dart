@@ -46,7 +46,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     }
 
     // Safely get userId from userData
-    final userId = userData.id;
+    // final userId = userData.id;
 
     return SafeArea(
       child: Scaffold(
@@ -92,7 +92,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
                                 try {
                                   await authProvider.verify2FA(
                                     codeController.text.trim(),
-                                    // int.parse(userId.toString()),
                                   );
 
                                   if (mounted) {

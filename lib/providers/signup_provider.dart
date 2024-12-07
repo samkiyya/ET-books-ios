@@ -46,11 +46,11 @@ class SignupProvider with ChangeNotifier {
     required String password,
     required String fname,
     required String lname,
-    required String phone,
-    required String city,
-    required String country,
-    required String role,
-    required String bio,
+    String? phone,
+    String? city,
+    String? country,
+    String? role,
+    String? bio,
     required BuildContext context,
   }) async {
     _isLoading = true;
@@ -58,18 +58,28 @@ class SignupProvider with ChangeNotifier {
     _successMessage = '';
     notifyListeners();
 
-    // Prepare the payload
     Map<String, String> payload = {
       'email': email,
       'password': password,
       'fname': fname,
       'lname': lname,
-      'phone': phone,
-      'city': city,
-      'country': country,
-      'role': role,
-      'bio': bio,
     };
+
+    if (phone != null && phone.isNotEmpty) {
+      payload['phone'] = phone;
+    }
+    if (city != null && city.isNotEmpty) {
+      payload['city'] = city;
+    }
+    if (country != null && country.isNotEmpty) {
+      payload['country'] = country;
+    }
+    if (role != null && role.isNotEmpty) {
+      payload['role'] = role;
+    }
+    if (bio != null && bio.isNotEmpty) {
+      payload['bio'] = bio;
+    }
 
     // Check internet connection
     final connectivityResult = await Connectivity().checkConnectivity();
@@ -130,8 +140,8 @@ class SignupProvider with ChangeNotifier {
         print(responseBody);
       } else if (response.statusCode == 400) {
         _errorMessage =
-            responseData['message'] ?? 'Bad request. Please check your inputs.';
-        print(responseBody);
+            responseData['error'] ?? 'Bad request. Please check your inputs.';
+        print('Server error $responseBody');
       } else {
         _errorMessage = responseData['error'] ??
             'Unexpected error occurred. please try again.';
@@ -152,7 +162,7 @@ class SignupProvider with ChangeNotifier {
     if (error is TimeoutException) {
       return 'Request timed out. Please try again later.';
     } else if (error is SocketException) {
-      return 'No internet connection';
+      return 'No internet connection, please enable your internet connection.';
     } else if (error is FormatException) {
       return 'Invalid response from server. Please try again later.';
     } else if (error is ClientException) {

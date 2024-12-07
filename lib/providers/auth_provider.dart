@@ -368,6 +368,8 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> changePassword(String oldPassword, String newPassword) async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
     try {
       var url = Uri.parse('$_baseUrl/api/user/change-password');
       var response = await http.post(

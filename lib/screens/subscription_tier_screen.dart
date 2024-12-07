@@ -65,66 +65,69 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
               itemBuilder: (context, index) {
                 final tier = provider.tiers[index];
 
-                return Card(
-                  margin: EdgeInsets.symmetric(
-                      vertical: height * 0.00135135,
-                      horizontal: width * 0.0138888),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  elevation: 5,
-                  shadowColor: Colors.black.withOpacity(0.8),
-                  color: AppColors.color1,
-                  child: ListTile(
-                      contentPadding: EdgeInsets.symmetric(
-                          horizontal: width * 0.00925925,
-                          vertical: height * 0.0045045),
-                      title: Text(tier['tier_name'] ?? 'Unknown Tier',
-                          style: AppTextStyles.bodyText),
-                      subtitle: Column(
-                        children: [
-                          Text(
-                            'Monthly price: ETB ${tier['monthly_price']}',
-                            style: AppTextStyles.bodyText,
-                          ),
-                          SizedBox(height: height * 0.0045045),
-                          Text(
-                            'Annual price: ETB ${tier['annual_price']}',
-                            style: AppTextStyles.bodyText,
-                          ),
-                        ],
-                      ),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  SubscriptionOrderScreen(tier: tier),
+                return Padding(
+                  padding: EdgeInsets.only(
+                      left: width * 0.03,
+                      right: width * 0.03,
+                      top: height * 0.003,
+                      bottom: height * 0.003),
+                  child: Card(
+                    margin: EdgeInsets.symmetric(
+                        vertical: height * 0.01, horizontal: width * 0.04),
+                    elevation: 8,
+                    shadowColor: AppColors.color3,
+                    color: AppColors.color1,
+                    child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: width * 0.03, vertical: height * 0.007),
+                        title: Text(tier['tier_name'] ?? 'Unknown Tier',
+                            style: AppTextStyles.bodyText),
+                        subtitle: Column(
+                          children: [
+                            SizedBox(height: height * 0.0045045),
+                            Text(
+                              'Monthly price: ETB ${tier['monthly_price']}',
+                              style: AppTextStyles.bodyText,
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: AppColors.color3,
-                          backgroundColor: AppColors.color2, // Text color
-                          elevation: 10, // Shadow effect
-                          padding: EdgeInsets.symmetric(
-                              vertical: height * 0.00585585,
-                              horizontal: width * 0.024074),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                30), // Rounded corners for 3D effect
-                          ),
-                          shadowColor: AppColors.color3.withOpacity(
-                              0.6), // Custom shadow color for realism
+                            SizedBox(height: height * 0.0045045),
+                            Text(
+                              'Annual price: ETB ${tier['annual_price']}',
+                              style: AppTextStyles.bodyText,
+                            ),
+                          ],
                         ),
-                        child: Text(
-                          'Subscribe',
-                          style: AppTextStyles.buttonText.copyWith(
-                            color: AppColors.color3,
+                        trailing: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    SubscriptionOrderScreen(tier: tier),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: AppColors.color3,
+                            backgroundColor: AppColors.color2, // Text color
+                            elevation: 10, // Shadow effect
+                            padding: EdgeInsets.symmetric(
+                                vertical: height * 0.00585585,
+                                horizontal: width * 0.024074),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  30), // Rounded corners for 3D effect
+                            ),
+                            shadowColor: AppColors.color3.withOpacity(
+                                0.6), // Custom shadow color for realism
                           ),
-                        ),
-                      )),
+                          child: Text(
+                            'Subscribe',
+                            style: AppTextStyles.buttonText.copyWith(
+                              color: AppColors.color3,
+                            ),
+                          ),
+                        )),
+                  ),
                 );
               },
             );

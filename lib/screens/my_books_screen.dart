@@ -123,7 +123,8 @@ class _DownloadScreenState extends State<DownloadScreen> {
                             style: AppTextStyles.bodyText,
                           ), // Book title
                           trailing: FutureBuilder<bool>(
-                            future: BookService.isBookDownloaded(order.id),
+                            future: BookService.isBookDownloaded(order.id,
+                                book['title']), // Check if book is downloaded
                             builder: (context, snapshot) {
                               final isDownloaded = snapshot.data ?? false;
                               return isDownloaded

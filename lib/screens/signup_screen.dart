@@ -32,49 +32,51 @@ class _SignupScreenState extends State<SignupScreen> {
     'Country': TextEditingController(),
     'Bio': TextEditingController(),
   };
-  String selectedRole = 'AUTHOR'; // Default role
+  String? selectedRole;
   File? imageFile;
 
   String? _validateField(String key, String value) {
-    if (key != 'phone' && value.isEmpty) {
+    // Required fields
+    if ((key == 'First Name' ||
+            key == 'Last Name' ||
+            key == 'Password' ||
+            key == 'Email') &&
+        value.isEmpty) {
       return '$key cannot be empty';
     }
-    if (key == 'Email' &&
-        !RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]+").hasMatch(value)) {
-      return 'Enter a valid email';
-    }
-    if (key == 'Phone' && value.isNotEmpty) {
-      if (key == 'Phone' &&
-          !RegExp(r"^(?:[+0]9)?[0-9]{10,13}$").hasMatch(value)) {
-        return 'Enter numbers only (10-13 digits)';
+
+    if ((key == 'First Name' || key == 'Last Name') && value.isNotEmpty) {
+      if (value.length < 2) {
+        return '$key must be at least 2 characters long';
       }
     }
-    if (key == 'Password' && value.length < 6) {
-      return 'Password must be at least 6 characters long';
-    }
-    if (key == 'Phone' && value.isNotEmpty && value.length < 10 ||
-        key == 'Phone' && value.length > 13) {
-      return 'Phone number must be at least 10 and at most 13 characters long';
-    }
-    if (key == 'Country' && value.length < 3) {
-      return 'Country must be at least 3 characters long';
-    }
-    if (key == 'City' && value.length < 3) {
-      return 'City must be at least 3 characters long';
-    }
-    if (key == 'First Name' && value.length < 3) {
-      return 'First Name must be at least 3 characters long';
-    }
-    if (key == 'Last Name' && value.length < 3) {
-      return 'Last Name must be at least 3 characters long';
-    }
-    if (key == 'Bio' && value.length < 10) {
-      return 'Bio must be at least 10 characters long';
-    }
-    if (key == 'role' && value.isEmpty) {
-      return 'Role must be selected';
+
+    // Email validation
+    if (key == 'Email' &&
+        value.isNotEmpty &&
+        !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+            .hasMatch(value)) {
+      return 'Enter a valid email';
     }
 
+    // Password length validation
+    if (key == 'Password' && value.isNotEmpty && value.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+    if (key == 'Bio' && value.isNotEmpty) {
+      if (value.length > 30) {
+        return 'Bio must not exceed 30 characters';
+      }
+    }
+
+    // Phone number validation (if provided)
+    if (key == 'Phone' && value.isNotEmpty) {
+      if (!RegExp(r"^[0-9]{10,13}$").hasMatch(value)) {
+        return 'Phone number must be between 10 and 13 digits';
+      }
+    }
+
+    // Optional fields, no validation for other cases
     return null; // No errors
   }
 
@@ -203,10 +205,21 @@ class _SignupScreenState extends State<SignupScreen> {
                               }),
                               SizedBox(height: height * 0.009),
                               // Role Selection
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Role',
+                                  style: AppTextStyles.bodyText,
+                                ),
+                              ),
                               ButtonTheme(
                                 alignedDropdown: true,
                                 child: DropdownButtonFormField<String>(
-                                  value: selectedRole,
+                                  value: selectedRole ?? selectedRole,
+                                  hint: const Text(
+                                    "Please Select your Role",
+                                    style: AppTextStyles.hintText,
+                                  ),
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedRole = newValue!;
@@ -232,7 +245,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                     );
                                   }).toList(),
                                   decoration: InputDecoration(
-                                    labelText: 'Who Are You?',
                                     labelStyle: const TextStyle(
                                         color: AppColors.color3),
                                     contentPadding: EdgeInsets.symmetric(

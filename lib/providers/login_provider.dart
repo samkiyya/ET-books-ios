@@ -5,6 +5,7 @@ import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/models/login_model.dart';
 import 'package:book_mobile/constants/constants.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -116,7 +117,7 @@ class LoginProvider with ChangeNotifier {
         _errorMessage = 'Authorizaation failed. Please try again.';
         _isAuthenticated = false;
       } else if (response.statusCode == 403 &&
-          data['message']?.contains('verify') == true) {
+          data['message']?.contains('isVerified') == true) {
         _errorMessage = 'Please verify your email before logging in';
         _isAuthenticated = false;
         // return false;
@@ -125,20 +126,28 @@ class LoginProvider with ChangeNotifier {
         _isAuthenticated = false;
       }
     } catch (error) {
-      if (error is SocketException) {
-        _errorMessage = 'No internet connection';
-      } else if (error is HttpException) {
-        _errorMessage = 'An error occurred: ${error.message}';
-      } else if (error is FormatException) {
-        _errorMessage = 'Invalid response from server';
-      } else if (error is TimeoutException) {
-        _errorMessage = 'Connection timeout. Please try again.';
-      } else {
-        _errorMessage = 'An error occurred: $error';
-      }
+      _errorMessage = _mapErrorToMessage(error);
+      _isAuthenticated = false;
+      print('Login error: $_errorMessage');
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  String _mapErrorToMessage(dynamic error) {
+    if (error is TimeoutException) {
+      return 'Request timed out. Please try again later.';
+    } else if (error is SocketException) {
+      return 'No internet connection, please enable your internet connection.';
+    } else if (error is FormatException) {
+      return 'Invalid response from server. Please try again later.';
+    } else if (error is ClientException) {
+      return 'Failed to connect to the server.';
+    } else if (error is HttpException) {
+      return 'Failed to send request. Please try again later.';
+    } else {
+      return 'An error occurred: $error';
     }
   }
 

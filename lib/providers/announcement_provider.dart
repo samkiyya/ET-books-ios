@@ -37,6 +37,8 @@ class AnnouncementProvider with ChangeNotifier {
         List<dynamic> announcements = data['data'];
         _announcements =
             announcements.map((json) => Announcement.fromJson(json)).toList();
+        // Sorting by createdAt, latest first
+        _announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       } else if (response.statusCode == 400) {
         _error = 'Bad request';
       } else if (response.statusCode == 404) {
@@ -67,6 +69,9 @@ class AnnouncementProvider with ChangeNotifier {
             commentsData.map((json) => Comment.fromJson(json)).toList();
 
         _comments[announcementId] = comments;
+        // Sorting by createdAt, latest first
+        _comments[announcementId]!
+            .sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
         notifyListeners();
       } else {
@@ -78,7 +83,7 @@ class AnnouncementProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addComment({
+  Future<bool> addComment({
     required int announcementId,
     required String comment,
   }) async {
@@ -88,7 +93,7 @@ class AnnouncementProvider with ChangeNotifier {
     if (userId == null) {
       _error = 'You must be logged in to post a comment';
       notifyListeners();
-      return;
+      return false;
     }
     _isLoading = true;
     notifyListeners();
@@ -107,6 +112,7 @@ class AnnouncementProvider with ChangeNotifier {
         // Refresh comments and announcements to update counts
         await fetchComments(announcementId);
         await fetchAnnouncements();
+        return true;
       } else {
         throw Exception('Failed to add comment');
       }
@@ -116,6 +122,7 @@ class AnnouncementProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+    return false;
   }
 
   Future<String?> getUserId() async {

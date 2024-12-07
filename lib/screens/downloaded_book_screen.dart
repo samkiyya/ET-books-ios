@@ -42,8 +42,8 @@ class _DownloadedBooksScreenState extends State<DownloadedBooksScreen> {
     }
   }
 
-  Future<void> _deleteBook(int bookId) async {
-    final deleted = await FileService.deleteBook(bookId);
+  Future<void> _deleteBook(int bookId, String bookName) async {
+    final deleted = await FileService.deleteBook(bookId, bookName);
     if (deleted) {
       setState(() {
         _books.removeWhere((book) => book['id'] == bookId);
@@ -79,7 +79,7 @@ class _DownloadedBooksScreenState extends State<DownloadedBooksScreen> {
     );
 
     if (confirm == true) {
-      _deleteBook(bookId);
+      _deleteBook(bookId, bookTitle);
     }
   }
 

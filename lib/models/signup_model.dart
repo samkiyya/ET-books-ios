@@ -3,11 +3,11 @@ class SignupModel {
   final String email;
   final String fname;
   final String lname;
-  final String phone;
-  final String city;
-  final String country;
-  final String role;
-  final String bio;
+  final String? phone;
+  final String? city;
+  final String? country;
+  final String? role;
+  final String? bio;
   final String? image;
   final bool is2FAEnabled;
   final bool isVerified;
@@ -17,11 +17,11 @@ class SignupModel {
     required this.email,
     required this.fname,
     required this.lname,
-    required this.phone,
-    required this.city,
-    required this.country,
-    required this.role,
-    required this.bio,
+    this.phone,
+    this.city,
+    this.country,
+    this.role,
+    this.bio,
     this.image,
     this.is2FAEnabled = false,
     this.isVerified = false,

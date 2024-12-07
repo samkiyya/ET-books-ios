@@ -32,13 +32,60 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
 
   void _addComment() async {
     if (_commentController.text.isNotEmpty) {
-      await Provider.of<AnnouncementProvider>(context, listen: false)
-          .addComment(
-        announcementId: widget.announcement.id,
-        comment: _commentController.text,
+      try {
+        bool success =
+            await Provider.of<AnnouncementProvider>(context, listen: false)
+                .addComment(
+          announcementId: widget.announcement.id,
+          comment: _commentController.text,
+        );
+
+        if (success) {
+          // Clear the text field
+          _commentController.clear();
+          // Refresh the comments list
+          _fetchComments();
+          // Notify user of success
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Comment posted successfully')),
+          );
+        } else {
+          // Notify user of failure
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to post comment')),
+          );
+        }
+      } catch (e) {
+        // Handle unexpected errors
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('An error occurred: $e')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a comment')),
       );
-      _commentController.clear();
-      _fetchComments(); // Refresh comments after adding
+    }
+  }
+
+  String timeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inSeconds < 60) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} hr ago';
+    } else if (difference.inDays < 30) {
+      return '${difference.inDays} day${difference.inDays > 1 ? 's' : ''} ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months month${months > 1 ? 's' : ''} ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years year${years > 1 ? 's' : ''} ago';
     }
   }
 
@@ -125,6 +172,10 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                     itemBuilder: (context, index) {
                       final comment = comments[index];
                       return Card(
+                        margin: EdgeInsets.symmetric(
+                            vertical: height * 0.006, horizontal: width * 0.04),
+                        elevation: 8,
+                        shadowColor: AppColors.color3,
                         color: AppColors.color1,
                         child: ListTile(
                           leading: CircleAvatar(
@@ -138,8 +189,8 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                             style: AppTextStyles.bodyText,
                           ),
                           subtitle: Text(
-                            'Posted on ${comment.createdAt.toString().split('.')[0]}',
-                            style: AppTextStyles.bodyText.copyWith(
+                            timeAgo(comment.createdAt),
+                            style: AppTextStyles.caption.copyWith(
                               color: AppColors.color6,
                             ),
                           ),

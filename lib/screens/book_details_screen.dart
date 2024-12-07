@@ -35,7 +35,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       case 2:
         Navigator.pushNamed(context, '/profile');
         break;
-
       default:
         Navigator.pushReplacement(
           context,
@@ -240,16 +239,27 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                   SizedBox(height: height * 0.03),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                    child: Consumer<OrderStatusProvider>(
-                        builder: (context, statusProvider, child) {
-                      return CustomButton(
-                        text: _getButtonText(statusProvider),
-                        onPressed: () => _handleButtonPress(context),
-                        backgroundColor: AppColors.color2,
-                        borderColor: AppColors.color3,
-                        textStyle: AppTextStyles.buttonText,
-                      );
-                    }),
+                    child: FutureBuilder<Map<String, dynamic>?>(
+                      future: fetchOrderForCurrentUser(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator(); // Show loading
+                        } else if (snapshot.hasError) {
+                          return const Text('Error loading data');
+                        } else {
+                          final order = snapshot.data;
+                          final buttonText = _determineButtonText(order);
+                          return CustomButton(
+                            text: buttonText,
+                            onPressed: () => _handleButtonPress(context),
+                            backgroundColor: AppColors.color2,
+                            borderColor: AppColors.color3,
+                            textStyle: AppTextStyles.buttonText,
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -264,26 +274,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  String _getButtonText(OrderStatusProvider statusProvider) {
-    final order = statusProvider.orders.firstWhere(
-      (order) => order.orderBook['id'] == widget.book['id'],
-      orElse: () => Order(
-        id: -1, // Default ID for a non-existent order
-        price: '0',
-        bankName: '',
-        type: '',
-        transactionNumber: '',
-        status: '',
-        createdAt: DateTime.now(),
-        orderBook: {},
-        orderUser: {},
-      ),
-    );
-
-    if (order.id != -1) {
-      if (order.status == 'PENDING') {
+  String _determineButtonText(Map<String, dynamic>? order) {
+    if (order != null) {
+      if (order['status'] == 'PENDING') {
         return 'Check Order Status';
-      } else if (order.status == 'APPROVED') {
+      } else if (order['status'] == 'APPROVED') {
         return 'Read Book';
       }
     }

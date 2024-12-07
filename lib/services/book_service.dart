@@ -10,10 +10,10 @@ class BookService {
     String bookTitle,
     BuildContext context,
   ) async {
-    final path = await FileService.getBookPath(bookId);
+    final path = await FileService.getBookPath(bookTitle, bookId);
 
     // Only download if the book doesn't exist
-    if (!await FileService.isBookDownloaded(bookId)) {
+    if (!await FileService.isBookDownloaded(bookId, bookTitle)) {
       final success = await DownloadService.downloadBook(url, path, context);
       if (!success) {
         if (context.mounted) {
@@ -35,7 +35,7 @@ class BookService {
     int bookId,
     String bookTitle,
   ) async {
-    final path = await FileService.getBookPath(bookId);
+    final path = await FileService.getBookPath(bookTitle, bookId);
 
     if (context.mounted) {
       Navigator.push(
@@ -50,8 +50,8 @@ class BookService {
     }
   }
 
-  static Future<bool> isBookDownloaded(int bookId) async {
-    return FileService.isBookDownloaded(bookId);
+  static Future<bool> isBookDownloaded(int bookId, String bookName) async {
+    return FileService.isBookDownloaded(bookId, bookName);
   }
 
   static Future<List<Map<String, dynamic>>> getDownloadedBooks() async {

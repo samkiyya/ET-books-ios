@@ -153,7 +153,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       //   break;
 
       case 'Enable 2FA':
-        _enable2FA(context);
+        // _enable2FA(context);
         break;
       case 'Logout':
         _logout(context);
@@ -165,22 +165,22 @@ class _CustomDrawerState extends State<CustomDrawer> {
   }
 
   // Enable 2FA logic
-  void _enable2FA(BuildContext context) async {
-    final authProvider = Provider.of<AuthProvider>(context);
-    try {
-      await authProvider.toggle2FA();
-      // Toggling 2FA
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('2FA Enabled Successfully!')));
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-      }
-    }
-  }
+  // void _enable2FA(BuildContext context) async {
+  //   final authProvider = Provider.of<AuthProvider>(context);
+  //   try {
+  //     await authProvider.toggle2FA();
+  //     // Toggling 2FA
+  //     if (context.mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //           const SnackBar(content: Text('2FA Enabled Successfully!')));
+  //     }
+  //   } catch (e) {
+  //     if (context.mounted) {
+  //       ScaffoldMessenger.of(context)
+  //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+  //     }
+  //   }
+  // }
 
   void shareApp(BuildContext context) {
     const appPackageName =

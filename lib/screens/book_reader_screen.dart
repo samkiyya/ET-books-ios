@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:book_mobile/constants/size.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:path_provider/path_provider.dart';
@@ -223,7 +222,10 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
                                 : PdfScrollDirection.horizontal,
                             key: _pdfViewerStateKey,
                             canShowPageLoadingIndicator: true,
-                            pageLayoutMode: PdfPageLayoutMode.continuous,
+                            initialZoomLevel: 2,
+                            pageLayoutMode: _scrollDirection == 'vertical'
+                                ? PdfPageLayoutMode.continuous
+                                : PdfPageLayoutMode.single,
                             onTap: (details) {
                               _toggleAppBarVisibility();
                               print('Tapped on page: ${details.pageNumber}');

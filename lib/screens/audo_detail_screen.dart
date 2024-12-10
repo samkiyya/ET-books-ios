@@ -1,10 +1,18 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/models/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/widgets/custom_nav_bar.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
+import 'package:book_mobile/screens/buy_audio_screen.dart';
+import 'package:book_mobile/screens/book_reader_screen.dart';
+import 'package:book_mobile/screens/audio_player_screen.dart';
+import 'package:book_mobile/screens/view_order_status_screen.dart';
+import 'package:book_mobile/providers/order_status_provider.dart';
+import 'package:provider/provider.dart';
 
 class AudioDetailScreen extends StatefulWidget {
   final Map<String, dynamic> audioBook;
@@ -16,60 +24,194 @@ class AudioDetailScreen extends StatefulWidget {
 }
 
 class _AudioDetailScreenState extends State<AudioDetailScreen> {
-  late AudioPlayer _audioPlayer;
-  bool _isPlaying = false;
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
+  Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
+    final statusProvider =
+        Provider.of<OrderStatusProvider>(context, listen: false);
 
-  @override
-  void initState() {
-    super.initState();
-    _audioPlayer = AudioPlayer();
+    try {
+      await statusProvider.fetchOrders();
+      final order = statusProvider.orders.firstWhere(
+        (order) => order.orderBook['id'] == widget.audioBook['id'],
+        orElse: () => Order(
+          id: -1, // Default ID for a non-existent order
+          price: '0',
+          bankName: '',
+          type: '',
+          transactionNumber: '',
+          status: '',
+          createdAt: DateTime.now(),
+          orderBook: {},
+          orderUser: {},
+        ),
+      );
 
-    // Listen to audio player states
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      setState(() {
-        _isPlaying = state == PlayerState.playing;
-      });
-    });
+      if (order.id != -1) {
+        return {
+          "orderId": order.id,
+          "audioBookId": order.orderBook['id'],
+          "status": order.status,
+          "type": order.type, // "audio", "pdf", or "both"
+        };
+      }
+    } catch (e) {
+      debugPrint('Error fetching order: $e');
+    }
 
-    _audioPlayer.onDurationChanged.listen((newDuration) {
-      setState(() {
-        _duration = newDuration;
-      });
-    });
-
-    _audioPlayer.onPositionChanged.listen((newPosition) {
-      setState(() {
-        _position = newPosition;
-      });
-    });
+    return null;
   }
 
-  Future<void> _playPauseAudio() async {
-    if (_isPlaying) {
-      await _audioPlayer.pause();
+  void _handleButtonPress(BuildContext context) async {
+    final order = await fetchOrderForCurrentUser();
+
+    if (order != null) {
+      if (order['status'] == 'PENDING') {
+        // Redirect to Order Status Screen
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const OrderStatusScreen()),
+          );
+        }
+      } else if (order['status'] == 'APPROVED') {
+        final type = order['type'];
+
+        if (type == 'audio') {
+          // Redirect to Audio Player Screen
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AudioPlayerScreen(
+                  audioBook: widget.audioBook,
+                ),
+              ),
+            );
+          }
+        } else if (type == 'pdf') {
+          // Redirect to Book Reader Screen
+          if (context.mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => BookReaderScreen(
+                  pdfPath:
+                      '${Network.baseUrl}/${widget.audioBook['pdfFilePath']}',
+                  bookTitle: widget.audioBook['title'],
+                ),
+              ),
+            );
+          }
+        } else if (type == 'both') {
+          // Show both "Play" and "Read" buttons
+          _showBothButtons(context);
+        } else {
+          // Redirect to BuyAudioScreen if type is null or invalid
+          _redirectToBuyAudioScreen(context);
+        }
+      }
     } else {
-      await _audioPlayer
-          .play(UrlSource("${Network.baseUrl}/${widget.audioBook['url']}"));
+      // Redirect to BuyAudioScreen if no order exists
+      _redirectToBuyAudioScreen(context);
     }
   }
 
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
+  void _redirectToBuyAudioScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => BuyAudioScreen(audioBook: widget.audioBook),
+      ),
+    );
+  }
+
+  void _showBothButtons(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CustomButton(
+                text: 'Play Audio',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AudioPlayerScreen(
+                        audioBook: widget.audioBook,
+                      ),
+                    ),
+                  );
+                },
+                backgroundColor: AppColors.color2,
+                borderColor: AppColors.color3,
+                textStyle: AppTextStyles.buttonText,
+              ),
+              const SizedBox(height: 16.0),
+              CustomButton(
+                text: 'Read PDF',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BookReaderScreen(
+                        pdfPath:
+                            '${Network.baseUrl}/${widget.audioBook['pdfFilePath']}',
+                        bookTitle: widget.audioBook['title'],
+                      ),
+                    ),
+                  );
+                },
+                backgroundColor: AppColors.color1,
+                borderColor: AppColors.color3,
+                textStyle: AppTextStyles.buttonText,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDetailRow(String label, dynamic value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: Row(
+        children: [
+          Text(
+            "$label: ",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: AppColors.color3,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value != null && value.toString().isNotEmpty
+                  ? value.toString()
+                  : "N/A",
+              style: const TextStyle(
+                color: AppColors.color3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.audioBook['episode'],
+            widget.audioBook['title'],
             style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
           ),
           centerTitle: true,
@@ -96,7 +238,6 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Audio Image
                     Center(
                       child: Card(
                         elevation: 5,
@@ -107,12 +248,13 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                           borderRadius: BorderRadius.circular(15),
                           child: Image.network(
                             '${Network.baseUrl}/${widget.audioBook['imageFilePath']}',
-                            width: width * 0.6,
+                            width: width * 0.8,
+                            height: width * 0.4,
                             fit: BoxFit.cover,
                             errorBuilder: (BuildContext context, Object error,
                                 StackTrace? stackTrace) {
                               return Icon(
-                                Icons.broken_image, // Alternative icon
+                                Icons.broken_image,
                                 size: width * 0.2,
                                 color: Colors.grey,
                               );
@@ -121,86 +263,75 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: height * 0.03),
-
-                    // Audio Details
-                    Text(
-                      "Episode: ${widget.audioBook['episode']}",
-                      style: TextStyle(
-                        fontSize: width * 0.045,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.color3,
+                    SizedBox(height: height * 0.01),
+                    // Audio Book Details Card
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+                      child: Card(
+                        color: AppColors.color1,
+                        elevation: 5,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(width * 0.02),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Title: ${widget.audioBook['title']}",
+                                style: TextStyle(
+                                  fontSize: width * 0.06,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.color3,
+                                ),
+                              ),
+                              SizedBox(height: height * 0.01),
+                              _buildDetailRow(
+                                  "Author", widget.audioBook['author']),
+                              _buildDetailRow("Publication Year",
+                                  widget.audioBook['publicationYear']),
+                              _buildDetailRow(
+                                  "Language", widget.audioBook['language']),
+                              _buildDetailRow(
+                                  "Price", "${widget.audioBook['price']} ETB"),
+                              _buildDetailRow("Number of Episodes",
+                                  widget.audioBook['audioCount']),
+                              _buildDetailRow("Description",
+                                  widget.audioBook['description']),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(height: height * 0.03),
-                    Text(
-                      "Book Title: ${widget.audioBook['bookTitle']}",
-                      style: const TextStyle(color: AppColors.color3),
-                    ),
-                    SizedBox(height: height * 0.03),
-                    Text(
-                      "Created At: ${widget.audioBook['createdAt']}",
-                      style: const TextStyle(color: AppColors.color3),
-                    ),
-                    SizedBox(height: height * 0.03),
-
-                    // Audio Player Controls
-                    Column(
-                      children: [
-                        Slider(
-                          min: 0,
-                          max: _duration.inSeconds.toDouble(),
-                          value: _position.inSeconds.toDouble(),
-                          onChanged: (value) async {
-                            final position = Duration(seconds: value.toInt());
-                            await _audioPlayer.seek(position);
-                          },
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(
-                                // _isPlaying ? Icons.pause : Icons.play_arrow,
-                                Icons.skip_previous,
-                                color: AppColors.color3,
-                              ),
-                              iconSize: width * 0.09,
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: Icon(
-                                _isPlaying ? Icons.pause : Icons.play_arrow,
-                                color: AppColors.color3,
-                              ),
-                              iconSize: width * 0.09,
-                              onPressed: _playPauseAudio,
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                // _isPlaying ? Icons.pause : Icons.play_arrow,
-                                Icons.skip_next,
-                                color: AppColors.color3,
-                              ),
-                              iconSize: width * 0.09,
-                              onPressed: () {},
-                            ),
-                            IconButton(
-                              icon: const Icon(
-                                // _isPlaying ? Icons.pause : Icons.play_arrow,
-                                Icons.volume_up,
-                                color: AppColors.color3,
-                              ),
-                              iconSize: width * 0.09,
-                              onPressed: () {},
-                            ),
-                          ],
-                        ),
-                        Text(
-                          "${_position.toString().split('.')[0]} / ${_duration.toString().split('.')[0]}",
-                          style: const TextStyle(color: AppColors.color3),
-                        ),
-                      ],
+                    SizedBox(height: height * 0.05),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: width * 0.03),
+                      child: FutureBuilder<Map<String, dynamic>?>(
+                        future: fetchOrderForCurrentUser(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.color3),
+                            ));
+                          } else if (snapshot.hasError) {
+                            return const Text('Error loading data');
+                          } else {
+                            final order = snapshot.data;
+                            final buttonText = _determineButtonText(order);
+                            return CustomButton(
+                              text: buttonText,
+                              onPressed: () => _handleButtonPress(context),
+                              backgroundColor: AppColors.color2,
+                              borderColor: AppColors.color3,
+                              textStyle: AppTextStyles.buttonText,
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -210,11 +341,27 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
         ),
         bottomNavigationBar: CustomBottomNavigationBar(
           currentIndex: 2,
-          onTap: (index) {
-            Navigator.pop(context); // Navigate based on index
-          },
+          onTap: (index) => Navigator.pop(context),
         ),
       ),
     );
+  }
+
+  String _determineButtonText(Map<String, dynamic>? order) {
+    if (order != null) {
+      if (order['status'] == 'PENDING') {
+        return 'Check Order Status';
+      } else if (order['status'] == 'APPROVED') {
+        final type = order['type'];
+        if (type == 'audio') {
+          return 'Play Audio';
+        } else if (type == 'pdf') {
+          return 'Read PDF';
+        } else if (type == 'both') {
+          return 'Choose Action';
+        }
+      }
+    }
+    return 'BUY';
   }
 }

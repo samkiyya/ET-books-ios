@@ -32,8 +32,10 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
     });
 
     try {
-      await Provider.of<AuthProvider>(context, listen: false)
-          .changePassword(widget.resetToken, newPassword);
+      await Provider.of<AuthProvider>(context, listen: false).resetPassword(
+        widget.resetToken,
+        newPassword,
+      );
       setState(() {
         _message = 'Password reset successfully.';
       });

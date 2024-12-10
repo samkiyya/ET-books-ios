@@ -33,11 +33,13 @@ import 'package:book_mobile/screens/splash_screen.dart';
 import 'package:book_mobile/screens/subscription_tier_screen.dart';
 import 'package:book_mobile/screens/update_profile_screen.dart';
 import 'package:book_mobile/services/background_service.dart';
+import 'package:book_mobile/services/storage_service.dart';
 // import 'package:book_mobile/screens/verfication_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,30 +54,35 @@ void main() async {
       }
     }
   }
+  final prefs = await SharedPreferences.getInstance();
+  final storageService = StorageService(prefs);
   // Initialize WorkManager
 // Initialize the background service
-  final authProvider = AuthProvider(); // Initialize AuthProvider
+  final authProvider =
+      AuthProvider(storageService: storageService); // Initialize AuthProvider
   final loginProvider = LoginProvider(authProvider: authProvider);
 
   // Initialize the background service
-  await AuthProvider().loadTokenFromStorage();
   await loginProvider.initializeLoginStatus();
   await initializeBackgroundService(loginProvider);
 
   // Schedule the background task
   scheduleBackgroundTask();
-  runApp(const MyApp());
+  runApp(MyApp(
+    storageService: storageService,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final StorageService storageService;
+  const MyApp({super.key, required this.storageService});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) => AuthProvider()..loadTokenFromStorage()),
+            create: (_) => AuthProvider(storageService: storageService)),
         ChangeNotifierProvider(create: (_) => SignupProvider()),
         ChangeNotifierProvider(
             create: (context) => LoginProvider(
@@ -125,7 +132,6 @@ class MyApp extends StatelessWidget {
           '/contact-us': (context) => const ContactUsScreen(),
           '/announcements': (context) => const AnnouncementListScreen(),
           // '/notifications': (context) => const NotificationsScreen(),
-          // '/category': (context) => const CategoryScreen(),
           // '/author': (context) => const AuthorScreen(),
         },
       ),

@@ -244,7 +244,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return const CircularProgressIndicator(); // Show loading
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.color3),
+                            ),
+                          ); // Show loading
                         } else if (snapshot.hasError) {
                           return const Text('Error loading data');
                         } else {

@@ -105,7 +105,9 @@ class LoginProvider with ChangeNotifier {
         _token = loginResponse.userToken;
         _isAuthenticated = true;
         if (loginResponse.userData.id > 0) {
-          await authProvider.setUserId(loginResponse.userData.id.toString());
+          if (authProvider.userData != null) {
+            authProvider.userData ?? (loginResponse.userData);
+          }
           await _saveTokenToLocalStorage(_token!);
 
           _successMessage = 'You have logged in successfully!';
@@ -156,8 +158,8 @@ class LoginProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('userToken', token);
 
-    if (authProvider.userId != null) {
-      await prefs.setString('userId', authProvider.userId!);
+    if (authProvider.userData != null) {
+      await prefs.setString('userId', authProvider.userData!.id.toString());
     }
   }
 

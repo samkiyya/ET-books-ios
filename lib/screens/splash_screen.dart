@@ -55,7 +55,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    await loginProvider.checkLoginStatus();
+    await loginProvider.initializeLoginStatus();
     if (!mounted) return;
 
     if (loginProvider.isAuthenticated && !loginProvider.isTokenExpired) {

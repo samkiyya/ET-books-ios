@@ -3,13 +3,14 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
+import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class BuyAudioScreen extends StatefulWidget {
-  final Map<String, dynamic> book;
-  const BuyAudioScreen({super.key, required this.book});
+  final Map<String, dynamic> audioBook;
+  const BuyAudioScreen({super.key, required this.audioBook});
 
   @override
   State<BuyAudioScreen> createState() => _BuyAudioScreenState();
@@ -21,38 +22,38 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
   final _transactionController = TextEditingController();
   final _bankNameController = TextEditingController();
   File? _receiptImage;
+  String _selectedType = 'AudioBook'; // Default selection
 
   String? _validateField(String key, String value) {
     if (value.isEmpty) {
       return 'Please enter your $key';
     }
-
     return null; // No errors
   }
 
   @override
   Widget build(BuildContext context) {
+    final orderProvider = Provider.of<PurchaseOrderProvider>(context);
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
-    final orderProvider = Provider.of<PurchaseOrderProvider>(context);
+
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: EdgeInsets.all(width * 0.0074),
+          padding: EdgeInsets.all(width * 0.03),
           child: SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: height * 0.027),
-                // Book title
+                SizedBox(height: height * 0.02),
                 Center(
                   child: Text(
-                    "Buy Your Audio Book",
-                    style: AppTextStyles.heading1
+                    "Buy Your AudioBook",
+                    style: AppTextStyles.heading2
                         .copyWith(color: AppColors.color2),
                   ),
                 ),
-
-                SizedBox(height: height * 0.009),
+                SizedBox(height: height * 0.04),
+                // Book details card
                 Card(
                   color: AppColors.color2,
                   elevation: 5,
@@ -60,56 +61,51 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Padding(
-                    padding: EdgeInsets.all(width * 0.0148),
+                    padding: EdgeInsets.all(width * 0.03),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Image on the left
+                        // Image
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.network(
-                            '${Network.baseUrl}/${widget.book['imageFilePath']}',
-                            height: height * 0.067567,
-                            width: width * 0.09259,
+                            '${Network.baseUrl}/${widget.audioBook['imageFilePath']}',
+                            height: height * 0.13,
                             fit: BoxFit.cover,
-                            errorBuilder: (BuildContext context, Object error,
-                                StackTrace? stackTrace) {
+                            errorBuilder: (context, error, stackTrace) {
                               return Icon(
-                                Icons.broken_image, // Alternative icon
+                                Icons.broken_image,
                                 size: width * 0.2,
                                 color: Colors.grey,
                               );
                             },
                           ),
                         ),
-                        SizedBox(
-                            width: width *
-                                0.02777), // Space between image and text
-                        // Text on the right
+                        SizedBox(width: width * 0.09),
+                        // Book details
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                widget.book['title'],
+                                widget.audioBook['title'],
                                 style: AppTextStyles.heading2,
                               ),
-                              SizedBox(
-                                  height: height *
-                                      0.0045), // Space between title and rating
+                              SizedBox(height: height * 0.0045),
                               Text(
-                                '${widget.book['rating']} ⭐ | ${widget.book['sold']} peoples bought',
+                                '${widget.audioBook['rating']} ⭐ | ${widget.audioBook['sold']} bought',
                                 style: AppTextStyles.bodyText,
                               ),
                               SizedBox(height: height * 0.0045),
                               Text(
-                                'Price: ETB ${widget.book['price']}',
+                                'Price: ETB ${widget.audioBook['price']}',
                                 style: AppTextStyles.bodyText,
                               ),
                               SizedBox(height: height * 0.0045),
                               Text(
-                                  'Publication Year ${widget.book['publicationYear']}',
-                                  style: AppTextStyles.bodyText),
+                                'Publication Year: ${widget.audioBook['publicationYear']}',
+                                style: AppTextStyles.bodyText,
+                              ),
                             ],
                           ),
                         ),
@@ -117,7 +113,7 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: height * 0.009),
+                SizedBox(height: height * 0.02),
                 Stack(
                   children: [
                     Opacity(
@@ -125,11 +121,11 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                       child: Form(
                         key: _formKey,
                         child: Card(
-                          color: Colors.transparent, // Transparent card color
+                          color: Colors.transparent,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          elevation: 5, // Adds subtle shadow for depth
+                          elevation: 5,
                           child: Padding(
                             padding: EdgeInsets.all(width * 0.0148),
                             child: Column(
@@ -153,9 +149,9 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                                   validator: (value) =>
                                       _validateField('Bank Name', value!),
                                 ),
-                                SizedBox(height: height * 0.0045),
+                                SizedBox(height: height * 0.02),
 
-                                // Row for Image Upload
+                                // Receipt Image
                                 Row(
                                   children: [
                                     Expanded(
@@ -180,22 +176,20 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                                         ),
                                       ),
                                     ),
-
-                                    SizedBox(width: width * 0.027777),
-
-                                    // Display Image or Placeholder
+                                    SizedBox(width: width * 0.03),
                                     Flexible(
-                                        child: orderProvider.receiptImage ==
-                                                null
-                                            ? const Text(
-                                                'No receipt image selected',
-                                                style: TextStyle(
-                                                    color: AppColors.color3),
-                                              )
-                                            : Image.file(
-                                                orderProvider.receiptImage!,
-                                                fit: BoxFit.cover,
-                                                height: height * 0.045)),
+                                      child: orderProvider.receiptImage == null
+                                          ? const Text(
+                                              'No receipt image selected',
+                                              style: TextStyle(
+                                                  color: AppColors.color3),
+                                            )
+                                          : Image.file(
+                                              orderProvider.receiptImage!,
+                                              fit: BoxFit.cover,
+                                              height: height * 0.09,
+                                            ),
+                                    ),
                                   ],
                                 ),
                                 if (_receiptImage == null)
@@ -203,7 +197,42 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                                     'Please upload a receipt image.',
                                     style: TextStyle(color: Colors.red),
                                   ),
+
                                 // Dropdown for Book Type
+                                SizedBox(height: height * 0.03),
+                                const Text(
+                                  'Select Book Type',
+                                  style: AppTextStyles.bodyText,
+                                ),
+                                DropdownButtonFormField<String>(
+                                  value: _selectedType,
+                                  items: const [
+                                    DropdownMenuItem(
+                                      value: 'AudioBook',
+                                      child: Text('AudioBook'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'PDF',
+                                      child: Text('PDF'),
+                                    ),
+                                    DropdownMenuItem(
+                                      value: 'Both',
+                                      child: Text('Both'),
+                                    ),
+                                  ],
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedType = value!;
+                                    });
+                                  },
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    filled: true,
+                                    fillColor: AppColors.color2,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -212,57 +241,47 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: height * 0.009),
-                Padding(
-                  padding: EdgeInsets.only(
-                      left: width * 0.0185, right: width * 0.0185),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: orderProvider.isLoading
-                          ? null
-                          : () async {
-                              if (!_formKey.currentState!.validate()) {
-                                return;
-                              }
-                              if (_receiptImage == null) {
-                                // Show an error message under the image upload section
-                                return;
-                              }
+                SizedBox(height: height * 0.04),
 
-                              await orderProvider.purchaseBook(
-                                id: widget.book['id'].toString(),
-                                transactionNumber: _transactionController.text,
-                                bankName: _bankNameController.text,
-                                bookType: widget.book['type'].toString(),
-                                context: context,
-                              );
+                // Submit Button
+                orderProvider.isLoading || orderProvider.isUploading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : CustomButton(
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate() ||
+                              _receiptImage == null) {
+                            return;
+                          }
 
-                              if (context.mounted) {
-                                orderProvider.showResponseDialog(
-                                  context,
-                                  orderProvider.errorMessage.isNotEmpty
-                                      ? orderProvider.errorMessage
-                                      : orderProvider.successMessage,
-                                  "Close",
-                                  orderProvider.errorMessage.isEmpty,
-                                );
-                              }
-                            },
-                      style: ElevatedButton.styleFrom(
+                          await orderProvider.purchaseBook(
+                            id: widget.audioBook['id'].toString(),
+                            transactionNumber: _transactionController.text,
+                            bankName: _bankNameController.text,
+                            bookType: _selectedType, // Selected type
+                            context: context,
+                          );
+
+                          if (context.mounted) {
+                            orderProvider.showResponseDialog(
+                              context,
+                              orderProvider.errorMessage.isNotEmpty
+                                  ? orderProvider.errorMessage
+                                  : orderProvider.successMessage,
+                              "Close",
+                              orderProvider.errorMessage.isEmpty,
+                            );
+                          }
+                        },
+                        text: 'Submit Order',
+                        textStyle: AppTextStyles.buttonText,
                         backgroundColor: AppColors.color2,
+                        borderColor: AppColors.color3,
                       ),
-                      child: orderProvider.isLoading ||
-                              orderProvider.isUploading
-                          ? const CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            )
-                          : const Text('Submit Order',
-                              style: AppTextStyles.buttonText),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

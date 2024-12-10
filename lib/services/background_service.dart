@@ -114,7 +114,7 @@ Future<void> initializeBackgroundService(LoginProvider loginProvider) async {
     initializeNotificationSetting,
     onDidReceiveNotificationResponse: (NotificationResponse response) async {
       final payload = response.payload;
-      await loginProvider.checkLoginStatus();
+      await loginProvider.initializeLoginStatus();
 
       if (loginProvider.isAuthenticated && payload != null) {
         // Parse payload data

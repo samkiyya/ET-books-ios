@@ -38,6 +38,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
     double height = AppSizes.screenHeight(context);
 
     return Scaffold(
+      backgroundColor: AppColors.color2,
       appBar: AppBar(
         title: Text(
           'Announcements',
@@ -84,7 +85,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                         announcement.content,
                         style: AppTextStyles.bodyText,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: height * 0.001),
                       Row(
                         children: [
                           // Comment Button with a count

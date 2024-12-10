@@ -257,12 +257,12 @@ class _HomeScreenState extends State<HomeScreen>
                                         title: Column(
                                           children: [
                                             Text(
-                                              book['author'],
+                                              book['title'],
                                               style: const TextStyle(
                                                   color: AppColors.color2),
                                             ),
                                             Text(
-                                              book['title'],
+                                              book['author'],
                                               style: const TextStyle(
                                                   color: AppColors.color2),
                                             ),
@@ -300,30 +300,32 @@ class _HomeScreenState extends State<HomeScreen>
                           SingleChildScrollView(
                             child: SizedBox(
                               height: height *
-                                  0.25, // Total height for the entire card
+                                  0.3, // Adjust height for the entire card
                               child: Card(
                                 color: AppColors.color2,
                                 child: Padding(
-                                  padding: EdgeInsets.all(width * 0.0074),
+                                  padding: EdgeInsets.all(
+                                      width * 0.02), // Consistent padding
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      // Audio Books Section Header
+                                      // Section Header
                                       Text(
                                         "Audio Books",
                                         style: TextStyle(
-                                          fontSize: width * 0.06,
+                                          fontSize: width * 0.05,
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.color3,
                                         ),
                                       ),
-                                      SizedBox(height: height * 0.01),
+                                      SizedBox(
+                                          height: height *
+                                              0.01), // Space below header
 
                                       // Horizontal List of Audio Books
                                       Expanded(
-                                        // Ensures ListView takes up remaining space
                                         child: ListView.builder(
                                           scrollDirection: Axis.horizontal,
                                           itemCount:
@@ -338,37 +340,114 @@ class _HomeScreenState extends State<HomeScreen>
                                                 MaterialPageRoute(
                                                   builder: (context) =>
                                                       AudioDetailScreen(
-                                                          audioBook: audioBook),
+                                                    audioBook: audioBook,
+                                                  ),
                                                 ),
                                               ),
                                               child: Card(
+                                                margin: EdgeInsets.symmetric(
+                                                    horizontal: width * 0.02),
                                                 child: Container(
                                                   width: width * 0.3,
                                                   padding: EdgeInsets.all(
-                                                      width * 0.03),
+                                                      width * 0.02),
                                                   child: Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
                                                             .start,
                                                     children: [
-                                                      // Audio Book Title
-                                                      Expanded(
-                                                        child: Text(
-                                                          audioBook[
-                                                                  'bookTitle'] ??
-                                                              "No title",
-                                                          style:
-                                                              const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                          ),
+                                                      // Audio Book Image
+                                                      ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                        child: Image.network(
+                                                          '${Network.baseUrl}/${audioBook['imageFilePath']}',
+                                                          height: height * 0.07,
+                                                          width:
+                                                              double.infinity,
+                                                          fit: BoxFit.cover,
+                                                          errorBuilder:
+                                                              (context, error,
+                                                                  stackTrace) {
+                                                            return Icon(
+                                                              Icons.audiotrack,
+                                                              size:
+                                                                  height * 0.07,
+                                                              color:
+                                                                  Colors.grey,
+                                                            );
+                                                          },
                                                         ),
                                                       ),
+                                                      SizedBox(
+                                                          height:
+                                                              height * 0.01),
 
-                                                      // Audio Book Episode
-                                                      Flexible(
-                                                        child: Text(audioBook[
-                                                            'episode']),
+                                                      // Audio Book Title
+                                                      Text(
+                                                        audioBook['title'] ??
+                                                            "No Title",
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              width * 0.035,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      SizedBox(
+                                                          height:
+                                                              height * 0.005),
+
+                                                      // Audio Book Author
+                                                      Text(
+                                                        'By ${audioBook['author'] ?? "Unknown Author"}',
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              width * 0.03,
+                                                          color:
+                                                              AppColors.color4,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      SizedBox(
+                                                          height:
+                                                              height * 0.005),
+
+                                                      // Audio Book Author
+                                                      Text(
+                                                        '${audioBook['audio_price'] ?? "N/A"} ETB',
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              width * 0.04,
+                                                          color:
+                                                              AppColors.color4,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                      ),
+                                                      SizedBox(
+                                                          height:
+                                                              height * 0.005),
+
+                                                      // Audio Book Author
+                                                      Text(
+                                                        '${audioBook['audioCount'] ?? "N/A"} ${audioBook['audioCount'] > 1 ? "Episodes" : "Episode"}',
+                                                        style: TextStyle(
+                                                          fontSize:
+                                                              width * 0.03,
+                                                          color:
+                                                              AppColors.color4,
+                                                        ),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
                                                       ),
                                                     ],
                                                   ),

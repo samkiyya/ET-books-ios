@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
@@ -183,12 +184,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
   // }
 
   void shareApp(BuildContext context) {
-    const appPackageName =
-        'com.example.bookmobile'; // Replace with your app's package name
-
     const shareText = '''
 Check out this amazing app! Download it here:
-https://play.google.com/store/apps/details?id=$appPackageName
+${Network.appPlayStoreUrl}${Network.appPackageName}
 ''';
 
     try {

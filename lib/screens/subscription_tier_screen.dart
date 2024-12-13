@@ -75,8 +75,8 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                     margin: EdgeInsets.symmetric(
                         vertical: height * 0.01, horizontal: width * 0.04),
                     elevation: 8,
-                    shadowColor: AppColors.color3,
-                    color: AppColors.color1,
+                    shadowColor: AppColors.color4,
+                    color: AppColors.color5,
                     child: ListTile(
                         contentPadding: EdgeInsets.symmetric(
                             horizontal: width * 0.03, vertical: height * 0.007),

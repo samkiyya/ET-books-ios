@@ -1,26 +1,34 @@
 import 'package:book_mobile/constants/logger.dart';
 import 'package:book_mobile/widgets/audio_controlls.dart';
 import 'package:book_mobile/widgets/audio_palyer_header.dart';
-import 'package:book_mobile/widgets/episode_list.dart';
 import 'package:book_mobile/widgets/error_boundary.dart';
+import 'package:book_mobile/widgets/progress_bar.dart';
 import 'package:book_mobile/widgets/volume_controll.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../services/audio_player_service.dart';
-import '../widgets/progress_bar.dart';
 import '../constants/constants.dart';
 import '../constants/styles.dart';
 
-class AudioPlayerScreen extends StatefulWidget {
-  final Map<String, dynamic> audioBook;
+class DownloadedAudioPlayerScreen extends StatefulWidget {
+  final String title;
+  final String imagePath;
+  final List<Map<String, String>> downloadedEpisodes;
 
-  const AudioPlayerScreen({super.key, required this.audioBook});
+  const DownloadedAudioPlayerScreen({
+    super.key,
+    required this.title,
+    required this.imagePath,
+    required this.downloadedEpisodes,
+  });
 
   @override
-  State<AudioPlayerScreen> createState() => _AudioPlayerScreenState();
+  State<DownloadedAudioPlayerScreen> createState() =>
+      _DownloadedAudioPlayerScreenState();
 }
 
-class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
+class _DownloadedAudioPlayerScreenState
+    extends State<DownloadedAudioPlayerScreen> {
   late final AudioPlayerService _audioService;
   double _volume = 0.5;
   int _currentTrackIndex = 0;
@@ -40,9 +48,15 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       return;
     }
 
-    await _audioService.setPlaylist(
-      widget.audioBook['audios'] as List<dynamic>,
-      Network.baseUrl,
+    final localPlaylist = widget.downloadedEpisodes.map((episode) {
+      return AudioSource.uri(
+        Uri.file(episode['path']!), // Local file path
+        tag: episode['title'],
+      );
+    }).toList();
+
+    await _audioService.player.setAudioSource(
+      ConcatenatingAudioSource(children: localPlaylist),
     );
 
     _audioService.player.currentIndexStream.listen((index) {
@@ -65,7 +79,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   void _playNextTrack() {
-    if (_currentTrackIndex < (widget.audioBook['audios'] as List).length - 1) {
+    if (_currentTrackIndex < widget.downloadedEpisodes.length - 1) {
       _audioService.player.seekToNext();
     }
   }
@@ -84,13 +98,12 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
   }
 
   Widget _buildAudioPlayer() {
-    final audios = widget.audioBook['audios'] as List<dynamic>;
-    final bool hasEpisodes = audios.isNotEmpty;
+    final hasEpisodes = widget.downloadedEpisodes.isNotEmpty;
 
     if (!hasEpisodes) {
       return Center(
         child: Text(
-          "No audio episodes available for this book.",
+          "No downloaded audio episodes available.",
           style: AppTextStyles.bodyText.copyWith(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -103,8 +116,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
     return Column(
       children: [
         AudioPlayerHeader(
-          title: widget.audioBook['title'],
-          imagePath: widget.audioBook['imageFilePath'],
+          title: widget.title,
+          imagePath: widget.imagePath,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -134,10 +147,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
             ],
           ),
         ),
-        EpisodeList(
-          episodes: audios,
-          player: _audioService.player,
-        ),
       ],
     );
   }
@@ -148,7 +157,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
       return Scaffold(
         appBar: AppBar(
           title: Text(
-            widget.audioBook['title'],
+            widget.title,
             style: AppTextStyles.heading2.copyWith(color: Colors.white),
           ),
           centerTitle: true,

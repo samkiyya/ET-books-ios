@@ -1,4 +1,5 @@
 // import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/services/book_service.dart';
 import 'package:book_mobile/services/file_services.dart';
@@ -85,6 +86,8 @@ class _DownloadedBooksScreenState extends State<DownloadedBooksScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -135,26 +138,43 @@ class _DownloadedBooksScreenState extends State<DownloadedBooksScreen> {
                         itemCount: _books.length,
                         itemBuilder: (context, index) {
                           final book = _books[index];
-                          return Card(
-                            color: AppColors.color1,
-                            child: ListTile(
-                              leading: const Icon(Icons.book),
-                              title: Text(book['title'],
-                                  style: AppTextStyles.bodyText),
-                              onTap: () async {
-                                await BookService.openBook(
-                                    context, book['id'], book['title']);
-                              },
-                              trailing: IconButton(
-                                icon:
-                                    const Icon(Icons.delete, color: Colors.red),
-                                onPressed: () {
-                                  _showDeleteConfirmationDialog(
-                                    context,
-                                    book['id'],
-                                    book['title'],
-                                  );
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                left: width * 0.03,
+                                right: width * 0.03,
+                                top: height * 0.003,
+                                bottom: height * 0.003),
+                            child: Card(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: height * 0.009,
+                                  horizontal: width * 0.03),
+                              elevation: 8,
+                              shadowColor: AppColors.color4,
+                              color: AppColors.color5,
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.007),
+                                leading: Icon(Icons.book,
+                                    color: AppColors.color1,
+                                    size: width * 0.07),
+                                title: Text(book['title'],
+                                    style: AppTextStyles.bodyText),
+                                onTap: () async {
+                                  await BookService.openBook(
+                                      context, book['id'], book['title']);
                                 },
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Colors.red),
+                                  onPressed: () {
+                                    _showDeleteConfirmationDialog(
+                                      context,
+                                      book['id'],
+                                      book['title'],
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           );

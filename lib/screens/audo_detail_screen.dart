@@ -2,7 +2,6 @@ import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/models/order_model.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
 
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/widgets/custom_nav_bar.dart';
@@ -87,21 +86,23 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
               ),
             );
           }
-        } else if (type == 'pdf') {
-          // Redirect to Book Reader Screen
-          if (context.mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => BookReaderScreen(
-                  pdfPath:
-                      '${Network.baseUrl}/${widget.audioBook['pdfFilePath']}',
-                  bookTitle: widget.audioBook['title'],
-                ),
-              ),
-            );
-          }
-        } else if (type == 'both') {
+        }
+        // else if (type == 'pdf') {
+        //   // Redirect to Book Reader Screen
+        //   if (context.mounted) {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => BookReaderScreen(
+        //           pdfPath:
+        //               '${Network.baseUrl}/${widget.audioBook['pdfFilePath']}',
+        //           bookTitle: widget.audioBook['title'],
+        //         ),
+        //       ),
+        //     );
+        //   }
+        // }
+        else if (type == 'both') {
           // Show both "Play" and "Read" buttons
           _showBothButtons(context);
         } else {

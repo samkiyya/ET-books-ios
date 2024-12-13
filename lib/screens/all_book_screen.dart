@@ -4,6 +4,7 @@ import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/home_provider.dart';
 import 'package:book_mobile/screens/book_details_screen.dart';
 import 'package:book_mobile/widgets/animated_search_field.dart';
+import 'package:book_mobile/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -196,8 +197,15 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                         ),
                       ),
                       child: Card(
-                        color: AppColors.color1,
+                        color: AppColors.color5,
+                        elevation: 8,
+                        margin: EdgeInsets.symmetric(
+                            vertical: height * 0.009, horizontal: width * 0.03),
+                        shadowColor: AppColors.color4,
                         child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: width * 0.03,
+                              vertical: height * 0.007),
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(15),
                             child: Image.network(
@@ -217,18 +225,38 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                           title: Column(
                             children: [
                               Text(
-                                book['author'],
-                                style: const TextStyle(color: AppColors.color2),
+                                book['title'],
+                                style: AppTextStyles.heading2.copyWith(
+                                    color: AppColors.color3,
+                                    fontSize: width * 0.047),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
                               Text(
-                                book['title'],
-                                style: const TextStyle(color: AppColors.color2),
+                                'By: ${book['author']}',
+                                style: TextStyle(
+                                  color: AppColors.color3.withOpacity(0.7),
+                                ),
                               ),
                               Text(
                                 "Price: ${book['price']} ETB",
-                                style: const TextStyle(color: AppColors.color3),
+                                style: const TextStyle(color: AppColors.color2),
                               ),
                             ],
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.share,
+                                color: AppColors.color3),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (_) => BookSharingModal(
+                                  book: book,
+                                  appDownloadLink:
+                                      "${Network.appPlayStoreUrl}${Network.appPackageName}",
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ),

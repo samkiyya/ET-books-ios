@@ -27,8 +27,9 @@ class NotificationProvider with ChangeNotifier {
 
   // Fetch notifications from the API
   Future<void> loadNotifications() async {
-    if (!_notificationsEnabled)
-      return; // Skip fetching if notifications are disabled
+    if (!_notificationsEnabled) {
+      return;
+    } // Skip fetching if notifications are disabled
 
     try {
       final token = await _getToken();

@@ -247,40 +247,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 width: width * 0.045,
                               ),
                               // Followers
-                              Column(
-                                children: [
-                                  Text(
-                                    'Followers',
-                                    style: TextStyle(
-                                        fontSize: width * 0.045,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    '${userProfile['followerCount']?.toInt() ?? 0}',
-                                    style: TextStyle(fontSize: width * 0.045),
-                                  ),
-                                ],
-                              ),
-                              VerticalDivider(
-                                color: Colors.black26,
-                                thickness: 1,
-                                width: width * 0.045,
-                              ),
-                              // Following
-                              Column(
-                                children: [
-                                  Text(
-                                    'Following',
-                                    style: TextStyle(
-                                        fontSize: width * 0.045,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    '${userProfile['followingCount']?.toInt() ?? 0}',
-                                    style: TextStyle(fontSize: width * 0.045),
-                                  ),
-                                ],
-                              ),
+                              userProfile['role'] == "AUTHOR"
+                                  ? Column(
+                                      children: [
+                                        Text(
+                                          'Followers',
+                                          style: TextStyle(
+                                              fontSize: width * 0.045,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          '${userProfile['followerCount']?.toInt() ?? 0}',
+                                          style: TextStyle(
+                                              fontSize: width * 0.045),
+                                        ),
+                                      ],
+                                    )
+                                  :
+
+                                  // Following
+                                  Column(
+                                      children: [
+                                        Text(
+                                          'Following',
+                                          style: TextStyle(
+                                              fontSize: width * 0.045,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          '${userProfile['followingCount']?.toInt() ?? 0}',
+                                          style: TextStyle(
+                                              fontSize: width * 0.045),
+                                        ),
+                                      ],
+                                    ),
                             ],
                           ),
                         ),

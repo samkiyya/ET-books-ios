@@ -38,7 +38,6 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
     double height = AppSizes.screenHeight(context);
 
     return Scaffold(
-      backgroundColor: AppColors.color2,
       appBar: AppBar(
         title: Text(
           'Announcements',
@@ -57,6 +56,18 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.color3),
           ));
         }
+        if (provider.announcements.isEmpty) {
+          return Center(
+            child: Text(
+              'No announcements available',
+              style: AppTextStyles.bodyText.copyWith(
+                color: AppColors.color3,
+                fontWeight: FontWeight.bold,
+                fontSize: width * 0.05,
+              ),
+            ),
+          );
+        }
 
         return ListView.builder(
           itemCount: provider.announcements.length,
@@ -68,11 +79,14 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                 right: width * 0.03,
               ),
               child: Card(
-                margin: EdgeInsets.all(width * 0.03),
-                color: AppColors.color1,
+                margin: EdgeInsets.symmetric(
+                    vertical: height * 0.009, horizontal: width * 0.03),
+                color: AppColors.color5,
                 shadowColor: AppColors.color3,
                 elevation: 8,
                 child: ListTile(
+                  contentPadding: EdgeInsets.symmetric(
+                      horizontal: width * 0.03, vertical: height * 0.007),
                   title: Text(
                     announcement.title,
                     style: AppTextStyles.bodyText.copyWith(

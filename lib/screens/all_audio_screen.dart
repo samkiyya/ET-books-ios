@@ -1,5 +1,6 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
+import 'package:book_mobile/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/constants/size.dart';
@@ -50,6 +51,7 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
           ),
           centerTitle: true,
           backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
         ),
         body: Padding(
           padding: EdgeInsets.all(width * 0.03),
@@ -109,31 +111,71 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                                       vertical: height * 0.01),
                                   color: AppColors.color5,
                                   child: ListTile(
-                                    leading: _buildBookImage(
-                                        '${Network.baseUrl}/${book['imageFilePath']}'),
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: Image.network(
+                                        '${Network.baseUrl}/${book['imageFilePath']}',
+                                        width: width * 0.2,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (BuildContext context,
+                                            Object error,
+                                            StackTrace? stackTrace) {
+                                          return Icon(
+                                            Icons.broken_image,
+                                            size: width * 0.2,
+                                            color: Colors.grey,
+                                          );
+                                        },
+                                      ),
+                                    ),
                                     title: Text(
                                       book['title'] ?? "Unknown Title",
-                                      style: AppTextStyles.bodyText,
+                                      style: AppTextStyles.heading2.copyWith(
+                                          color: AppColors.color3,
+                                          fontSize: width * 0.045),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     subtitle: Column(
+                                      
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           "Author: ${book['author'] ?? 'Unknown'}",
-                                          style: AppTextStyles.bodyText,
-                                        ),
-                                        Text(
-                                          "Price: ${book['audio_price'] ?? 'Free'} ETB",
-                                          style: AppTextStyles.bodyText,
+                                          style: AppTextStyles.bodyText
+                                              .copyWith(
+                                                  color: AppColors.color3
+                                                      .withOpacity(0.8)),
                                         ),
                                         Text(
                                           "Episodes: ${book['audioCount'] ?? '0'}",
-                                          style: AppTextStyles.bodyText,
+                                          style: AppTextStyles.bodyText
+                                              .copyWith(
+                                                  color: AppColors.color3
+                                                      .withOpacity(0.8)),
+                                        ),
+                                        Text(
+                                          "Price: ${book['audio_price'] ?? 'Free'} ETB",
+                                          style: AppTextStyles.bodyText
+                                              .copyWith(
+                                                  color: AppColors.color2),
                                         ),
                                       ],
+                                    ),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.share,
+                                          color: AppColors.color3),
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (_) => BookSharingModal(
+                                            book: book,
+                                            appDownloadLink:
+                                                "${Network.appPlayStoreUrl}${Network.appPackageName}",
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),
@@ -149,24 +191,18 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
   }
 
   Widget _buildBookImage(String? imageUrl) {
-    return imageUrl != null && imageUrl.isNotEmpty
-        ? Image.network(
-            imageUrl,
-            width: 50,
-            height: 50,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return const Icon(
-                Icons.audiotrack,
-                color: Colors.grey,
-              );
-            },
-          )
-        : const Icon(
-            Icons.audiotrack,
-            color: AppColors.color3,
-            size: 50,
-          );
+    return Image.network(
+      imageUrl!,
+      width: 50,
+      height: 50,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(
+          Icons.audiotrack,
+          color: Colors.grey,
+        );
+      },
+    );
   }
 
   Widget _buildFilterButton(BuildContext context, String label, String type,

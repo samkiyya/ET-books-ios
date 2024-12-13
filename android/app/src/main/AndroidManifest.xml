@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools">
+xmlns:tools="http://schemas.android.com/tools"
+package="com.example.book_mobile">
     <queries>
         <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
         <intent>
@@ -29,6 +30,9 @@ xmlns:tools="http://schemas.android.com/tools">
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
+            <meta-data
+                android:name="flutter_notifications_click"
+                android:value="true" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -44,7 +48,7 @@ xmlns:tools="http://schemas.android.com/tools">
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <service
-            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"        
+            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"
             android:exported="false"
             android:stopWithTask="false"
             android:foregroundServiceType="specialUse">
@@ -67,6 +71,9 @@ xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />

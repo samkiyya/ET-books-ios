@@ -3,6 +3,7 @@ import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/screens/all_book_screen.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
 import 'package:book_mobile/screens/book_details_screen.dart';
+import 'package:book_mobile/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/constants/styles.dart';
@@ -147,51 +148,71 @@ class _HomeScreenState extends State<HomeScreen>
                                             BookDetailScreen(book: book),
                                       ),
                                     ),
-                                    child: Card(
-                                      child: SizedBox(
-                                        width: width * 0.3,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Image.network(
-                                              '${Network.baseUrl}/${book['imageFilePath']}',
-                                              fit: BoxFit.cover,
-                                              height: height * 0.08,
-                                              width: width * 0.2,
-                                              errorBuilder:
-                                                  (BuildContext context,
-                                                      Object error,
-                                                      StackTrace? stackTrace) {
-                                                return Icon(
-                                                  Icons
-                                                      .broken_image, // Alternative icon
-                                                  size: width * 0.2,
-                                                  color: Colors.grey,
-                                                );
-                                              },
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.all(
-                                                  width * 0.0074),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    book['title'] ??
-                                                        "No title available",
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Text(
-                                                    "Price: ${book['price'] ?? 'N/A'} ETB",
-                                                  ),
-                                                ],
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          left: width * 0.03,
+                                          right: width * 0.03,
+                                          top: height * 0.003,
+                                          bottom: height * 0.003),
+                                      child: Card(
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: height * 0.009,
+                                            horizontal: width * 0.03),
+                                        elevation: 8,
+                                        shadowColor: AppColors.color4,
+                                        color: AppColors.color5,
+                                        child: SizedBox(
+                                          width: width * 0.3,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Image.network(
+                                                '${Network.baseUrl}/${book['imageFilePath']}',
+                                                fit: BoxFit.cover,
+                                                height: height * 0.08,
+                                                width: width * 0.2,
+                                                errorBuilder: (BuildContext
+                                                        context,
+                                                    Object error,
+                                                    StackTrace? stackTrace) {
+                                                  return Icon(
+                                                    Icons
+                                                        .broken_image, // Alternative icon
+                                                    size: width * 0.2,
+                                                    color: Colors.grey,
+                                                  );
+                                                },
                                               ),
-                                            ),
-                                          ],
+                                              Padding(
+                                                padding: EdgeInsets.all(
+                                                    width * 0.0074),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      book['title'] ??
+                                                          "No title available",
+                                                      style: AppTextStyles
+                                                          .heading2
+                                                          .copyWith(
+                                                              color: AppColors
+                                                                  .color3,
+                                                              fontSize: width *
+                                                                  0.047),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    Text(
+                                                      "Price: ${book['price'] ?? 'N/A'} ETB",
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -232,46 +253,80 @@ class _HomeScreenState extends State<HomeScreen>
                                             BookDetailScreen(book: book),
                                       ),
                                     ),
-                                    child: Card(
-                                      color: AppColors.color1,
-                                      child: ListTile(
-                                        leading: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          child: Image.network(
-                                            '${Network.baseUrl}/${book['imageFilePath']}',
-                                            width: width * 0.2,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (BuildContext context,
-                                                Object error,
-                                                StackTrace? stackTrace) {
-                                              return Icon(
-                                                Icons
-                                                    .broken_image, // Alternative icon
-                                                size: width * 0.2,
-                                                color: Colors.grey,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(
+                                          left: width * 0.03,
+                                          right: width * 0.03,
+                                          top: height * 0.003,
+                                          bottom: height * 0.003),
+                                      child: Card(
+                                        color: AppColors.color5,
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: height * 0.009,
+                                            horizontal: width * 0.03),
+                                        elevation: 8,
+                                        shadowColor: AppColors.color4,
+                                        child: ListTile(
+                                          leading: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            child: Image.network(
+                                              '${Network.baseUrl}/${book['imageFilePath']}',
+                                              width: width * 0.2,
+                                              fit: BoxFit.cover,
+                                              errorBuilder:
+                                                  (BuildContext context,
+                                                      Object error,
+                                                      StackTrace? stackTrace) {
+                                                return Icon(
+                                                  Icons
+                                                      .broken_image, // Alternative icon
+                                                  size: width * 0.2,
+                                                  color: Colors.grey,
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          title: Column(
+                                            children: [
+                                              Text(
+                                                book['title'],
+                                                style: AppTextStyles.heading2
+                                                    .copyWith(
+                                                        color: AppColors.color3,
+                                                        fontSize:
+                                                            width * 0.045),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                'By: ${book['author']}',
+                                                style: TextStyle(
+                                                    color: AppColors.color3
+                                                        .withOpacity(0.7)),
+                                              ),
+                                              Text(
+                                                "Price: ${book['price']} ETB",
+                                                style: const TextStyle(
+                                                    color: AppColors.color2),
+                                              ),
+                                            ],
+                                          ),
+                                          trailing: IconButton(
+                                            icon: const Icon(Icons.share,
+                                                color: AppColors.color3),
+                                            onPressed: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (_) =>
+                                                    BookSharingModal(
+                                                  book: book,
+                                                  appDownloadLink:
+                                                      "${Network.appPlayStoreUrl}${Network.appPackageName}",
+                                                ),
                                               );
                                             },
                                           ),
-                                        ),
-                                        title: Column(
-                                          children: [
-                                            Text(
-                                              book['title'],
-                                              style: const TextStyle(
-                                                  color: AppColors.color2),
-                                            ),
-                                            Text(
-                                              book['author'],
-                                              style: const TextStyle(
-                                                  color: AppColors.color2),
-                                            ),
-                                            Text(
-                                              "Price: ${book['price']} ETB",
-                                              style: const TextStyle(
-                                                  color: AppColors.color3),
-                                            ),
-                                          ],
                                         ),
                                       ),
                                     ),
@@ -404,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                                                       // Audio Book Author
                                                       Text(
-                                                        'By ${audioBook['author'] ?? "Unknown Author"}',
+                                                        'By: ${audioBook['author'] ?? "Unknown Author"}',
                                                         style: TextStyle(
                                                           fontSize:
                                                               width * 0.03,

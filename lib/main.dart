@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/announcement_provider.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
+import 'package:book_mobile/providers/author_provider.dart';
 import 'package:book_mobile/providers/home_provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
 import 'package:book_mobile/providers/notification_provider.dart';
@@ -18,9 +19,7 @@ import 'package:book_mobile/screens/all_audio_screen.dart';
 import 'package:book_mobile/screens/all_book_screen.dart';
 import 'package:book_mobile/screens/announcement_screen.dart';
 import 'package:book_mobile/screens/contact_us_screen.dart';
-// import 'package:book_mobile/screens/demo_screen.dart';
 import 'package:book_mobile/screens/downloaded_book_screen.dart';
-// import 'package:book_mobile/screens/author_screen.dart';
 import 'package:book_mobile/screens/home_screen.dart';
 import 'package:book_mobile/screens/login_screen.dart';
 import 'package:book_mobile/screens/forgot_password_screen.dart';
@@ -34,10 +33,8 @@ import 'package:book_mobile/screens/subscription_tier_screen.dart';
 import 'package:book_mobile/screens/update_profile_screen.dart';
 import 'package:book_mobile/services/background_service.dart';
 import 'package:book_mobile/services/storage_service.dart';
-// import 'package:book_mobile/screens/verfication_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,7 +55,6 @@ void main() async {
   final prefs = await SharedPreferences.getInstance();
   final storageService = StorageService(prefs);
   // Initialize WorkManager
-// Initialize the background service
   final authProvider =
       AuthProvider(storageService: storageService); // Initialize AuthProvider
   final loginProvider = LoginProvider(authProvider: authProvider);
@@ -98,10 +94,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
             create: (context) => SubscriptionTiersProvider()),
         ChangeNotifierProvider(create: (_) => AnnouncementProvider()),
-
-        ChangeNotifierProvider(
-            create: (context) =>
-                UpdateProfileProvider()), // Initialize DemoScreenProvider
+        ChangeNotifierProvider(create: (context) => UpdateProfileProvider()),
+        ChangeNotifierProvider(create: (context) => AuthorProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Signup',

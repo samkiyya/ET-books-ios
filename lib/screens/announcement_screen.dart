@@ -37,174 +37,178 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Announcements',
-          style: AppTextStyles.heading2.copyWith(
-            color: AppColors.color6,
-          ),
-        ),
-        centerTitle: true,
-        foregroundColor: AppColors.color6,
-        backgroundColor: AppColors.color1,
-      ),
-      body: Consumer<AnnouncementProvider>(builder: (context, provider, child) {
-        if (provider.isLoading) {
-          return const Center(
-              child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(AppColors.color3),
-          ));
-        }
-        if (provider.announcements.isEmpty) {
-          return Center(
-            child: Text(
-              'No announcements available',
-              style: AppTextStyles.bodyText.copyWith(
-                color: AppColors.color3,
-                fontWeight: FontWeight.bold,
-                fontSize: width * 0.05,
-              ),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Announcements',
+            style: AppTextStyles.heading2.copyWith(
+              color: AppColors.color6,
             ),
-          );
-        }
-
-        return ListView.builder(
-          itemCount: provider.announcements.length,
-          itemBuilder: (context, index) {
-            final announcement = provider.announcements[index];
-            return Padding(
-              padding: EdgeInsets.only(
-                left: width * 0.03,
-                right: width * 0.03,
-              ),
-              child: Card(
-                margin: EdgeInsets.symmetric(
-                    vertical: height * 0.009, horizontal: width * 0.03),
-                color: AppColors.color5,
-                shadowColor: AppColors.color3,
-                elevation: 8,
-                child: ListTile(
-                  contentPadding: EdgeInsets.symmetric(
-                      horizontal: width * 0.03, vertical: height * 0.007),
-                  title: Text(
-                    announcement.title,
-                    style: AppTextStyles.bodyText.copyWith(
-                        color: AppColors.color6, fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        announcement.content,
-                        style: AppTextStyles.bodyText,
-                      ),
-                      SizedBox(height: height * 0.001),
-                      Row(
-                        children: [
-                          // Comment Button with a count
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      AnnouncementDetailScreen(
-                                    announcement: announcement,
-                                  ),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              iconColor: AppColors.color2,
-                              minimumSize: const Size(50, 30),
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.comment,
-                                  size: 18,
-                                  color: AppColors.color2,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${announcement.commentsCount}',
-                                  style: AppTextStyles.bodyText
-                                      .copyWith(color: AppColors.color2),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(width: width * 0.04),
-
-                          // Like Button with like functionality
-                          ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                await Provider.of<AnnouncementProvider>(
-                                  context,
-                                  listen: false,
-                                ).likeAnnouncement(announcement.id);
-                              } catch (e) {
-                                if (provider.error != null) {
-                                  WidgetsBinding.instance.addPostFrameCallback(
-                                    (_) {
-                                      _showErrorSnackBar(provider.error!);
-                                    },
-                                  );
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              iconColor: announcement.isLiked
-                                  ? Colors.blue
-                                  : AppColors.color2,
-                              minimumSize: const Size(50, 30),
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.thumb_up,
-                                  size: 18,
-                                  color: AppColors.color2,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${announcement.likesCount}',
-                                  style: AppTextStyles.bodyText
-                                      .copyWith(color: AppColors.color2),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AnnouncementDetailScreen(
-                          announcement: announcement,
-                        ),
-                      ),
-                    );
-                  },
+          ),
+          centerTitle: true,
+          foregroundColor: AppColors.color6,
+          backgroundColor: AppColors.color1,
+        ),
+        body:
+            Consumer<AnnouncementProvider>(builder: (context, provider, child) {
+          if (provider.isLoading) {
+            return const Center(
+                child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.color3),
+            ));
+          }
+          if (provider.announcements.isEmpty) {
+            return Center(
+              child: Text(
+                'No announcements available',
+                style: AppTextStyles.bodyText.copyWith(
+                  color: AppColors.color3,
+                  fontWeight: FontWeight.bold,
+                  fontSize: width * 0.05,
                 ),
               ),
             );
-          },
-        );
-      }),
+          }
+
+          return ListView.builder(
+            itemCount: provider.announcements.length,
+            itemBuilder: (context, index) {
+              final announcement = provider.announcements[index];
+              return Padding(
+                padding: EdgeInsets.only(
+                  left: width * 0.03,
+                  right: width * 0.03,
+                ),
+                child: Card(
+                  margin: EdgeInsets.symmetric(
+                      vertical: height * 0.009, horizontal: width * 0.03),
+                  color: AppColors.color5,
+                  shadowColor: AppColors.color3,
+                  elevation: 8,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(
+                        horizontal: width * 0.03, vertical: height * 0.007),
+                    title: Text(
+                      announcement.title,
+                      style: AppTextStyles.bodyText.copyWith(
+                          color: AppColors.color6, fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          announcement.content,
+                          style: AppTextStyles.bodyText,
+                        ),
+                        SizedBox(height: height * 0.001),
+                        Row(
+                          children: [
+                            // Comment Button with a count
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        AnnouncementDetailScreen(
+                                      announcement: announcement,
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                iconColor: AppColors.color2,
+                                minimumSize: const Size(50, 30),
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.comment,
+                                    size: 18,
+                                    color: AppColors.color2,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${announcement.commentsCount}',
+                                    style: AppTextStyles.bodyText
+                                        .copyWith(color: AppColors.color2),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: width * 0.04),
+
+                            // Like Button with like functionality
+                            ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  await Provider.of<AnnouncementProvider>(
+                                    context,
+                                    listen: false,
+                                  ).likeAnnouncement(announcement.id);
+                                } catch (e) {
+                                  if (provider.error != null) {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback(
+                                      (_) {
+                                        _showErrorSnackBar(provider.error!);
+                                      },
+                                    );
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                iconColor: announcement.isLiked
+                                    ? Colors.blue
+                                    : AppColors.color2,
+                                minimumSize: const Size(50, 30),
+                                padding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.thumb_up,
+                                    size: 18,
+                                    color: AppColors.color2,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${announcement.likesCount}',
+                                    style: AppTextStyles.bodyText
+                                        .copyWith(color: AppColors.color2),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AnnouncementDetailScreen(
+                            announcement: announcement,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          );
+        }),
+      ),
     );
   }
 }

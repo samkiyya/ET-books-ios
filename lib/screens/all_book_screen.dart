@@ -2,6 +2,7 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/home_provider.dart';
+import 'package:book_mobile/screens/author_screen.dart';
 import 'package:book_mobile/screens/book_details_screen.dart';
 import 'package:book_mobile/widgets/animated_search_field.dart';
 import 'package:book_mobile/widgets/book_sharing_modal.dart';
@@ -232,10 +233,24 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              Text(
-                                'By: ${book['author']}',
-                                style: TextStyle(
-                                  color: AppColors.color3.withOpacity(0.7),
+                              TextButton(
+                                onPressed: () {
+                                  print('Author id: ${book['author_id']}');
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AuthorScreen(
+                                        authorId:
+                                            (book['author_id'].toString()),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  'By: ${book['author']}',
+                                  style: TextStyle(
+                                      color: AppColors.color3.withOpacity(0.7)),
                                 ),
                               ),
                               Text(

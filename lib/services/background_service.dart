@@ -15,6 +15,7 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final FlutterLocalNotificationsPlugin flip = FlutterLocalNotificationsPlugin();
 
+@pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     // Fetch API data
@@ -109,7 +110,6 @@ Future<void> initializeBackgroundService(LoginProvider loginProvider) async {
     android: androids,
     iOS: iosDetails,
   );
-
   await flip.initialize(
     initializeNotificationSetting,
     onDidReceiveNotificationResponse: (NotificationResponse response) async {
@@ -150,6 +150,7 @@ Future<void> initializeBackgroundService(LoginProvider loginProvider) async {
   await createNotificationChannel();
 }
 
+@pragma('vm:entry-point')
 Future<void> createNotificationChannel() async {
   const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel',

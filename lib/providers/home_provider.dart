@@ -2,11 +2,17 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:book_mobile/constants/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeProvider with ChangeNotifier {
   List<dynamic> trendingBooks = [];
   List<dynamic> allBooks = [];
   List<dynamic> audioBooks = [];
+  List<dynamic> searchResults = [];
+  List<dynamic> recommendedBooks = [];
+
+  String? _token;
+  bool isSearching = false;
   bool isLoading = true;
   bool hasError = false;
 
@@ -58,5 +64,55 @@ class HomeProvider with ChangeNotifier {
     } finally {
       notifyListeners(); // Notify listeners to update UI
     }
+  }
+
+  Future<void> fetchSearchAndRecommendations(String query) async {
+    if (query.isEmpty) {
+      searchResults = [];
+      recommendedBooks = [];
+      isSearching = false;
+      notifyListeners();
+      return;
+    }
+
+    isSearching = true;
+    notifyListeners();
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      _token = prefs.getString('userToken') ?? '';
+      print('Query: $query');
+      final url = Uri.parse(
+          "${Network.baseUrl}/api/book/search-recommendations?query=$query");
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $_token',
+        },
+      );
+      print('Response: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        searchResults = data['matchingBooks'] ?? [];
+        print('Search Results: $searchResults');
+        recommendedBooks = data['recommendedBooks'] ?? [];
+        print('recommended Results: $recommendedBooks');
+      } else {
+        searchResults = [];
+        recommendedBooks = [];
+      }
+    } catch (e) {
+      searchResults = [];
+      recommendedBooks = [];
+    } finally {
+      isSearching = false;
+      notifyListeners();
+    }
+  }
+
+  void clearSearch() {
+    searchResults = [];
+    recommendedBooks = [];
+    notifyListeners();
   }
 }

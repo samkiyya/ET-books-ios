@@ -155,7 +155,7 @@ class LoginProvider with ChangeNotifier {
 
   // Save token to local storage
   Future<void> _saveTokenToLocalStorage(String token) async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('userToken', token);
 
     if (authProvider.userData != null) {

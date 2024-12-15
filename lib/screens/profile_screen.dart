@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
@@ -126,8 +127,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           CircleAvatar(
                             radius: width * 0.2,
                             backgroundImage: NetworkImage(
-                              userProfile['imageFilePath'] ??
-                                  'https://xsgames.co/randomusers/avatar.php?g=pixel',
+                              userProfile['imageFilePath'] != null
+                                  ? '${Network.baseUrl}/${userProfile['imageFilePath']}'
+                                  : 'https://xsgames.co/randomusers/avatar.php?g=pixel',
                             ),
                           ),
                           Positioned(

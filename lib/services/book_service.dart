@@ -9,20 +9,13 @@ class BookService {
     String url,
     String bookTitle,
     BuildContext context,
+    Function(double) onProgress,
   ) async {
     final path = await FileService.getBookPath(bookTitle, bookId);
 
     // Only download if the book doesn't exist
     if (!await FileService.isBookDownloaded(bookId, bookTitle)) {
-      final success = await DownloadService.downloadBook(url, path, context);
-      if (!success) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Download failed. Please try again.')),
-          );
-        }
-        return;
-      }
+      await DownloadService.downloadBook(url, bookId, bookTitle, onProgress);
     }
 
     if (context.mounted) {

@@ -51,6 +51,7 @@ class SignupProvider with ChangeNotifier {
     String? country,
     String? role,
     String? bio,
+    String? referalCode,
     required BuildContext context,
   }) async {
     _isLoading = true;
@@ -79,6 +80,9 @@ class SignupProvider with ChangeNotifier {
     }
     if (bio != null && bio.isNotEmpty) {
       payload['bio'] = bio;
+    }
+    if (referalCode != null && referalCode.isNotEmpty) {
+      payload['referalCode'] = referalCode;
     }
 
     // Check internet connection

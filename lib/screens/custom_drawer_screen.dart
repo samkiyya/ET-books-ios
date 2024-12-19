@@ -24,13 +24,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
     {'label': 'My Books', 'icon': Icons.book},
     {'label': 'Notification', 'icon': Icons.notifications},
     {'label': 'Subscribe', 'icon': Icons.subscriptions},
-    {'label': 'Author', 'icon': Icons.person},
+    // {'label': 'Author', 'icon': Icons.person},
     {'label': 'Share App', 'icon': Icons.share},
     {'label': 'Share Code', 'icon': Icons.code},
     {'label': 'Settings', 'icon': Icons.settings},
-    {'label': 'Contact Us', 'icon': Icons.contact_mail},
-    {'label': 'announecements', 'icon': Icons.announcement},
-    {'label': 'Enable 2FA', 'icon': Icons.security},
+    // {'label': 'Contact Us', 'icon': Icons.contact_mail},
+    {'label': 'announcs', 'icon': Icons.announcement},
+    // {'label': 'Enable 2FA', 'icon': Icons.security},
     {'label': 'Logout', 'icon': Icons.logout},
     // {'label': 'About', 'icon': Icons.info},
   ];
@@ -134,7 +134,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
       case 'Subscribe':
         _subscription(context);
         break;
-      case 'announecements':
+      case 'announcs':
         Navigator.pushNamed(context, '/announcements');
         break;
       // case 'Author':
@@ -153,11 +153,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
       //   _contactUs(context);
       //   break;
 
-      case 'Enable 2FA':
-        // _enable2FA(context);
-        break;
+      // case 'Enable 2FA':
+      //   // _enable2FA(context);
+      //   break;
       case 'Logout':
-        _logout(context);
+        _showLogoutDialog(context);
         break;
 
       default:
@@ -201,31 +201,51 @@ ${Network.appPlayStoreUrl}${Network.appPackageName}
     }
   }
 
-  // Logout logic
-  void _logout(BuildContext context) async {
+  void _showLogoutDialog(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    try {
-      await authProvider.logout();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Logged out successfully!')),
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text(
+            'Logout',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await authProvider.logout();
+                  if (context.mounted) {
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/login',
+                      (route) => false,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Logged out successfully')),
+                    );
+                  }
+                } catch (error) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: ${error.toString()}')),
+                    );
+                  }
+                }
+              },
+              child: const Text('Logout'),
+            ),
+          ],
         );
-      }
-      // Logout
-      if (context.mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/login',
-          (route) => false,
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-      }
-    }
+      },
+    );
   }
 
   void _audioBook(BuildContext context) {

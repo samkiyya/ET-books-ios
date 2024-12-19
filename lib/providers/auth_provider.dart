@@ -102,11 +102,19 @@ class AuthProvider with ChangeNotifier {
 
   /// Logout the user
   Future<void> logout() async {
+    _updateAuthState(
+      isLoading: true,
+    );
     if (_isLoggingOut) return;
     _isLoggingOut = true;
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      _token = prefs.getString('userToken');
+      if (_token == null) {
+        throw Exception("No token found");
+      }
       final response = await http.post(
-        Uri.parse("$_baseUrl/api/auth/logout"),
+        Uri.parse("$_baseUrl/api/user/logout"),
         headers: {'Authorization': 'Bearer $_token'},
       );
 

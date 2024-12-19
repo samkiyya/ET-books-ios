@@ -18,7 +18,9 @@ class DownloadScreen extends StatefulWidget {
 
 class _DownloadScreenState extends State<DownloadScreen> {
   bool _isLoading = true;
-  String _selectedCategory = 'PDF'; // Default category
+  String _selectedCategory = 'PDF';
+  final Map<int, double> _downloadProgress = {};
+  final Set<int> _downloadingIds = {};
 
   @override
   void initState() {
@@ -185,83 +187,132 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                     book['title'],
                                     style: AppTextStyles.bodyText,
                                   ),
-                                  trailing: _selectedCategory == 'PDF'
-                                      ? FutureBuilder<bool>(
-                                          future: BookService.isBookDownloaded(
-                                              order.id, book['title']),
-                                          builder: (context, snapshot) {
-                                            final isDownloaded =
-                                                snapshot.data ?? false;
-                                            return isDownloaded
-                                                ? IconButton(
-                                                    icon: const Icon(
-                                                      Icons.read_more,
-                                                      color: AppColors.color3,
-                                                    ),
-                                                    onPressed: () async {
-                                                      await BookService
-                                                          .openBook(
-                                                              context,
-                                                              order.id,
-                                                              book['title']);
-                                                    },
-                                                  )
-                                                : IconButton(
-                                                    icon: const Icon(
-                                                      Icons.download,
-                                                      color: AppColors.color3,
-                                                    ),
-                                                    onPressed: () async {
-                                                      await BookService
-                                                          .downloadAndOpenBook(
-                                                        order.id,
-                                                        "${Network.baseUrl}/${book['pdfFilePath']}",
-                                                        book['title'],
-                                                        context,
-                                                      );
-                                                      setState(() {});
-                                                    },
-                                                  );
-                                          },
-                                        )
-                                      //for audio book download button handling
-                                      : IconButton(
-                                          icon: const Icon(
-                                            Icons.audio_file,
-                                            color: AppColors.color3,
-                                          ),
-                                          onPressed: () {
-                                            // Get the audio book from HomeProvider
-                                            final audioBook = audioBookProvider
-                                                .audioBooks
-                                                .firstWhere(
-                                              (audioBook) =>
-                                                  audioBook['id'] == book['id'],
-                                              orElse: () => null,
-                                            );
-
-                                            if (audioBook == null) {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                  content: Text(
-                                                    "Audio book not found.",
-                                                  ),
-                                                ),
-                                              );
-                                              return;
-                                            }
-                                            print('Audio Book: $audioBook');
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (_) =>
-                                                    AudioEpisodeScreen(
-                                                        audioBook: audioBook),
+                                  trailing: _downloadingIds.contains(book['id'])
+                                      ? SizedBox(
+                                          width: 48,
+                                          height: 48,
+                                          child: Stack(
+                                            alignment: Alignment.center,
+                                            children: [
+                                              CircularProgressIndicator(
+                                                value: _downloadProgress[
+                                                    book['id']],
+                                                valueColor:
+                                                    const AlwaysStoppedAnimation(
+                                                        AppColors.color3),
                                               ),
-                                            );
-                                          },
-                                        ),
+                                              Text(
+                                                "${(_downloadProgress[book['id']]! * 100).toInt()}%",
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: AppColors.color3,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      : _selectedCategory == 'PDF'
+                                          ? FutureBuilder<bool>(
+                                              future:
+                                                  BookService.isBookDownloaded(
+                                                      book['id'],
+                                                      book['title']),
+                                              builder: (context, snapshot) {
+                                                final isDownloaded =
+                                                    snapshot.data ?? false;
+                                                return isDownloaded
+                                                    ? IconButton(
+                                                        icon: const Icon(
+                                                          Icons.read_more,
+                                                          color:
+                                                              AppColors.color3,
+                                                        ),
+                                                        onPressed: () async {
+                                                          await BookService
+                                                              .openBook(
+                                                                  context,
+                                                                  book['id'],
+                                                                  book[
+                                                                      'title']);
+                                                        },
+                                                      )
+                                                    : IconButton(
+                                                        icon: const Icon(
+                                                          Icons.download,
+                                                          color:
+                                                              AppColors.color3,
+                                                        ),
+                                                        onPressed: () async {
+                                                          setState(() {
+                                                            _downloadingIds.add(
+                                                                book['id']);
+                                                            _downloadProgress[
+                                                                    book[
+                                                                        'id']] =
+                                                                0.0;
+                                                          });
+                                                          await BookService
+                                                              .downloadAndOpenBook(
+                                                            book['id'],
+                                                            "${Network.baseUrl}/${book['pdfFilePath']}",
+                                                            book['title'],
+                                                            context,
+                                                            (progress) {
+                                                              setState(() {
+                                                                _downloadProgress[
+                                                                        book[
+                                                                            'id']] =
+                                                                    progress;
+                                                              });
+                                                            },
+                                                          );
+                                                          setState(() {
+                                                            _downloadingIds
+                                                                .remove(
+                                                                    book['id']);
+                                                          });
+                                                        },
+                                                      );
+                                              },
+                                            )
+                                          : IconButton(
+                                              icon: const Icon(
+                                                Icons.audio_file,
+                                                color: AppColors.color3,
+                                              ),
+                                              onPressed: () {
+                                                final audioBook =
+                                                    audioBookProvider.audioBooks
+                                                        .firstWhere(
+                                                  (audioBook) =>
+                                                      audioBook['id'] ==
+                                                      book['id'],
+                                                  orElse: () => null,
+                                                );
+
+                                                if (audioBook == null) {
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          "Audio book not found."),
+                                                    ),
+                                                  );
+                                                  return;
+                                                }
+                                                print('Audio Book: $audioBook');
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        AudioEpisodeScreen(
+                                                            audioBook:
+                                                                audioBook),
+                                                  ),
+                                                );
+                                              },
+                                            ),
                                 ),
                               ),
                             );

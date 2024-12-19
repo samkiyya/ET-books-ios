@@ -31,6 +31,7 @@ class _SignupScreenState extends State<SignupScreen> {
     'City': TextEditingController(),
     'Country': TextEditingController(),
     'Bio': TextEditingController(),
+    'referalCode': TextEditingController(),
   };
   String? selectedRole;
   File? imageFile;

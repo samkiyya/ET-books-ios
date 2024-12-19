@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:flutter/material.dart';
 
 class CustomMessageModal extends StatelessWidget {
@@ -18,6 +19,8 @@ class CustomMessageModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     // Determine colors based on the type
     Color backgroundColor = type == 'success' ? Colors.green : Colors.red;
     Color buttonColor = Colors.white;
@@ -33,15 +36,15 @@ class CustomMessageModal extends StatelessWidget {
           Icon(
             type == 'success' ? Icons.check_circle : Icons.error,
             color: Colors.white,
-            size: 50,
+            size: width * 0.09,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: height * 0.03),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: Colors.white, fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: width * 0.045),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: height * 0.03),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               foregroundColor: backgroundColor,

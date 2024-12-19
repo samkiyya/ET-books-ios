@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/screens/home_screen.dart';
 import 'package:book_mobile/screens/signup_screen.dart';
@@ -5,6 +6,7 @@ import 'package:book_mobile/screens/forgot_password_screen.dart'; // Add your Fo
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:book_mobile/widgets/modal.dart';
+import 'package:book_mobile/widgets/square_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
@@ -26,11 +28,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-      if (loginProvider != null) {
-        loginProvider.addListener(_handleLoginResponse);
-      }
-    });
+    Provider.of<LoginProvider>(context, listen: false).addListener(_handleLoginResponse);
+  });
   }
 
 // Show success or error dialog
@@ -60,47 +59,39 @@ class _LoginScreenState extends State<LoginScreen> {
   void dispose() {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    if (loginProvider != null) {
-      loginProvider.removeListener(_handleLoginResponse);
-    }
+    loginProvider.removeListener(_handleLoginResponse);
+
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   void _handleLoginResponse() {
-    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+  final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    if (loginProvider.successMessage.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showResponseDialog(
-          context,
-          loginProvider.successMessage,
-          "Close",
-          true,
-        );
-
-        // Delay navigation to HomeScreen until the dialog is closed
-        loginProvider.clearMessages();
-      });
-    } else if (loginProvider.isAuthenticated) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      });
-    } else if (loginProvider.errorMessage.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showResponseDialog(
-          context,
-          loginProvider.errorMessage,
-          "Retry",
-          false,
-        );
-        loginProvider.clearMessages();
-      });
-    }
+  if (loginProvider.successMessage.isNotEmpty) {
+    _showResponseDialog(
+      context,
+      loginProvider.successMessage,
+      "Close",
+      true,
+    );
+    loginProvider.clearMessages();
+  } else if (loginProvider.isAuthenticated) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
+  } else if (loginProvider.errorMessage.isNotEmpty) {
+    _showResponseDialog(
+      context,
+      loginProvider.errorMessage,
+      "Retry",
+      false,
+    );
+    loginProvider.clearMessages();
   }
+}
+
 
   String? _validateField(String key, String value) {
     if (value.isEmpty) {
@@ -121,23 +112,26 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         body: Stack(
           children: [
             // Gradient background
             Container(
-              height: double.infinity,
-              width: double.infinity,
+              height: height,
+              width: width,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(colors: [
                   AppColors.color1,
                   AppColors.color2,
                 ]),
               ),
-              child: const Padding(
-                padding: EdgeInsets.only(top: 60.0, left: 22),
-                child: Text(
+              child: Padding(
+                padding:
+                    EdgeInsets.only(top: height * 0.09, left: width * 0.04),
+                child: const Text(
                   'Login Page!',
                   style: AppTextStyles.heading1,
                 ),
@@ -145,10 +139,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             // Login form container
             Padding(
-              padding: const EdgeInsets.only(top: 200.0),
+              padding: EdgeInsets.only(top: height * 0.25),
               child: Container(
-                height: double.infinity,
-                width: double.infinity,
+                height: height * .8,
+                width: width,
                 decoration: const BoxDecoration(
                   color: AppColors.color1,
                   borderRadius: BorderRadius.only(
@@ -158,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 child: SingleChildScrollView(
                   child: Padding(
-                    padding: const EdgeInsets.all(18.0),
+                    padding: EdgeInsets.all(width * 0.055),
                     child: Consumer<LoginProvider>(
                       builder: (context, loginProvider, child) {
                         return Form(
@@ -175,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 validator: (value) =>
                                     _validateField('email', value!),
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.02),
                               // Password field
                               CustomTextField(
                                 controller: _passwordController,
@@ -211,21 +205,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                     );
                                   },
-                                  child: const Text(
+                                  child: Text(
                                     'Forgot Password?',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.color3,
-                                      fontSize: 16,
+                                      fontSize: width * 0.04,
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 50),
+                              SizedBox(height: height * 0.03),
                               // Login button
                               loginProvider.isLoading
                                   ? const Center(
-                                      child: CircularProgressIndicator())
+                                      child: CircularProgressIndicator(
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                  Colors.white)))
                                   : CustomButton(
                                       text: 'LOGIN',
                                       onPressed: () {
@@ -237,16 +234,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       },
                                       backgroundColor: AppColors.color2,
-                                      borderColor: Colors.transparent,
+                                      borderColor: AppColors.color3,
                                       textStyle: AppTextStyles.buttonText,
                                     ),
-                              const SizedBox(height: 30),
+                              SizedBox(height: height * 0.07),
                               // Social Login Buttons
-                              Column(
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CustomButton(
-                                    text: 'Login with Google',
-                                    onPressed: () async {
+                                  SquareTile(
+                                    imagePath: 'assets/images/g_logo.png',
+                                    onTap: () async {
                                       try {
                                         await loginProvider.loginWithGoogle();
                                         if (context.mounted) {
@@ -257,6 +255,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   Text('Logged in with Google'),
                                             ),
                                           );
+                                        }
+                                        // Check if user is authenticated after Facebook login and navigate
+
+                                        if (loginProvider.isAuthenticated) {
+                                          if (context.mounted) {
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      const HomeScreen()),
+                                            );
+                                          }
                                         }
                                       } catch (e) {
                                         if (context.mounted) {
@@ -270,13 +280,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       }
                                     },
-                                    backgroundColor: Colors.red,
-                                    textStyle: AppTextStyles.buttonText,
                                   ),
-                                  const SizedBox(height: 20),
-                                  CustomButton(
-                                    text: 'Login with Facebook',
-                                    onPressed: () async {
+                                  SizedBox(width: width * 0.1),
+                                  SquareTile(
+                                    imagePath: 'assets/images/fb_logo.png',
+                                    onTap: () async {
                                       try {
                                         await loginProvider.loginWithFacebook();
                                         if (context.mounted) {
@@ -287,6 +295,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   'Logged in with Facebook'),
                                             ),
                                           );
+                                        }
+                                        // Check if user is authenticated after Facebook login and navigate
+
+                                        if (loginProvider.isAuthenticated) {
+                                          if (context.mounted) {
+                                            Navigator.of(context)
+                                                .pushReplacement(
+                                              MaterialPageRoute(
+                                                  builder: (_) =>
+                                                      const HomeScreen()),
+                                            );
+                                          }
                                         }
                                       } catch (e) {
                                         if (context.mounted) {
@@ -300,12 +320,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                         }
                                       }
                                     },
-                                    backgroundColor: Colors.blue,
-                                    textStyle: AppTextStyles.buttonText,
-                                  ),
+                                  )
                                 ],
                               ),
-                              const SizedBox(height: 50),
+                              SizedBox(height: height * 0.06),
                               // Signup prompt
                               TextButton(
                                 onPressed: () {
@@ -321,15 +339,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                     text: 'Don\'t have an account? ',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontSize: 16,
+                                      fontSize: width * 0.045,
                                     ),
-                                    children: const [
+                                    children: [
                                       TextSpan(
                                         text: 'Sign Up',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.color3,
-                                          fontSize: 17,
+                                          fontSize: width * .055,
                                         ),
                                       ),
                                     ],

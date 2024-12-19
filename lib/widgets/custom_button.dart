@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
@@ -18,11 +19,13 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return GestureDetector(
       onTap: onPressed,
       child: Container(
-        height: 53,
-        width: double.infinity,
+        height: height * .07,
+        width: width,
         decoration: BoxDecoration(
           color: backgroundColor,
           borderRadius: BorderRadius.circular(30),

@@ -1,5 +1,3 @@
-// lib/size.dart
-
 import 'package:flutter/material.dart';
 
 class AppSizes {

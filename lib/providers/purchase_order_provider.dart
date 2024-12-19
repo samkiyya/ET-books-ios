@@ -18,7 +18,7 @@ class PurchaseOrderProvider with ChangeNotifier {
   String _errorMessage = '';
   String _successMessage = '';
   String? _token = '';
-  List<Order> _orders = [];
+  final List<Order> _orders = [];
   File? _receiptImage;
 
   bool _isUploading = false;

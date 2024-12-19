@@ -1,3 +1,4 @@
+import 'package:book_mobile/constants/size.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/constants/styles.dart';
 
@@ -7,6 +8,7 @@ class CustomTextField extends StatelessWidget {
   final String? labelText;
   final String? hintText;
   final IconData? icon;
+  final IconData? prefixIcon;
   final IconButton? suffixIcon;
   final bool obscureText;
   final String? Function(String?)? validator;
@@ -21,27 +23,33 @@ class CustomTextField extends StatelessWidget {
     this.obscureText = false,
     this.validator,
     this.suffixIcon,
+    this.prefixIcon,
   });
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null)
           Text(
             label!,
-            style: const TextStyle(
-              fontSize: 18.0,
+            style: TextStyle(
+              fontSize: width * 0.045,
               fontWeight: FontWeight.bold,
               color: AppColors.color3,
             ),
           ),
-        const SizedBox(height: 12),
+        SizedBox(height: height * 0.01),
         TextFormField(
           controller: controller,
           obscureText: obscureText,
           decoration: InputDecoration(
+            prefixIcon: prefixIcon != null
+                ? Icon(prefixIcon, color: AppColors.color1)
+                : null,
             labelStyle: const TextStyle(color: AppColors.color3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -56,7 +64,7 @@ class CustomTextField extends StatelessWidget {
           ),
           validator: validator,
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: height * 0.02),
       ],
     );
   }

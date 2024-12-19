@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:mime/mime.dart';
@@ -45,11 +46,12 @@ class SignupProvider with ChangeNotifier {
     required String password,
     required String fname,
     required String lname,
-    required String phone,
-    required String city,
-    required String country,
-    required String role,
-    required String bio,
+    String? phone,
+    String? city,
+    String? country,
+    String? role,
+    String? bio,
+    String? referalCode,
     required BuildContext context,
   }) async {
     _isLoading = true;
@@ -57,22 +59,35 @@ class SignupProvider with ChangeNotifier {
     _successMessage = '';
     notifyListeners();
 
-    // Prepare the payload
     Map<String, String> payload = {
       'email': email,
       'password': password,
       'fname': fname,
       'lname': lname,
-      'phone': phone,
-      'city': city,
-      'country': country,
-      'role': role,
-      'bio': bio,
     };
+
+    if (phone != null && phone.isNotEmpty) {
+      payload['phone'] = phone;
+    }
+    if (city != null && city.isNotEmpty) {
+      payload['city'] = city;
+    }
+    if (country != null && country.isNotEmpty) {
+      payload['country'] = country;
+    }
+    if (role != null && role.isNotEmpty) {
+      payload['role'] = role;
+    }
+    if (bio != null && bio.isNotEmpty) {
+      payload['bio'] = bio;
+    }
+    if (referalCode != null && referalCode.isNotEmpty) {
+      payload['referalCode'] = referalCode;
+    }
 
     // Check internet connection
     final connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
+    if (connectivityResult == [ConnectivityResult.none]) {
       _errorMessage = 'No internet connection. Please check your network.';
       _isLoading = false;
       notifyListeners();
@@ -129,24 +144,37 @@ class SignupProvider with ChangeNotifier {
         print(responseBody);
       } else if (response.statusCode == 400) {
         _errorMessage =
-            responseData['message'] ?? 'Bad request. Please check your inputs.';
-        print(responseBody);
+            responseData['error'] ?? 'Bad request. Please check your inputs.';
+        print('Server error $responseBody');
       } else {
         _errorMessage = responseData['error'] ??
             'Unexpected error occurred. please try again.';
         print(responseBody);
       }
     } catch (error) {
-      if (error is TimeoutException) {
-        _errorMessage = 'Request timed out. Please try again later.';
-      } else {
-        _errorMessage = 'An error occurred: $error';
-      }
+      _errorMessage = _mapErrorToMessage(error);
+
       print('Signup error: $_errorMessage');
     } finally {
       _isLoading = false;
       _isUploading = false;
       notifyListeners();
+    }
+  }
+
+  String _mapErrorToMessage(dynamic error) {
+    if (error is TimeoutException) {
+      return 'Request timed out. Please try again later.';
+    } else if (error is SocketException) {
+      return 'No internet connection, please enable your internet connection.';
+    } else if (error is FormatException) {
+      return 'Invalid response from server. Please try again later.';
+    } else if (error is ClientException) {
+      return 'Failed to connect to the server.';
+    } else if (error is HttpException) {
+      return 'Failed to send request. Please try again later.';
+    } else {
+      return 'An error occurred: $error';
     }
   }
 

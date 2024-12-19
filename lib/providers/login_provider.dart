@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:async';
 import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/models/login_model.dart';
 import 'package:book_mobile/constants/constants.dart';
+import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -93,35 +96,71 @@ class LoginProvider with ChangeNotifier {
       final body = jsonEncode({"email": email, "password": password});
 
       final response = await http.post(url, headers: headers, body: body);
-
+      final data = jsonDecode(response.body);
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
       if (response.statusCode == 200) {
         final loginResponse =
             LoginResponse.fromJson(json.decode(response.body));
         _token = loginResponse.userToken;
         _isAuthenticated = true;
-        await _saveTokenToLocalStorage(_token!);
-        final userId = loginResponse.userData.id;
+        if (loginResponse.userData.id > 0) {
+          if (authProvider.userData != null) {
+            authProvider.userData ?? (loginResponse.userData);
+          }
+          await _saveTokenToLocalStorage(_token!);
 
-        await authProvider.setUserId(userId.toString());
-        _successMessage = 'you had Login successful!';
+          _successMessage = 'You have logged in successfully!';
+        } else {
+          _errorMessage = 'Invalid user data returned.';
+          _isAuthenticated = false;
+        }
       } else if (response.statusCode == 401) {
         _errorMessage = 'Authorizaation failed. Please try again.';
+        _isAuthenticated = false;
+      } else if (response.statusCode == 403 &&
+          data['message']?.contains('isVerified') == true) {
+        _errorMessage = 'Please verify your email before logging in';
+        _isAuthenticated = false;
+        // return false;
       } else {
         _errorMessage = 'Invalid credentials. Please try again.';
+        _isAuthenticated = false;
       }
     } catch (error) {
-      _errorMessage = 'An error occurred: $error';
+      _errorMessage = _mapErrorToMessage(error);
+      _isAuthenticated = false;
+      print('Login error: $_errorMessage');
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
+  String _mapErrorToMessage(dynamic error) {
+    if (error is TimeoutException) {
+      return 'Request timed out. Please try again later.';
+    } else if (error is SocketException) {
+      return 'No internet connection, please enable your internet connection.';
+    } else if (error is FormatException) {
+      return 'Invalid response from server. Please try again later.';
+    } else if (error is ClientException) {
+      return 'Failed to connect to the server.';
+    } else if (error is HttpException) {
+      return 'Failed to send request. Please try again later.';
+    } else {
+      return 'An error occurred: $error';
+    }
+  }
+
   // Save token to local storage
   Future<void> _saveTokenToLocalStorage(String token) async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('userToken', token);
-    await prefs.setString('userId', authProvider.userId!);
+
+    if (authProvider.userData != null) {
+      await prefs.setString('userId', authProvider.userData!.id.toString());
+    }
   }
 
   void clearMessages() {

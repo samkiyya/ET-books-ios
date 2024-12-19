@@ -1,3 +1,5 @@
+import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
@@ -30,8 +32,10 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
     });
 
     try {
-      await Provider.of<AuthProvider>(context, listen: false)
-          .changePassword(widget.resetToken, newPassword);
+      await Provider.of<AuthProvider>(context, listen: false).resetPassword(
+        widget.resetToken,
+        newPassword,
+      );
       setState(() {
         _message = 'Password reset successfully.';
       });
@@ -48,19 +52,30 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: const Text('Reset Password')),
+        appBar: AppBar(
+          title: Text(
+            'Reset Password',
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
+          ),
+          centerTitle: true,
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
+        ),
         body: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(
+              horizontal: width * 0.0148148, vertical: height * 0.0072072),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Enter a new password to reset your password.',
-                style: TextStyle(fontSize: 16.0),
+                style: TextStyle(fontSize: width * 0.0148148),
               ),
-              const SizedBox(height: 16.0),
+              SizedBox(height: height * 0.0072072),
               TextField(
                 controller: _newPasswordController,
                 obscureText: true,
@@ -69,7 +84,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-              const SizedBox(height: 16.0),
+              SizedBox(height: height * 0.0072072),
               if (_message != null)
                 Text(
                   _message!,
@@ -79,9 +94,13 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                         : Colors.green,
                   ),
                 ),
-              const SizedBox(height: 16.0),
+              SizedBox(height: height * 0.0072072),
               if (_isLoading)
-                const Center(child: CircularProgressIndicator())
+                const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
               else
                 ElevatedButton(
                   onPressed: _resetPassword,

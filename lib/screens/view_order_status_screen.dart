@@ -1,3 +1,5 @@
+import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -14,27 +16,45 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
   @override
   void initState() {
     super.initState();
-    final orderProvider =
-        Provider.of<OrderStatusProvider>(context, listen: false);
-    orderProvider.fetchOrders();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final orderProvider =
+            Provider.of<OrderStatusProvider>(context, listen: false);
+        orderProvider.fetchOrders();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     final orderProvider = Provider.of<OrderStatusProvider>(context);
 
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Your Order Status'),
+          title: Text('Your Order Status',
+              style: AppTextStyles.heading2.copyWith(
+                color: AppColors.color6,
+              )),
+          centerTitle: true,
+          backgroundColor: AppColors.color1,
+          foregroundColor: AppColors.color6,
         ),
         body: orderProvider.isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
             : orderProvider.errorMessage.isNotEmpty
                 ? Center(
                     child: Text(
                       orderProvider.errorMessage,
-                      style: const TextStyle(color: Colors.red, fontSize: 16),
+                      style:
+                          TextStyle(color: Colors.red, fontSize: width * 0.045),
                     ),
                   )
                 : orderProvider.orders.isEmpty
@@ -45,13 +65,15 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                           final order = orderProvider.orders[index];
                           return Card(
                             elevation: 5,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 8.0, horizontal: 16.0),
+                            margin: EdgeInsets.symmetric(
+                                vertical: height * 0.01,
+                                horizontal: width * 0.025),
                             child: ListTile(
                               title: Text(
                                 'Order ID: ${order.id}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: width * 0.045),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +88,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const SizedBox(height: 8),
+                                        SizedBox(height: height * 0.03),
                                         Text(
                                           'Book Title: ${order.orderBook['title']}',
                                           style: const TextStyle(
@@ -85,7 +107,9 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
         floatingActionButton: FloatingActionButton(
           onPressed: orderProvider.isLoading ? null : orderProvider.fetchOrders,
           child: orderProvider.isLoading
-              ? const CircularProgressIndicator(color: Colors.white)
+              ? const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                )
               : const Icon(Icons.refresh),
         ),
       ),

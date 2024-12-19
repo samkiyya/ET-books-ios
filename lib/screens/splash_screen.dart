@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/screens/home_screen.dart';
 // import 'package:book_mobile/screens/verification_screen.dart';
@@ -32,9 +33,11 @@ class _SplashScreenState extends State<SplashScreen>
   Future<void> _initializeLogin() async {
     await Provider.of<LoginProvider>(context, listen: false)
         .initializeLoginStatus();
-    setState(() {
-      _isInitialized = true;
-    });
+    if (context.mounted) {
+      setState(() {
+        _isInitialized = true;
+      });
+    }
   }
 
   void _setupAnimation() {
@@ -52,7 +55,8 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
 
-    await loginProvider.checkLoginStatus();
+    await loginProvider.initializeLoginStatus();
+    if (!mounted) return;
 
     if (loginProvider.isAuthenticated && !loginProvider.isTokenExpired) {
       if (context.mounted) {
@@ -83,6 +87,8 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -106,25 +112,27 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _animation,
                 child: ScaleTransition(
                   scale: _animation,
-                  child: const Icon(
+                  child: Icon(
                     Icons.book,
-                    size: 150,
+                    size: width * 0.4,
                     color: AppColors.color3,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text(
+              SizedBox(height: height * 0.009),
+              Text(
                 'Book App',
                 style: TextStyle(
-                  fontSize: 30,
+                  fontSize: width * 0.05,
                   color: AppColors.color3,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               if (!_isInitialized) ...[
-                const SizedBox(height: 20),
-                const CircularProgressIndicator(),
+                SizedBox(height: height * 0.09),
+                const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
               ],
             ],
           ),

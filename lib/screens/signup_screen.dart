@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/signup_provider.dart';
 import 'package:book_mobile/screens/login_screen.dart';
@@ -30,50 +31,53 @@ class _SignupScreenState extends State<SignupScreen> {
     'City': TextEditingController(),
     'Country': TextEditingController(),
     'Bio': TextEditingController(),
+    'referalCode': TextEditingController(),
   };
-  String selectedRole = 'AUTHOR'; // Default role
+  String? selectedRole;
   File? imageFile;
 
   String? _validateField(String key, String value) {
-    if (key != 'phone' && value.isEmpty) {
+    // Required fields
+    if ((key == 'First Name' ||
+            key == 'Last Name' ||
+            key == 'Password' ||
+            key == 'Email') &&
+        value.isEmpty) {
       return '$key cannot be empty';
     }
-    if (key == 'Email' &&
-        !RegExp(r"^[a-zA-Z0-9]+@[a-zA-Z]+\.[a-zA-Z]+").hasMatch(value)) {
-      return 'Enter a valid email';
-    }
-    if (key == 'Phone' && value.isNotEmpty) {
-      if (key == 'Phone' &&
-          !RegExp(r"^(?:[+0]9)?[0-9]{10,13}$").hasMatch(value)) {
-        return 'Enter numbers only (10-13 digits)';
+
+    if ((key == 'First Name' || key == 'Last Name') && value.isNotEmpty) {
+      if (value.length < 2) {
+        return '$key must be at least 2 characters long';
       }
     }
-    if (key == 'Password' && value.length < 6) {
-      return 'Password must be at least 6 characters long';
-    }
-    if (key == 'Phone' && value.isNotEmpty && value.length < 10 ||
-        key == 'Phone' && value.length > 13) {
-      return 'Phone number must be at least 10 and at most 13 characters long';
-    }
-    if (key == 'Country' && value.length < 3) {
-      return 'Country must be at least 3 characters long';
-    }
-    if (key == 'City' && value.length < 3) {
-      return 'City must be at least 3 characters long';
-    }
-    if (key == 'First Name' && value.length < 3) {
-      return 'First Name must be at least 3 characters long';
-    }
-    if (key == 'Last Name' && value.length < 3) {
-      return 'Last Name must be at least 3 characters long';
-    }
-    if (key == 'Bio' && value.length < 10) {
-      return 'Bio must be at least 10 characters long';
-    }
-    if (key == 'role' && value.isEmpty) {
-      return 'Role must be selected';
+
+    // Email validation
+    if (key == 'Email' &&
+        value.isNotEmpty &&
+        !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+            .hasMatch(value)) {
+      return 'Enter a valid email';
     }
 
+    // Password length validation
+    if (key == 'Password' && value.isNotEmpty && value.length < 6) {
+      return 'Password must be at least 6 characters long';
+    }
+    if (key == 'Bio' && value.isNotEmpty) {
+      if (value.length > 30) {
+        return 'Bio must not exceed 30 characters';
+      }
+    }
+
+    // Phone number validation (if provided)
+    if (key == 'Phone' && value.isNotEmpty) {
+      if (!RegExp(r"^[0-9]{10,13}$").hasMatch(value)) {
+        return 'Phone number must be between 10 and 13 digits';
+      }
+    }
+
+    // Optional fields, no validation for other cases
     return null; // No errors
   }
 
@@ -105,6 +109,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -119,9 +125,10 @@ class _SignupScreenState extends State<SignupScreen> {
                   AppColors.color2,
                 ]),
               ),
-              child: const Padding(
-                padding: EdgeInsets.only(top: 60.0, left: 22),
-                child: Text(
+              child: Padding(
+                padding: EdgeInsets.only(
+                    top: width * 0.0555556, left: width * 0.02037),
+                child: const Text(
                   'Create Your Account',
                   style: AppTextStyles.heading1,
                 ),
@@ -129,7 +136,7 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
             // Form container
             Padding(
-              padding: const EdgeInsets.only(top: 200.0),
+              padding: EdgeInsets.only(top: height * 0.09),
               child: Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.only(
@@ -140,7 +147,10 @@ class _SignupScreenState extends State<SignupScreen> {
                 height: double.infinity,
                 width: double.infinity,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 18.0, right: 18),
+                  padding: EdgeInsets.only(
+                    left: width * 0.016666,
+                    right: width * 0.016666,
+                  ),
                   child: Consumer<SignupProvider>(
                     builder: (context, signupProvider, child) {
                       // Display dialog based on success or error message
@@ -194,37 +204,53 @@ class _SignupScreenState extends State<SignupScreen> {
                                       : false,
                                 );
                               }),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.009),
                               // Role Selection
+                              const Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Role',
+                                  style: AppTextStyles.bodyText,
+                                ),
+                              ),
                               ButtonTheme(
                                 alignedDropdown: true,
                                 child: DropdownButtonFormField<String>(
-                                  value: selectedRole,
+                                  value: selectedRole ?? selectedRole,
+                                  hint: const Text(
+                                    "Please Select your Role",
+                                    style: AppTextStyles.hintText,
+                                  ),
                                   onChanged: (String? newValue) {
                                     setState(() {
                                       selectedRole = newValue!;
                                     });
                                   },
-                                  items: <String>['AUTHOR', 'USER']
-                                      .map<DropdownMenuItem<String>>(
-                                          (String value) {
+                                  items: [
+                                    {'display': 'Author', 'value': 'AUTHOR'},
+                                    {'display': 'Reader', 'value': 'USER'},
+                                  ].map<DropdownMenuItem<String>>(
+                                      (Map<String, String> role) {
                                     return DropdownMenuItem<String>(
-                                      value: value,
+                                      value: role[
+                                          'value'], // Send this value to the backend
                                       child: Padding(
                                         padding:
-                                            const EdgeInsets.only(left: 10),
-                                        child: Text(value,
-                                            style: AppTextStyles.hintText),
+                                            EdgeInsets.only(left: width * 0.01),
+                                        child: Text(
+                                          role[
+                                              'display']!, // Display this value in the dropdown
+                                          style: AppTextStyles.hintText,
+                                        ),
                                       ),
                                     );
                                   }).toList(),
-                                  decoration: const InputDecoration(
-                                    labelText: 'Who Are You?',
-                                    labelStyle:
-                                        TextStyle(color: AppColors.color3),
-                                    contentPadding:
-                                        EdgeInsets.symmetric(vertical: 10),
-                                    border: OutlineInputBorder(),
+                                  decoration: InputDecoration(
+                                    labelStyle: const TextStyle(
+                                        color: AppColors.color3),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: height * 0.0045),
+                                    border: const OutlineInputBorder(),
                                     filled: true,
                                     fillColor: AppColors.color6,
                                   ),
@@ -232,7 +258,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                       .color6, // Background color for the dropdown menu
                                 ),
                               ),
-                              const SizedBox(height: 20),
+
+                              SizedBox(height: height * 0.009),
                               // Image Upload Button
                               Row(
                                 children: [
@@ -253,7 +280,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       style: AppTextStyles.bodyText,
                                     ),
                                   ),
-                                  const SizedBox(width: 40),
+                                  SizedBox(width: width * 0.037),
                                   // Image preview (optional)
                                   Flexible(
                                       child: signupProvider.profileImage == null
@@ -264,14 +291,19 @@ class _SignupScreenState extends State<SignupScreen> {
                                           : Image.file(
                                               signupProvider.profileImage!,
                                               fit: BoxFit.cover,
-                                              height: 100))
+                                              height: height * 0.09))
                                 ],
                               ),
-                              const SizedBox(height: 20),
+                              SizedBox(height: height * 0.009),
                               // Show loading spinner if the provider is loading
                               signupProvider.isLoading
                                   ? const Center(
-                                      child: CircularProgressIndicator())
+                                      child: CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                    )
                                   : CustomButton(
                                       text: 'Sign Up',
                                       onPressed: () {
@@ -301,10 +333,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                         }
                                       },
                                       backgroundColor: AppColors.color2,
-                                      borderColor: Colors.transparent,
+                                      borderColor: AppColors.color3,
                                       textStyle: AppTextStyles.buttonText,
                                     ),
-                              const SizedBox(height: 80),
+                              SizedBox(height: height * 0.037),
                               // Bottom TextButton for navigation
                               TextButton(
                                 onPressed: () {
@@ -321,15 +353,15 @@ class _SignupScreenState extends State<SignupScreen> {
                                     text: 'Already have an account? ',
                                     style: TextStyle(
                                       color: Colors.grey.shade600,
-                                      fontSize: 16,
+                                      fontSize: width * 0.045,
                                     ),
-                                    children: const [
+                                    children: [
                                       TextSpan(
                                         text: 'Go to Login',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: AppColors.color3,
-                                          fontSize: 17,
+                                          fontSize: width * 0.045,
                                         ),
                                       ),
                                     ],

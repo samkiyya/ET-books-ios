@@ -1,11 +1,12 @@
 import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/home_provider.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
-import 'package:book_mobile/screens/details_screen.dart';
-import 'package:book_mobile/widgets/animated_search_field.dart';
+import 'package:book_mobile/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:book_mobile/constants/size.dart';
+import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/providers/home_provider.dart';
+import 'package:book_mobile/widgets/animated_search_field.dart';
 
 class AllAudioScreen extends StatefulWidget {
   const AllAudioScreen({super.key});
@@ -21,17 +22,22 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
   @override
   Widget build(BuildContext context) {
     final homeProvider = Provider.of<HomeProvider>(context);
+    double width = AppSizes.screenWidth(context);
+    double height = AppSizes.screenHeight(context);
 
-    // Filter the books based on the search query and selected filter type
+    // Filter books based on search query and filter type
     var filteredBooks = homeProvider.audioBooks.where((book) {
       if (_filterType == 'bookTitle') {
-        return book['bookTitle']!
+        return book['title']!
             .toLowerCase()
             .contains(_searchQuery.toLowerCase());
       } else if (_filterType == 'episode') {
-        return book['episode']!
-            .toLowerCase()
-            .contains(_searchQuery.toLowerCase());
+        return book['audios'] != null &&
+            (book['audios'] as List).any((audio) =>
+                audio['episode'] != null &&
+                audio['episode']
+                    .toLowerCase()
+                    .contains(_searchQuery.toLowerCase()));
       }
       return false;
     }).toList();
@@ -39,12 +45,16 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("All Audio Books"),
+          title: Text(
+            "All Audio Books",
+            style: AppTextStyles.heading2.copyWith(color: AppColors.color6),
+          ),
+          centerTitle: true,
           backgroundColor: AppColors.color1,
           foregroundColor: AppColors.color6,
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: EdgeInsets.all(width * 0.03),
           child: Column(
             children: [
               // Search Box
@@ -59,119 +69,22 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                       },
                     ),
                   ),
-                  // Filter Buttons (Book / Author)
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: height * 0.03),
+              // Filter Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          AppColors.color1,
-                          AppColors.color2
-                        ], // Gradient colors
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.color5
-                              .withOpacity(0.5), // Shadow for 3D effect
-                          offset: const Offset(3, 3), // Position of shadow
-                          blurRadius: 6, // Blur for soft edges
-                        ),
-                        BoxShadow(
-                          color: AppColors.color3
-                              .withOpacity(0.5), // Light shadow for highlight
-                          offset: const Offset(-2, -2),
-                          blurRadius: 4,
-                        ),
-                      ],
-                      borderRadius:
-                          BorderRadius.circular(12), // Rounded corners
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _filterType = 'bookTitle';
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors
-                            .transparent, // Make background transparent to use gradient
-                        shadowColor:
-                            Colors.transparent, // Disable default shadow
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12), // Button size
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        "Search By bookTitle",
-                        style: AppTextStyles.buttonText
-                            .copyWith(color: AppColors.color3),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  // Second Button
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [
-                          AppColors.color2,
-                          AppColors.color1,
-                        ], // Gradient colors
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.color5
-                              .withOpacity(0.5), // Shadow for 3D effect
-                          offset: const Offset(3, 3),
-                          blurRadius: 6,
-                        ),
-                        BoxShadow(
-                          color: AppColors.color5
-                              .withOpacity(0.5), // Light shadow for highlight
-                          offset: const Offset(-2, -2),
-                          blurRadius: 4,
-                        ),
-                      ],
-                      borderRadius:
-                          BorderRadius.circular(12), // Rounded corners
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          _filterType = 'episode';
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: Text(
-                        "Search By episode",
-                        style: AppTextStyles.buttonText
-                            .copyWith(color: AppColors.color3),
-                      ),
-                    ),
-                  ),
+                  _buildFilterButton(
+                      context, "Search By Title", 'bookTitle', width, height),
+                  SizedBox(width: width * 0.03),
+                  _buildFilterButton(
+                      context, "Search By Episode", 'episode', width, height),
                 ],
               ),
-              const SizedBox(height: 20),
-              // Scrollable Book List
+              SizedBox(height: height * 0.03),
+              // List of Audio Books
               homeProvider.isLoading
                   ? const Center(
                       child: CircularProgressIndicator(),
@@ -194,37 +107,75 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                                   ),
                                 ),
                                 child: Card(
-                                  color: AppColors.color1,
+                                  margin: EdgeInsets.symmetric(
+                                      vertical: height * 0.01),
+                                  color: AppColors.color5,
                                   child: ListTile(
-                                    leading: const Icon(
-                                      Icons.audio_file,
-                                      color: AppColors.color3,
-                                      size: 40,
+                                    leading: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15),
+                                      child: Image.network(
+                                        '${Network.baseUrl}/${book['imageFilePath']}',
+                                        width: width * 0.2,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (BuildContext context,
+                                            Object error,
+                                            StackTrace? stackTrace) {
+                                          return Icon(
+                                            Icons.broken_image,
+                                            size: width * 0.2,
+                                            color: Colors.grey,
+                                          );
+                                        },
+                                      ),
                                     ),
-                                    //Image.network(
-                                    //   '${Network.baseUrl}/${book['imageFilePath']}',
-                                    //   width: 50,
-                                    //   height: 50,
-                                    //   fit: BoxFit.cover,
-                                    // ),
-                                    title: Column(
+                                    title: Text(
+                                      book['title'] ?? "Unknown Title",
+                                      style: AppTextStyles.heading2.copyWith(
+                                          color: AppColors.color3,
+                                          fontSize: width * 0.045),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    subtitle: Column(
+                                      
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          book['bookTitle'],
-                                          style: const TextStyle(
-                                              color: AppColors.color2),
+                                          "Author: ${book['author'] ?? 'Unknown'}",
+                                          style: AppTextStyles.bodyText
+                                              .copyWith(
+                                                  color: AppColors.color3
+                                                      .withOpacity(0.8)),
                                         ),
                                         Text(
-                                          book['episode'],
-                                          style: const TextStyle(
-                                              color: AppColors.color2),
+                                          "Episodes: ${book['audioCount'] ?? '0'}",
+                                          style: AppTextStyles.bodyText
+                                              .copyWith(
+                                                  color: AppColors.color3
+                                                      .withOpacity(0.8)),
                                         ),
-                                        // Text(
-                                        //   "Price: ${book['price']} ETB",
-                                        //   style: const TextStyle(
-                                        //       color: AppColors.color3),
-                                        // ),
+                                        Text(
+                                          "Price: ${book['audio_price'] ?? 'Free'} ETB",
+                                          style: AppTextStyles.bodyText
+                                              .copyWith(
+                                                  color: AppColors.color2),
+                                        ),
                                       ],
+                                    ),
+                                    trailing: IconButton(
+                                      icon: const Icon(Icons.share,
+                                          color: AppColors.color3),
+                                      onPressed: () {
+                                        showModalBottomSheet(
+                                          context: context,
+                                          builder: (_) => BookSharingModal(
+                                            book: book,
+                                            appDownloadLink:
+                                                "${Network.appPlayStoreUrl}${Network.appPackageName}",
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),
@@ -234,6 +185,56 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                         ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBookImage(String? imageUrl) {
+    return Image.network(
+      imageUrl!,
+      width: 50,
+      height: 50,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return const Icon(
+          Icons.audiotrack,
+          color: Colors.grey,
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterButton(BuildContext context, String label, String type,
+      double width, double height) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.color1, AppColors.color2],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _filterType = type;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: EdgeInsets.symmetric(
+              horizontal: width * 0.04, vertical: height * 0.015),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Text(
+          label,
+          style: AppTextStyles.buttonText
+              .copyWith(color: AppColors.color6, fontSize: width * 0.04),
         ),
       ),
     );

@@ -25,22 +25,45 @@ dependencies:
   http_parser: ^4.0.2
   intl: ^0.19.0
   url_launcher: ^6.3.1
+  share_plus: ^10.1.2
   connectivity_plus: ^6.1.0
-  audioplayers: ^6.1.0
+  flutter_local_notifications: ^18.0.1
+  workmanager: ^0.5.2
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
+  syncfusion_flutter_pdfviewer: ^28.1.33
+  syncfusion_flutter_core: ^28.1.33
+  encrypt: ^5.0.3
+  flutter_launcher_icons: ^0.14.1
+  font_awesome_flutter: ^10.8.0
+  device_info_plus: ^10.1.2
+  permission_handler: ^11.3.1
+  wolt_modal_sheet: ^0.9.4
+  just_audio: ^0.9.42
+  audio_session: ^0.1.21
+  rxdart: ^0.28.0
+  flutter_slidable: ^3.1.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^5.0.0
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/ic_launcher.png"
+  adaptive_icon_background: "#FF6A331E"
+  adaptive_icon_foreground: "assets/icons/ic_launcher.png"
+  remove_alpha_ios: true
 
 # The following section is specific to Flutter packages.
 flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+    - assets/images/
   #   - images/a_dot_ham.jpeg
 
   # fonts:

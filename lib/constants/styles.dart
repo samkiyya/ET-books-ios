@@ -8,6 +8,7 @@ class AppColors {
   static const color4 = Color(0xFF040404); // Default text color
   static const color5 = Color(0xFF5A5535); // Error color
   static const color6 = Color(0xFFC4AA89);
+  static const color7 = Color(0xFF808000);
 }
 
 // Text Styles

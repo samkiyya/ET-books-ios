@@ -1,3 +1,4 @@
+// import 'package:book_mobile/constants/size.dart';
 import 'package:flutter/material.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
@@ -12,6 +13,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // double width = AppSizes.screenWidth(context);
+    // double height = AppSizes.screenHeight(context);
     return BottomNavigationBar(
       currentIndex: currentIndex,
       onTap: onTap,

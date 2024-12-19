@@ -26,7 +26,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     {'label': 'Subscribe', 'icon': Icons.subscriptions},
     // {'label': 'Author', 'icon': Icons.person},
     {'label': 'Share App', 'icon': Icons.share},
-    {'label': 'Share Code', 'icon': Icons.code},
+    // {'label': 'Share Code', 'icon': Icons.code},
     {'label': 'Settings', 'icon': Icons.settings},
     // {'label': 'Contact Us', 'icon': Icons.contact_mail},
     {'label': 'announcs', 'icon': Icons.announcement},
@@ -143,9 +143,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
       case 'Share App':
         shareApp(context);
         break;
-      case 'Share Code':
-        // Share Code
-        break;
+      // case 'Share Code':
+      //   // Share Code
+      //   break;
       case 'Settings':
         _settings(context);
         break;

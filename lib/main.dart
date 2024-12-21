@@ -118,7 +118,7 @@ class MyApp extends StatelessWidget {
           '/profile': (context) => const ProfileScreen(),
           '/allAudio': (context) => const AllAudioScreen(),
           '/settings': (context) => const SettingsScreen(),
-          '/notifications': (context) => const NotificationScreen(),
+          '/notification': (context) => const NotificationScreen(),
           '/allEbook': (context) => const AllBooksScreen(),
           '/edit-profile': (context) => const UpdateProfileScreen(),
           '/my-books': (context) => const DownloadScreen(),

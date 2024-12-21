@@ -58,17 +58,27 @@ class AnnouncementProvider with ChangeNotifier {
 
   Future<void> fetchComments(int announcementId) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('userToken');
       final response = await http.get(
         Uri.parse('$baseUrl/announcement/comments/$announcementId'),
+        headers: {
+          'Authorization': 'Bearer $token',
+        },
       );
+      print('response: ${response.body}');
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-        final List<dynamic> commentsData = data['data'] ?? [];
+        final List<dynamic> commentsData =
+            json.decode(response.body); // Parse as list
+
+        // Map JSON to Comment objects
         final List<Comment> comments =
             commentsData.map((json) => Comment.fromJson(json)).toList();
 
+        // Store comments in the map
         _comments[announcementId] = comments;
+
         // Sorting by createdAt, latest first
         _comments[announcementId]!
             .sort((a, b) => b.createdAt.compareTo(a.createdAt));
@@ -89,21 +99,25 @@ class AnnouncementProvider with ChangeNotifier {
   }) async {
     final userId = await getUserId();
     print('userId: $userId');
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('userToken');
 
-    if (userId == null) {
-      _error = 'You must be logged in to post a comment';
-      notifyListeners();
-      return false;
-    }
+    // if (userId == null) {
+    //   _error = 'You must be logged in to post a comment';
+    //   notifyListeners();
+    //   return false;
+    // }
     _isLoading = true;
     notifyListeners();
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/announcement/comment'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
         body: json.encode({
           'announcementId': announcementId,
-          'userId': userId,
           'comment': comment,
         }),
       );
@@ -126,7 +140,8 @@ class AnnouncementProvider with ChangeNotifier {
   }
 
   Future<String?> getUserId() async {
-    final prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     return prefs.getString('userId');
   }
 
@@ -138,12 +153,7 @@ class AnnouncementProvider with ChangeNotifier {
   Future<void> likeAnnouncement(int announcementId) async {
     final url = Uri.parse('$baseUrl/announcement/like');
     final userId = await getUserId();
-
-    if (userId == null) {
-      _error = 'You must be logged in to like an announcement';
-      notifyListeners();
-      return;
-    }
+    print('userId for like: $userId');
 
     try {
       final response = await http.post(
@@ -155,12 +165,22 @@ class AnnouncementProvider with ChangeNotifier {
         }),
       );
 
-      if (response.statusCode == 201) {
-        // Update local announcement data
+      if (response.statusCode == 201 || response.statusCode == 200) {
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+        final wasLiked = responseData['wasLiked'];
         final announcement =
             _announcements.firstWhere((a) => a.id == announcementId);
-        announcement.likesCount += 1;
-        announcement.isLiked = true;
+
+        if (wasLiked) {
+          announcement.likesCount += 1;
+          _error = 'You have liked this announcement';
+        } else {
+          announcement.likesCount -= 1;
+          _error = 'You have unliked this announcement';
+        }
+
+        announcement.isLiked = wasLiked;
+        print('isLiked: ${announcement.isLiked}');
 
         notifyListeners();
       } else if (response.body

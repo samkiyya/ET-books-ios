@@ -36,7 +36,7 @@ class BookService {
         MaterialPageRoute(
           builder: (_) => BookReaderScreen(
             bookTitle: bookTitle,
-            pdfPath: path,
+            filePath: path,
           ),
         ),
       );

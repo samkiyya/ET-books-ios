@@ -1,3 +1,5 @@
+import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/screens/video_player_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
@@ -97,11 +99,78 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Display image if exists
+                        if (announcement.imageUrl != null &&
+                            announcement.imageUrl!.isNotEmpty &&
+                            (announcement.videoUrl == null ||
+                                announcement.videoUrl!.isEmpty))
+                          Padding(
+                            padding:
+                                EdgeInsets.symmetric(vertical: height * 0.01),
+                            child: Container(
+                              width: double.infinity,
+                              height: height * 0.25,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: NetworkImage(
+                                      '${Network.baseUrl}/${announcement.imageUrl!}'),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
+
+                        // Display video thumbnail if exists
+                        if (announcement.videoUrl != null &&
+                            announcement.videoUrl!.isNotEmpty)
+                          Padding(
+                            padding:
+                                EdgeInsets.symmetric(vertical: height * 0.01),
+                            child: GestureDetector(
+                              onTap: () {
+                                // Open video in a new screen or video player
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => VideoPlayerScreen(
+                                      videoUrl:
+                                          '${Network.baseUrl}/${announcement.videoUrl!}',
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Container(
+                                    width: double.infinity,
+                                    height: height * 0.25,
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            '${Network.baseUrl}/${announcement.imageUrl!}'),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.play_circle_fill,
+                                    size: 50,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                        SizedBox(height: height * 0.01),
                         Text(
                           announcement.content,
                           style: AppTextStyles.bodyText,
                         ),
-                        SizedBox(height: height * 0.001),
+                        SizedBox(height: height * 0.01),
                         Row(
                           children: [
                             // Comment Button with a count
@@ -174,10 +243,12 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.thumb_up,
                                     size: 18,
-                                    color: AppColors.color2,
+                                    color: announcement.isLiked
+                                        ? Colors.blue
+                                        : AppColors.color2,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(

@@ -158,7 +158,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => BookReaderScreen(
-                        pdfPath:
+                        filePath:
                             '${Network.baseUrl}/${widget.audioBook['pdfFilePath']}',
                         bookTitle: widget.audioBook['title'],
                       ),

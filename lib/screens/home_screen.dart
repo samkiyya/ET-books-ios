@@ -141,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen>
             IconButton(
               icon: Icon(Icons.notifications, size: width * 0.09),
               onPressed: () {
-                Navigator.pushNamed(context, '/notifications');
+                Navigator.pushNamed(context, '/notification');
               },
             ),
             Container(

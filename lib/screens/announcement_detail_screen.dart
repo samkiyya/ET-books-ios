@@ -28,6 +28,8 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
   void _fetchComments() {
     Provider.of<AnnouncementProvider>(context, listen: false)
         .fetchComments(widget.announcement.id);
+    print(
+        'comments fetched are: ${Provider.of<AnnouncementProvider>(context, listen: false).getComments(widget.announcement.id)}');
   }
 
   void _addComment() async {
@@ -176,8 +178,9 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                             vertical: height * 0.006, horizontal: width * 0.04),
                         elevation: 8,
                         shadowColor: AppColors.color3,
-                        color: AppColors.color1,
+                        color: AppColors.color5,
                         child: ListTile(
+                          contentPadding: const EdgeInsets.all(8),
                           leading: CircleAvatar(
                             child: Text(
                               'U${comment.userId}',

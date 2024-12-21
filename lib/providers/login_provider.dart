@@ -109,6 +109,7 @@ class LoginProvider with ChangeNotifier {
             authProvider.userData ?? (loginResponse.userData);
           }
           await _saveTokenToLocalStorage(_token!);
+          await _saveUserIdToLocalStorage(loginResponse.userData.id.toString());
 
           _successMessage = 'You have logged in successfully!';
         } else {
@@ -161,6 +162,11 @@ class LoginProvider with ChangeNotifier {
     if (authProvider.userData != null) {
       await prefs.setString('userId', authProvider.userData!.id.toString());
     }
+  }
+
+  Future<void> _saveUserIdToLocalStorage(String userId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
   }
 
   void clearMessages() {

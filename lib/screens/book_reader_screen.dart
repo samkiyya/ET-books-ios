@@ -7,11 +7,15 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 class BookReaderScreen extends StatefulWidget {
+  final int bookId;
   final String filePath;
   final String bookTitle;
 
   const BookReaderScreen(
-      {super.key, required this.filePath, required this.bookTitle});
+      {super.key,
+      required this.filePath,
+      required this.bookTitle,
+      required this.bookId});
 
   @override
   State<BookReaderScreen> createState() => _BookReaderScreenState();
@@ -114,13 +118,17 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
   Widget _getFileReaderScreen() {
     if (_localFilePath!.endsWith('.pdf')) {
       return PdfReaderScreen(
-          filePath: _localFilePath!, bookTitle: widget.bookTitle);
+          filePath: _localFilePath!,
+          bookTitle: widget.bookTitle,
+          bookId: widget.bookId);
     } else if (_localFilePath!.endsWith('.epub')) {
       return EpubReaderScreen(
           filePath: _localFilePath!, bookTitle: widget.bookTitle);
     } else if (_localFilePath!.endsWith('.docx')) {
       return DocxReaderScreen(
-          filePath: _localFilePath!, bookTitle: widget.bookTitle);
+          filePath: _localFilePath!,
+          bookTitle: widget.bookTitle,
+          bookId: widget.bookId);
     } else {
       return const Center(child: Text('Unsupported file format'));
     }

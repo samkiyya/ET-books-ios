@@ -14,6 +14,7 @@ import 'package:book_mobile/providers/signup_provider.dart';
 import 'package:book_mobile/providers/subscription_provider.dart';
 import 'package:book_mobile/providers/subscription_tiers_provider.dart';
 import 'package:book_mobile/providers/update_profile_provider.dart';
+import 'package:book_mobile/providers/user_interaction_provider.dart';
 
 import 'package:book_mobile/screens/all_audio_screen.dart';
 import 'package:book_mobile/screens/all_book_screen.dart';
@@ -96,6 +97,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AnnouncementProvider()),
         ChangeNotifierProvider(create: (context) => UpdateProfileProvider()),
         ChangeNotifierProvider(create: (context) => AuthorProvider()),
+        ChangeNotifierProvider(create: (context) => UserActivityProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Signup',

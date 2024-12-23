@@ -1,4 +1,5 @@
 import 'package:book_mobile/constants/constants.dart';
+import 'package:book_mobile/providers/user_activity_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -17,7 +18,7 @@ class SubscriptionProvider with ChangeNotifier {
 
   DateTime? _startDate;
   DateTime? _endDate;
-  String _subscriptionType = 'monthly'; // Default to monthly
+  String _subscriptionType = 'monthly';
 
   bool get isUploading => _isUploading;
   String get errorMessage => _errorMessage;
@@ -147,7 +148,8 @@ class SubscriptionProvider with ChangeNotifier {
       } else {
         final errorResponse = json.decode(responseBody);
         _errorMessage =
-            errorResponse['error'] ?? 'Failed to create subscription';
+            errorResponse['message'] ?? 'Failed to create subscription';
+        print(errorResponse);
       }
     } catch (e) {
       _errorMessage = 'An error occurred: $e';

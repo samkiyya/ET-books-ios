@@ -1,10 +1,13 @@
 import 'dart:io';
+import 'package:book_mobile/providers/user_interaction_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
 class PdfReaderScreen extends StatefulWidget {
+  final int bookId;
   final String filePath; // Local or network URL of the PDF
   final String bookTitle;
 
@@ -12,6 +15,7 @@ class PdfReaderScreen extends StatefulWidget {
     super.key,
     required this.filePath,
     required this.bookTitle,
+    required this.bookId,
   });
 
   @override
@@ -35,6 +39,26 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
     _pdfViewerController = PdfViewerController();
     _loadPreferences();
     _loadPdf(widget.filePath);
+    // Start tracking the user's activity when the screen is loaded
+    final userActivityProvider =
+        Provider.of<UserActivityProvider>(context, listen: false);
+    userActivityProvider.startTracking(widget.bookId);
+  }
+
+  @override
+  void dispose() {
+    // Stop tracking when the user leaves the screen
+    final userActivityProvider =
+        Provider.of<UserActivityProvider>(context, listen: false);
+    userActivityProvider.stopTracking(widget.bookId);
+    super.dispose();
+  }
+
+  // Increment pages read when user progresses in the book
+  void _incrementPagesRead() {
+    final userActivityProvider =
+        Provider.of<UserActivityProvider>(context, listen: false);
+    userActivityProvider.incrementPagesRead();
   }
 
   void _loadPreferences() async {
@@ -84,6 +108,8 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userActivityProvider = Provider.of<UserActivityProvider>(context);
+
     double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Theme(
@@ -177,12 +203,15 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                                 : PdfScrollDirection.horizontal,
                             key: _pdfViewerStateKey,
                             canShowPageLoadingIndicator: true,
-                            initialZoomLevel: 2,
                             pageLayoutMode: _scrollDirection == 'vertical'
                                 ? PdfPageLayoutMode.continuous
                                 : PdfPageLayoutMode.single,
-                            onTap: (details) {
+                            onTap: (details) async {
                               _toggleAppBarVisibility();
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.setInt('last_interaction',
+                                  DateTime.now().millisecondsSinceEpoch);
                               print('Tapped on page: ${details.pageNumber}');
                             },
                             interactionMode: PdfInteractionMode.pan,
@@ -211,6 +240,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                                   color: _getTextColor()),
                               onPressed: () async {
                                 _pdfViewerController.nextPage();
+                                _incrementPagesRead();
                               },
                             ),
                           ],

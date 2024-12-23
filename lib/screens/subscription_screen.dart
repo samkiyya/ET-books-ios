@@ -1,11 +1,13 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/providers/user_activity_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/subscription_provider.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SubscriptionOrderScreen extends StatefulWidget {
   final Map<String, dynamic> tier;
@@ -20,6 +22,7 @@ class SubscriptionOrderScreen extends StatefulWidget {
 class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
   final _bankNameController = TextEditingController();
   final Map<String, String> _validationErrors = {};
+  final UserActivityTracker _tracker = UserActivityTracker();
 
   // Validate form inputs and return true if valid
   bool _validateInputs() {
@@ -262,8 +265,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                           )
                         : CustomButton(
                             backgroundColor: AppColors.color2,
-                                            borderColor: AppColors.color3,
-
+                            borderColor: AppColors.color3,
                             textStyle: AppTextStyles.buttonText,
                             text: 'Submit Order',
                             onPressed: () async {
@@ -276,8 +278,31 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                 bankName: _bankNameController.text.trim(),
                                 context: context,
                               );
+                              final actionDetails = {
+                                "subscriptionType": provider.subscriptionType,
+                                "amount": provider.subscriptionType == 'yearly'
+                                    ? widget.tier['annual_price']
+                                    : widget.tier['monthly_price'],
+                                "startDate":
+                                    provider.startDate!.toIso8601String(),
+                                "endDate": provider.endDate!.toIso8601String(),
+                                "tierId": widget.tier['id'].toString(),
+                              };
+                              SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
+                              int? userId = int.tryParse(
+                                  pref.getString('userId').toString());
 
                               final isSuccess = provider.errorMessage.isEmpty;
+
+                              if (isSuccess) {
+                                await _tracker.trackUserActivity(
+                                  userId: userId!,
+                                  actionType: "SUBSCRIPTION",
+                                  actionDetails: actionDetails,
+                                );
+                              }
+
                               final message = isSuccess
                                   ? provider.successMessage
                                   : provider.errorMessage;

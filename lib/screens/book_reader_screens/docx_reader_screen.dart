@@ -3,11 +3,15 @@ import 'package:docx_viewer/docx_viewer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DocxReaderScreen extends StatefulWidget {
+  final int bookId;
   final String filePath;
   final String bookTitle;
 
   const DocxReaderScreen(
-      {super.key, required this.filePath, required this.bookTitle});
+      {super.key,
+      required this.filePath,
+      required this.bookTitle,
+      required this.bookId});
 
   @override
   State<DocxReaderScreen> createState() => _DocxReaderScreenState();

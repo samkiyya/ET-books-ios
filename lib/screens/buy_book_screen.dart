@@ -3,10 +3,12 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
+import 'package:book_mobile/providers/user_activity_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BuyBookScreen extends StatefulWidget {
   final Map<String, dynamic> book;
@@ -34,6 +36,8 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
   @override
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<PurchaseOrderProvider>(context);
+    final UserActivityTracker tracker = UserActivityTracker();
+
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
     return SafeArea(
@@ -233,8 +237,24 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                             id: widget.book['id'].toString(),
                             transactionNumber: _transactionController.text,
                             bankName: _bankNameController.text,
-                            bookType: widget.book['type'].toString(),
+                            // bookType: widget.book['type'].toString(),
+                            bookType: 'PDF',
                             context: context,
+                          );
+
+                          final actionDetails = {
+                            "bookId": widget.book['id'].toString(),
+                            "title": widget.book['title'].toString(),
+                            "price": widget.book['price'].toString(),
+                          };
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
+                          int? userId =
+                              int.tryParse(pref.getString('userId').toString());
+                          await tracker.trackUserActivity(
+                            userId: userId!,
+                            actionType: "BOOK_PURCHASE",
+                            actionDetails: actionDetails,
                           );
 
                           if (context.mounted) {

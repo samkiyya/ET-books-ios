@@ -104,6 +104,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   shadowColor: AppColors.color3,
                   elevation: 8,
                   child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(
+                        vertical: height * 0.009, horizontal: width * 0.03),
                     leading: Icon(
                       notification['isRead']
                           ? Icons.notifications_none
@@ -112,8 +114,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           ? AppColors.color3
                           : Colors.blue,
                     ),
-                    title: Text(notification['title'] ?? 'No Title'),
-                    subtitle: Text(notification['body'] ?? 'No Body'),
+                    title: Text(
+                      notification['title'] ?? 'No Title',
+                      style: AppTextStyles.bodyText.copyWith(
+                        color: AppColors.color3,
+                        fontSize: width * 0.05,
+                        letterSpacing: 0.5,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: Text(
+                      notification['body'] ?? 'No Body',
+                      style: AppTextStyles.bodyText.copyWith(
+                        color: AppColors.color3,
+                        fontSize: width * 0.04,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
                     tileColor: notification['isRead']
                         ? AppColors.color5
                         : AppColors.color2,

@@ -49,6 +49,9 @@ class LoginProvider with ChangeNotifier {
 
       _isAuthenticated = isValid;
       _isTokenExpired = tokenExpirationCheck(token);
+      if (_isAuthenticated) {
+        _successMessage = 'You have logged in successfully!';
+      }
 
       if (!isValid) {
         _token = null;
@@ -63,9 +66,10 @@ class LoginProvider with ChangeNotifier {
 
   Future<void> loginWithGoogle() async {
     await authProvider.loginWithGoogle();
-    if (authProvider.userData != null) {
-      await checkLoginStatus();
-    }
+    print('User Data from google login: ${authProvider.userData}');
+    await checkLoginStatus();
+    _isAuthenticated = true;
+    _successMessage = 'You have logged in successfully!';
 
     notifyListeners();
   }

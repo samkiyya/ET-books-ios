@@ -101,14 +101,15 @@ class AnnouncementProvider with ChangeNotifier {
     print('userId: $userId');
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('userToken');
-
-    // if (userId == null) {
-    //   _error = 'You must be logged in to post a comment';
-    //   notifyListeners();
-    //   return false;
-    // }
+    print('token: $token');
+    if (userId == null) {
+      _error = 'You must be logged in to post a comment';
+      notifyListeners();
+      return false;
+    }
     _isLoading = true;
     notifyListeners();
+    print('announcementId: $announcementId');
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/announcement/comment'),
@@ -121,11 +122,12 @@ class AnnouncementProvider with ChangeNotifier {
           'comment': comment,
         }),
       );
-
+      print('response: ${response.body}');
       if (response.statusCode == 201) {
         // Refresh comments and announcements to update counts
         await fetchComments(announcementId);
         await fetchAnnouncements();
+
         return true;
       } else {
         throw Exception('Failed to add comment');

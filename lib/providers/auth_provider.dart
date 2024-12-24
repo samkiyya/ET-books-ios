@@ -62,15 +62,35 @@ class AuthProvider with ChangeNotifier {
   /// Save token and user data to storage
   Future<void> _handleSuccessfulLogin(Map<String, dynamic> data) async {
     _token = data['userToken'];
+    print('User Data before assign😒😒😒😒😒😒: ${jsonEncode(_userData)}');
+
+    // Initialize _userData with the parsed data from JSON
     _userData = UserData.fromJson(data['userData']);
+
     final prefs = await SharedPreferences.getInstance();
+
+    // Save the user token
     await prefs.setString('userToken', _token!);
-    await prefs.setString('userData', jsonEncode(data['userData']));
-    await storageService.saveToken(_token!);
-    await prefs.setString('userId', jsonEncode(data['userData']['id']));
-    print('User ID: ${data['userData']['id']}');
-    _updateAuthState(isAuthenticated: true, token: _token, userData: _userData);
-    _updateAuthState(isAuthenticated: true);
+
+    // Save the user data, using toJson() to convert it to a Map before encoding
+    await prefs.setString(
+        'userData', jsonEncode(_userData?.toJson())); // Fix here
+
+    // Save the user ID, making sure it's properly encoded as a string
+    await prefs.setString('userId', jsonEncode(_userData?.id)); // Fix here
+
+    // Print user ID for debugging
+    print('User ID: ${_userData?.id}');
+
+    // Print the user data for debugging (UserData instance)
+    print('User Data: $_userData');
+
+    _updateAuthState(
+      isAuthenticated: true,
+      token: _token,
+      userData: _userData,
+    );
+    print('User Data 🤣🤣: $_userData');
   }
 
   /// Remove token and user data from storage
@@ -141,7 +161,7 @@ class AuthProvider with ChangeNotifier {
 
             // Log for debugging
             print('Received token: $token');
-            print('Received user data: $userData');
+            print('Received user data: ${jsonEncode(userData)}');
 
             // Save token and user data
             await _handleSuccessfulLogin({

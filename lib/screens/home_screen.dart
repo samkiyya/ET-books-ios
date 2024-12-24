@@ -278,8 +278,25 @@ class _HomeScreenState extends State<HomeScreen>
                                                           overflow: TextOverflow
                                                               .ellipsis,
                                                         ),
+                                                        SizedBox(
+                                                            height: height *
+                                                                0.0045),
+                                                        Text(
+                                                          "By: ${book['author'] ?? "N/A"}",
+                                                          style: TextStyle(
+                                                              color: AppColors
+                                                                  .color3
+                                                                  .withOpacity(
+                                                                      0.7)),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
                                                         Text(
                                                           "Price: ${book['price'] ?? 'N/A'} ETB",
+                                                          style: const TextStyle(
+                                                              color: AppColors
+                                                                  .color2),
                                                         ),
                                                       ],
                                                     ),

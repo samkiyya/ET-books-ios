@@ -28,8 +28,9 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-    Provider.of<LoginProvider>(context, listen: false).addListener(_handleLoginResponse);
-  });
+      Provider.of<LoginProvider>(context, listen: false)
+          .addListener(_handleLoginResponse);
+    });
   }
 
 // Show success or error dialog
@@ -67,31 +68,30 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleLoginResponse() {
-  final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-  if (loginProvider.successMessage.isNotEmpty) {
-    _showResponseDialog(
-      context,
-      loginProvider.successMessage,
-      "Close",
-      true,
-    );
-    loginProvider.clearMessages();
-  } else if (loginProvider.isAuthenticated) {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const HomeScreen()),
-    );
-  } else if (loginProvider.errorMessage.isNotEmpty) {
-    _showResponseDialog(
-      context,
-      loginProvider.errorMessage,
-      "Retry",
-      false,
-    );
-    loginProvider.clearMessages();
+    if (loginProvider.successMessage.isNotEmpty) {
+      _showResponseDialog(
+        context,
+        loginProvider.successMessage,
+        "Close",
+        true,
+      );
+      loginProvider.clearMessages();
+    } else if (loginProvider.isAuthenticated) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const HomeScreen()),
+      );
+    } else if (loginProvider.errorMessage.isNotEmpty) {
+      _showResponseDialog(
+        context,
+        loginProvider.errorMessage,
+        "Retry",
+        false,
+      );
+      loginProvider.clearMessages();
+    }
   }
-}
-
 
   String? _validateField(String key, String value) {
     if (value.isEmpty) {
@@ -131,9 +131,11 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Padding(
                 padding:
                     EdgeInsets.only(top: height * 0.09, left: width * 0.04),
-                child: const Text(
-                  'Login Page!',
-                  style: AppTextStyles.heading1,
+                child: Center(
+                  child: const Text(
+                    'Login',
+                    style: AppTextStyles.heading1,
+                  ),
                 ),
               ),
             ),
@@ -247,16 +249,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onTap: () async {
                                       try {
                                         await loginProvider.loginWithGoogle();
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content:
-                                                  Text('Logged in with Google'),
-                                            ),
-                                          );
-                                        }
-                                        // Check if user is authenticated after Facebook login and navigate
 
                                         if (loginProvider.isAuthenticated) {
                                           if (context.mounted) {

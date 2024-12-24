@@ -70,7 +70,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLoginResponse() {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
-    if (loginProvider.successMessage.isNotEmpty) {
+    if (loginProvider.successMessage.isNotEmpty &&
+        loginProvider.isAuthenticated) {
       _showResponseDialog(
         context,
         loginProvider.successMessage,
@@ -78,11 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
         true,
       );
       loginProvider.clearMessages();
-    } else if (loginProvider.isAuthenticated) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    } else if (loginProvider.errorMessage.isNotEmpty) {
+    }
+    //else if (loginProvider.isAuthenticated) {
+    //   Navigator.of(context).pushReplacement(
+    //     MaterialPageRoute(builder: (_) => const HomeScreen()),
+    //   );
+    // }
+    else if (loginProvider.errorMessage.isNotEmpty) {
       _showResponseDialog(
         context,
         loginProvider.errorMessage,
@@ -130,12 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: Padding(
                 padding:
-                    EdgeInsets.only(top: height * 0.09, left: width * 0.04),
-                child: Center(
-                  child: const Text(
-                    'Login',
-                    style: AppTextStyles.heading1,
-                  ),
+                    EdgeInsets.only(top: height * 0.09, left: width * 0.36),
+                child: const Text(
+                  'Login',
+                  style: AppTextStyles.heading1,
                 ),
               ),
             ),

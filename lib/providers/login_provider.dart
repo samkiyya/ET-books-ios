@@ -68,8 +68,12 @@ class LoginProvider with ChangeNotifier {
     await authProvider.loginWithGoogle();
     print('User Data from google login: ${authProvider.userData}');
     await checkLoginStatus();
-    _isAuthenticated = true;
-    _successMessage = 'You have logged in successfully!';
+    print('user data from google login: ${authProvider.userData}');
+    if (authProvider.isAuthenticated) {
+      _isAuthenticated = authProvider.isAuthenticated;
+      _successMessage = 'You have logged in successfully!';
+    }
+    print('Is Authenticated: $_isAuthenticated');
 
     notifyListeners();
   }

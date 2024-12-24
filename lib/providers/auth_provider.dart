@@ -86,7 +86,7 @@ class AuthProvider with ChangeNotifier {
     print('User Data: $_userData');
 
     _updateAuthState(
-      isAuthenticated: true,
+      isAuthenticated: _token != null,
       token: _token,
       userData: _userData,
     );

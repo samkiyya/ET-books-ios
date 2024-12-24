@@ -40,7 +40,12 @@ class SubscriptionTiersProvider with ChangeNotifier {
         hasError = true;
       }
     } catch (e) {
-      errorMessage = 'Error fetching data: $e';
+      if (e is http.ClientException) {
+        errorMessage =
+            'Error fetching data: please check your internet connection';
+      } else {
+        errorMessage = 'Error fetching data: ';
+      }
       print('Error fetching data: $e');
       hasError = true;
     } finally {

@@ -137,7 +137,6 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     subtitle: Column(
-                                      
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
@@ -190,20 +189,20 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
     );
   }
 
-  Widget _buildBookImage(String? imageUrl) {
-    return Image.network(
-      imageUrl!,
-      width: 50,
-      height: 50,
-      fit: BoxFit.cover,
-      errorBuilder: (context, error, stackTrace) {
-        return const Icon(
-          Icons.audiotrack,
-          color: Colors.grey,
-        );
-      },
-    );
-  }
+  // Widget _buildBookImage(String? imageUrl) {
+  //   return Image.network(
+  //     imageUrl!,
+  //     width: 50,
+  //     height: 50,
+  //     fit: BoxFit.cover,
+  //     errorBuilder: (context, error, stackTrace) {
+  //       return const Icon(
+  //         Icons.audiotrack,
+  //         color: Colors.grey,
+  //       );
+  //     },
+  //   );
+  // }
 
   Widget _buildFilterButton(BuildContext context, String label, String type,
       double width, double height) {

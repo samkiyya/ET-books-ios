@@ -41,7 +41,7 @@ class OrderStatusProvider with ChangeNotifier {
     );
   }
 
-  // Fetch orders for the logged-in user
+  // Fetch orders for the logged-in user with an online-first approach
   Future<void> fetchOrders() async {
     _isLoading = true;
     _errorMessage = '';
@@ -78,14 +78,31 @@ class OrderStatusProvider with ChangeNotifier {
         print('Orders: $_orders');
         _successMessage =
             responseBody['message'] ?? 'Orders fetched successfully.';
+
+        // Cache orders locally
+        await prefs.setString('cachedOrders', json.encode(ordersData));
       } else {
-        _errorMessage = 'Failed to fetch orders your order status.';
+        _errorMessage = 'Failed to fetch your order status.';
         print(
             'Failed to fetch orders: ${response.body} Status code: ${response.statusCode}');
       }
     } catch (error) {
       if (error is SocketException) {
-        _errorMessage = 'No internet connection. Please check your network.';
+        _errorMessage =
+            'No internet connection. Displaying cached orders if available.';
+        print('No internet connection: $error');
+
+        // Attempt to load cached orders
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final cachedOrders = prefs.getString('cachedOrders');
+        if (cachedOrders != null) {
+          final List<dynamic> ordersData = json.decode(cachedOrders);
+          _orders = ordersData.map((json) => Order.fromJson(json)).toList();
+          _successMessage = 'Displaying cached orders.';
+        } else {
+          _errorMessage =
+              'No internet connection and no cached data available.';
+        }
       } else {
         _errorMessage = 'Failed to fetch orders. Please try again later.';
         print('Failed to fetch orders: $error');

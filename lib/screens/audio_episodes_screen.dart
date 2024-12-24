@@ -15,6 +15,7 @@ class AudioEpisodeScreen extends StatefulWidget {
 class _AudioEpisodeScreenState extends State<AudioEpisodeScreen> {
   final Map<int, double> _downloadProgress = {};
   final Set<int> _downloadingIds = {};
+  final Map<int, bool> _isPlaying = {}; // Track play state for each episode
 
   @override
   Widget build(BuildContext context) {
@@ -91,19 +92,18 @@ class _AudioEpisodeScreenState extends State<AudioEpisodeScreen> {
                       final isDownloaded = snapshot.data ?? false;
                       return IconButton(
                         icon: Icon(
-                          EpisodeService.isPlaying
-                              ? Icons.pause
-                              : (isDownloaded
-                                  ? Icons.play_arrow
-                                  : Icons.download),
+                          isDownloaded
+                              ? (_isPlaying[episodeId] == true
+                                  ? Icons.pause
+                                  : Icons.play_arrow)
+                              : EpisodeService.isPlaying
+                                  ? Icons.pause
+                                  : Icons.download,
                           color: AppColors.color3,
                         ),
                         onPressed: () {
                           if (isDownloaded) {
-                            EpisodeService.togglePlayPause(
-                              widget.audioBook['id'],
-                              episodeId,
-                            );
+                            _togglePlayPause(episodeId);
                           } else {
                             _downloadEpisode(episode);
                           }
@@ -140,6 +140,19 @@ class _AudioEpisodeScreenState extends State<AudioEpisodeScreen> {
 
     setState(() {
       _downloadingIds.remove(episodeId);
+    });
+  }
+
+  void _togglePlayPause(int episodeId) {
+    setState(() {
+      if (_isPlaying[episodeId] == true) {
+        _isPlaying[episodeId] = false;
+        EpisodeService.pauseEpisode(episodeId); // Now calls pauseEpisode
+      } else {
+        _isPlaying[episodeId] = true;
+        EpisodeService.playEpisode(widget.audioBook['id'],
+            episodeId); // Now calls playEpisode with the bookId
+      }
     });
   }
 }

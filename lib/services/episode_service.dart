@@ -6,11 +6,20 @@ import 'package:dio/dio.dart';
 class EpisodeService {
   static final _dio = Dio();
   static final _audioPlayer = AudioPlayer();
-  static bool isPlaying = false; // Track the playback state
+  static int?
+      _currentlyPlayingEpisodeId; // Tracks the currently playing episode ID
+
+  // Getter to check if any episode is playing
+  static bool get isPlaying => _audioPlayer.playing;
+
+  // Method to check if a specific episode is playing
+  static bool isEpisodePlaying(int episodeId) {
+    return _currentlyPlayingEpisodeId == episodeId && isPlaying;
+  }
 
   static Future<String> getEpisodePath(int bookId, int episodeId) async {
     final directory = await getApplicationDocumentsDirectory();
-    return '${directory.path}/book_${bookId}_episode_${episodeId}.mp3';
+    return '${directory.path}/book_${bookId}_episode_$episodeId.mp3';
   }
 
   static Future<bool> isEpisodeDownloaded(int bookId, int episodeId) async {
@@ -23,22 +32,13 @@ class EpisodeService {
     if (await File(path).exists()) {
       await _audioPlayer.setFilePath(path);
       await _audioPlayer.play();
+      _currentlyPlayingEpisodeId = episodeId; // Track the playing episode ID
     }
   }
 
-  static Future<void> togglePlayPause(int bookId, int episodeId) async {
-    final path = await getEpisodePath(bookId, episodeId);
-
-    if (await File(path).exists()) {
-      if (isPlaying) {
-        // Pause the audio if it's already playing
-        await _audioPlayer.pause();
-      } else {
-        // Otherwise play the episode
-        await _audioPlayer.setFilePath(path);
-        await _audioPlayer.play();
-      }
-      isPlaying = !isPlaying; // Toggle the playback state
+  static Future<void> pauseEpisode(int episodeId) async {
+    if (_currentlyPlayingEpisodeId == episodeId) {
+      await _audioPlayer.pause();
     }
   }
 

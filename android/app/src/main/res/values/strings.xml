@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="facebook_app_id">492237580533079</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
     <string name="facebook_client_token">c2425f1470bae7e1c099bd70ada5d1e7</string>
+    <string name="app_name">book_mobile</string>
 </resources>

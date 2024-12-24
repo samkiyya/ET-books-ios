@@ -5,6 +5,8 @@ class Announcement {
   final String status;
   final String reason;
   final String content;
+  final String? imageUrl;
+  final String? videoUrl;
   bool allowComments;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -19,6 +21,8 @@ class Announcement {
       required this.status,
       required this.reason,
       required this.content,
+      this.imageUrl,
+      this.videoUrl,
       required this.allowComments,
       required this.createdAt,
       required this.updatedAt,
@@ -34,6 +38,8 @@ class Announcement {
       status: json['status'] ?? '',
       reason: json['reason'] ?? '',
       content: json['content'] ?? '',
+      imageUrl: json['image'],
+      videoUrl: json['video'],
       allowComments: json['allowComments'] ?? false,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])

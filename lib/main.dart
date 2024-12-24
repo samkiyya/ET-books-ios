@@ -1,43 +1,14 @@
+import 'dart:async';
 import 'dart:io';
-
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/announcement_provider.dart';
-import 'package:book_mobile/providers/auth_provider.dart';
-import 'package:book_mobile/providers/author_provider.dart';
-import 'package:book_mobile/providers/home_provider.dart';
-import 'package:book_mobile/providers/login_provider.dart';
-import 'package:book_mobile/providers/notification_provider.dart';
-import 'package:book_mobile/providers/order_status_provider.dart';
-import 'package:book_mobile/providers/profile_provider.dart';
-import 'package:book_mobile/providers/purchase_order_provider.dart';
-import 'package:book_mobile/providers/signup_provider.dart';
-import 'package:book_mobile/providers/subscription_provider.dart';
-import 'package:book_mobile/providers/subscription_tiers_provider.dart';
-import 'package:book_mobile/providers/update_profile_provider.dart';
-
-import 'package:book_mobile/screens/all_audio_screen.dart';
-import 'package:book_mobile/screens/all_book_screen.dart';
-import 'package:book_mobile/screens/announcement_screen.dart';
-import 'package:book_mobile/screens/contact_us_screen.dart';
-import 'package:book_mobile/screens/downloaded_book_screen.dart';
-import 'package:book_mobile/screens/home_screen.dart';
-import 'package:book_mobile/screens/login_screen.dart';
-import 'package:book_mobile/screens/forgot_password_screen.dart';
-import 'package:book_mobile/screens/my_books_screen.dart';
-import 'package:book_mobile/screens/notification_screen.dart';
-import 'package:book_mobile/screens/profile_screen.dart';
-import 'package:book_mobile/screens/setting_screen.dart';
-import 'package:book_mobile/screens/signup_screen.dart';
-import 'package:book_mobile/screens/splash_screen.dart';
-import 'package:book_mobile/screens/subscription_tier_screen.dart';
-import 'package:book_mobile/screens/update_profile_screen.dart';
-import 'package:book_mobile/services/background_service.dart';
-import 'package:book_mobile/services/storage_service.dart';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:no_screenshot/no_screenshot.dart';
+
+import 'package:book_mobile/exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,16 +41,77 @@ void main() async {
   ));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   final StorageService storageService;
   const MyApp({super.key, required this.storageService});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late AppLinks _appLinks;
+  late StreamSubscription _appLinkSubscription;
+  final _noScreenshot = NoScreenshot.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _appLinks = AppLinks();
+    _appLinkSubscription = _appLinks.uriLinkStream.listen((uri) {
+      _navigateToRoute(uri, context);
+    });
+    disableScreenshots();
+  }
+
+  @override
+  void dispose() {
+    _appLinkSubscription.cancel();
+    enableScreenshot();
+    super.dispose();
+  }
+
+  void disableScreenshots() async {
+    bool result = await _noScreenshot.screenshotOff();
+    if (!result) {
+      debugPrint('Failed to disable screenshots.');
+    } else {
+      debugPrint('Screenshot blocking enabled.');
+    }
+    await _noScreenshot.startScreenshotListening();
+    debugPrint('Screenshot listening started.');
+    _noScreenshot.screenshotStream.listen((event) {
+      _showScreenshotNotAllowedAlert();
+    });
+  }
+
+  void enableScreenshot() async {
+    bool result = await _noScreenshot.screenshotOn();
+    if (!result) {
+      debugPrint('Failed to enable screenshots.');
+    } else {
+      debugPrint('Screenshot blocking disabled.');
+    }
+  }
+
+  /// Show a notification when the user attempts to take a screenshot
+  void _showScreenshotNotAllowedAlert() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text(
+            "Screenshots and screen recording are not allowed. in this app"),
+        duration: const Duration(seconds: 2),
+        backgroundColor: Colors.redAccent,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) => AuthProvider(storageService: storageService)),
+            create: (_) => AuthProvider(storageService: widget.storageService)),
         ChangeNotifierProvider(create: (_) => SignupProvider()),
         ChangeNotifierProvider(
             create: (context) => LoginProvider(
@@ -95,41 +127,114 @@ class MyApp extends StatelessWidget {
             create: (context) => SubscriptionTiersProvider()),
         ChangeNotifierProvider(create: (_) => AnnouncementProvider()),
         ChangeNotifierProvider(create: (context) => UpdateProfileProvider()),
-        ChangeNotifierProvider(create: (context) => AuthorProvider()),
+        ChangeNotifierProvider(create: (_) => AuthorProvider()),
+        ChangeNotifierProvider(create: (_) => UserActivityProvider()),
       ],
       child: MaterialApp(
-        title: 'Flutter Signup',
-        initialRoute: '/',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: AppColors.color1),
-          useMaterial3: true,
-          scaffoldBackgroundColor:
-              AppColors.color1, // Set background color of the entire app
-        ),
-        debugShowCheckedModeBanner: false,
-        routes: {
-          '/': (context) => const SplashScreen(),
-          '/home': (context) => const HomeScreen(),
-          '/forgot-password': (context) => const ForgotPasswordScreen(),
-          // '/verify': (context) => const VerificationScreen(),
-          '/signup': (context) => const SignupScreen(),
-          '/login': (context) => const LoginScreen(),
-          '/splash': (context) => const SplashScreen(),
-          '/profile': (context) => const ProfileScreen(),
-          '/allAudio': (context) => const AllAudioScreen(),
-          '/settings': (context) => const SettingsScreen(),
-          '/notifications': (context) => const NotificationScreen(),
-          '/allEbook': (context) => const AllBooksScreen(),
-          '/edit-profile': (context) => const UpdateProfileScreen(),
-          '/my-books': (context) => const DownloadScreen(),
-          '/downloaded': (context) => const DownloadedBooksScreen(),
-          '/subscription-tier': (context) => const SubscriptionTierScreen(),
-          '/contact-us': (context) => const ContactUsScreen(),
-          '/announcements': (context) => const AnnouncementListScreen(),
-          // '/notifications': (context) => const NotificationsScreen(),
-          // '/author': (context) => const AuthorScreen(),
-        },
-      ),
+          title: 'Flutter Signup',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: AppColors.color1),
+            useMaterial3: true,
+            scaffoldBackgroundColor:
+                AppColors.color1, // Set background color of the entire app
+          ),
+          debugShowCheckedModeBanner: false,
+          initialRoute: '/',
+          onGenerateRoute: _onGenerateRoute,
+          builder: (context, child) {
+            _handleAppLinks(context);
+            return child!;
+          }),
     );
+  }
+
+  // Method to handle incoming app links
+  void _handleAppLinks(BuildContext context) async {
+    // _appLinks is already initialized in initState
+    _appLinks.uriLinkStream.listen((uri) {
+      _navigateToRoute(uri, context);
+    });
+  }
+
+  // Navigation logic based on the link
+  void _navigateToRoute(Uri uri, BuildContext context) {
+    if (uri.pathSegments.contains('login')) {
+      Navigator.pushNamed(context, '/login');
+    } else if (uri.pathSegments.contains('signup')) {
+      Navigator.pushNamed(context, '/signup');
+    } else if (uri.pathSegments.contains('allAudio')) {
+      Navigator.pushNamed(context, '/allAudio');
+    } else if (uri.pathSegments.contains('allEbook')) {
+      Navigator.pushNamed(context, '/allEbook');
+    } else if (uri.pathSegments.contains('settings')) {
+      Navigator.pushNamed(context, '/settings');
+    } else if (uri.pathSegments.contains('notification')) {
+      Navigator.pushNamed(context, '/notification');
+    } else if (uri.pathSegments.contains('profile')) {
+      Navigator.pushNamed(context, '/profile');
+    } else if (uri.pathSegments.contains('home')) {
+      Navigator.pushNamed(context, '/home');
+    } else if (uri.pathSegments.contains('edit-profile')) {
+      Navigator.pushNamed(context, '/edit-profile');
+    } else if (uri.pathSegments.contains('my-books')) {
+      Navigator.pushNamed(context, '/my-books');
+    } else if (uri.pathSegments.contains('downloaded')) {
+      Navigator.pushNamed(context, '/downloaded');
+    } else if (uri.pathSegments.contains('subscription-tier')) {
+      Navigator.pushNamed(context, '/subscription-tier');
+    } else if (uri.pathSegments.contains('contact-us')) {
+      Navigator.pushNamed(context, '/contact-us');
+    } else if (uri.pathSegments.contains('announcements')) {
+      Navigator.pushNamed(context, '/announcements');
+    } else if (uri.pathSegments.contains('purchase-order')) {
+      Navigator.pushNamed(context, '/purchase-order');
+    } else if (uri.pathSegments.contains('user-activity')) {
+      Navigator.pushNamed(context, '/user-activity');
+    } else {
+      // Handle other routes here
+    }
+  }
+
+  Route<dynamic>? _onGenerateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case '/':
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case '/home':
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
+      case '/forgot-password':
+        return MaterialPageRoute(builder: (_) => const ForgotPasswordScreen());
+      case '/signup':
+        return MaterialPageRoute(builder: (_) => const SignupScreen());
+      case '/login':
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case '/splash':
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case '/profile':
+        return MaterialPageRoute(builder: (_) => const ProfileScreen());
+      case '/allAudio':
+        return MaterialPageRoute(builder: (_) => const AllAudioScreen());
+      case '/settings':
+        return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case '/notification':
+        return MaterialPageRoute(builder: (_) => const NotificationScreen());
+      case '/allEbook':
+        return MaterialPageRoute(builder: (_) => const AllBooksScreen());
+      case '/edit-profile':
+        return MaterialPageRoute(builder: (_) => const UpdateProfileScreen());
+      case '/my-books':
+        return MaterialPageRoute(builder: (_) => const DownloadScreen());
+      case '/downloaded':
+        return MaterialPageRoute(builder: (_) => const DownloadedBooksScreen());
+      case '/subscription-tier':
+        return MaterialPageRoute(
+            builder: (_) => const SubscriptionTierScreen());
+      case '/contact-us':
+        return MaterialPageRoute(builder: (_) => const ContactUsScreen());
+      case '/announcements':
+        return MaterialPageRoute(
+            builder: (_) => const AnnouncementListScreen());
+      default:
+        return null;
+    }
   }
 }

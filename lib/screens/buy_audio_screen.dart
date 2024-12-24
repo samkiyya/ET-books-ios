@@ -3,10 +3,12 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
+import 'package:book_mobile/providers/user_activity_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BuyAudioScreen extends StatefulWidget {
   final Map<String, dynamic> audioBook;
@@ -22,7 +24,7 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
   final _transactionController = TextEditingController();
   final _bankNameController = TextEditingController();
   File? _receiptImage;
-  String _selectedType = 'AudioBook'; // Default selection
+  String _selectedType = 'audio'; // Default selection
 
   String? _validateField(String key, String value) {
     if (value.isEmpty) {
@@ -34,6 +36,8 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
   @override
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<PurchaseOrderProvider>(context);
+    final UserActivityTracker tracker = UserActivityTracker();
+
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
 
@@ -208,7 +212,7 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                                   value: _selectedType,
                                   items: const [
                                     DropdownMenuItem(
-                                      value: 'AudioBook',
+                                      value: 'audio',
                                       child: Text('AudioBook'),
                                     ),
                                     DropdownMenuItem(
@@ -265,7 +269,20 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                             bookType: _selectedType, // Selected type
                             context: context,
                           );
-
+                          final actionDetails = {
+                            "bookId": widget.audioBook['id'].toString(),
+                            "title": widget.audioBook['title'].toString(),
+                            "price": widget.audioBook['price'].toString(),
+                          };
+                          SharedPreferences pref =
+                              await SharedPreferences.getInstance();
+                          int? userId =
+                              int.tryParse(pref.getString('userId').toString());
+                          await tracker.trackUserActivity(
+                            userId: userId!,
+                            actionType: "BOOK_PURCHASE",
+                            actionDetails: actionDetails,
+                          );
                           if (context.mounted) {
                             orderProvider.showResponseDialog(
                               context,

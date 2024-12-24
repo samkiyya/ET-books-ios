@@ -140,13 +140,18 @@ class PurchaseOrderProvider with ChangeNotifier {
       ));
       final response = await request.send();
       if (response.statusCode == 201) {
+        _receiptImage = null;
         final responseBody = await response.stream.bytesToString();
         final parsedResponse = json.decode(responseBody);
         _successMessage = parsedResponse['message'] ??
             'Your Order submitted successfuly, please check the order status!';
       } else {
         final responseBody = await response.stream.bytesToString();
-        _errorMessage = 'Failed to submit the order, please try again';
+        final parsedResponse = json.decode(responseBody);
+        print(parsedResponse);
+
+        _errorMessage = parsedResponse['message'] ??
+            'Failed to submit the order, please try again';
         print(
             'Failed to submit the order, please try again ${response.statusCode} - $responseBody');
       }

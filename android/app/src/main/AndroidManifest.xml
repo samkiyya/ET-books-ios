@@ -23,7 +23,29 @@ package="com.example.book_mobile">
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
+            
+            <!-- Disable default Flutter deep linking -->
+            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <!-- App Link sample -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="sam" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" />
+                <data android:scheme="samuel" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" />
+            </intent-filter>
+
+            <!-- Deep Link sample -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Add optional android:host to distinguish your app
+                     from others in case of conflicting scheme name -->
+                <data android:scheme="sam" android:host="open.samapp.app" />
+            </intent-filter>
+
+<!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
@@ -38,6 +60,22 @@ package="com.example.book_mobile">
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity android:name="com.facebook.FacebookActivity"
+        android:configChanges=
+                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+        android:label="@string/app_name" />
+        <activity
+        android:name="com.facebook.CustomTabActivity"
+        android:exported="true">
+            <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="@string/fb_login_protocol_scheme" />
+            </intent-filter>
+        </activity>
+
         <!-- Flutter auto-generated metadata -->
         <meta-data
             android:name="flutterEmbedding"

@@ -1,4 +1,3 @@
-// models/login_response.dart
 class UserData {
   final int id;
   final String fname;
@@ -20,6 +19,7 @@ class UserData {
     this.image,
   });
 
+  // Factory constructor to create an instance from a JSON map
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
       id: json['id'] ?? 0,
@@ -32,6 +32,20 @@ class UserData {
       image: json['image'],
     );
   }
+
+  // Method to convert the instance to a JSON map
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'fname': fname,
+      'lname': lname,
+      'email': email,
+      'token': token,
+      'password': password,
+      'role': role,
+      'image': image,
+    };
+  }
 }
 
 class LoginResponse {
@@ -40,10 +54,19 @@ class LoginResponse {
 
   LoginResponse({required this.userToken, required this.userData});
 
+  // Factory constructor to create an instance from a JSON map
   factory LoginResponse.fromJson(Map<String, dynamic> json) {
     return LoginResponse(
       userToken: json['userToken'] ?? "",
       userData: UserData.fromJson(json['userData']),
     );
+  }
+
+  // Method to convert the instance to a JSON map
+  Map<String, dynamic> toJson() {
+    return {
+      'userToken': userToken,
+      'userData': userData.toJson(),
+    };
   }
 }

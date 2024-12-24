@@ -63,11 +63,22 @@ class LoginProvider with ChangeNotifier {
 
   Future<void> loginWithGoogle() async {
     await authProvider.loginWithGoogle();
+    if (authProvider.userData != null) {
+      await checkLoginStatus();
+    }
+
     notifyListeners();
   }
 
   Future<void> loginWithFacebook() async {
     await authProvider.loginWithFacebook();
+    if (authProvider.userData != null) {
+      await _saveUserIdToLocalStorage(authProvider.userData!.id.toString());
+      _isAuthenticated = true;
+
+      await checkLoginStatus();
+    }
+
     notifyListeners();
   }
 

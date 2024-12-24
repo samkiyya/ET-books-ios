@@ -19,7 +19,7 @@ class EpisodeService {
 
   static Future<String> getEpisodePath(int bookId, int episodeId) async {
     final directory = await getApplicationDocumentsDirectory();
-    return '${directory.path}/book_${bookId}_episode_${episodeId}.mp3';
+    return '${directory.path}/book_${bookId}_episode_$episodeId.mp3';
   }
 
   static Future<bool> isEpisodeDownloaded(int bookId, int episodeId) async {

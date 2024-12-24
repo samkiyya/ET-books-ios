@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/constants/constants.dart';
 
 class BookSharingModal extends StatefulWidget {
   final Map<String, dynamic> book;

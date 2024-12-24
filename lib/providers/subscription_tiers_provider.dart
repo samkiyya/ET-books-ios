@@ -46,7 +46,7 @@ class SubscriptionTiersProvider with ChangeNotifier {
     } finally {
       isLoading = false;
 
-      notifyListeners(); // Ensure UI updates
+      notifyListeners();
     }
   }
 }

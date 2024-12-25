@@ -189,21 +189,6 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
     );
   }
 
-  // Widget _buildBookImage(String? imageUrl) {
-  //   return Image.network(
-  //     imageUrl!,
-  //     width: 50,
-  //     height: 50,
-  //     fit: BoxFit.cover,
-  //     errorBuilder: (context, error, stackTrace) {
-  //       return const Icon(
-  //         Icons.audiotrack,
-  //         color: Colors.grey,
-  //       );
-  //     },
-  //   );
-  // }
-
   Widget _buildFilterButton(BuildContext context, String label, String type,
       double width, double height) {
     return Container(
@@ -225,7 +210,7 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           padding: EdgeInsets.symmetric(
-              horizontal: width * 0.04, vertical: height * 0.015),
+              horizontal: width * 0.02, vertical: height * 0.01),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),

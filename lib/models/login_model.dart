@@ -25,7 +25,7 @@ class UserData {
       id: json['id'] ?? 0,
       fname: json['fname'] ?? "",
       lname: json['lname'] ?? "",
-      email: json['email'] ?? "",
+      email: json['email'],
       token: json['token'],
       password: json['password'],
       role: json['role'] ?? "",

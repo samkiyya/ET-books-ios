@@ -20,6 +20,7 @@ class CustomDrawer extends StatefulWidget {
 class _CustomDrawerState extends State<CustomDrawer> {
   final List<Map<String, dynamic>> drawerItems = [
     {'label': 'Audio Book', 'icon': Icons.library_music},
+    {'label': 'All Books', 'icon': Icons.book},
     {'label': 'Downloaded', 'icon': Icons.download},
     {'label': 'My Books', 'icon': Icons.book},
     {'label': 'Notification', 'icon': Icons.notifications},
@@ -121,6 +122,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
     switch (label) {
       case 'Audio Book':
         _audioBook(context);
+        break;
+      case 'All Books':
+        Navigator.pushNamed(context, '/allEbook');
         break;
       case 'Downloaded':
         _downloaded(context);

@@ -66,14 +66,12 @@ class LoginProvider with ChangeNotifier {
 
   Future<void> loginWithGoogle() async {
     await authProvider.loginWithGoogle();
-    print('User Data from google login: ${authProvider.userData}');
-    await checkLoginStatus();
-    print('user data from google login: ${authProvider.userData}');
-    if (authProvider.isAuthenticated) {
-      _isAuthenticated = authProvider.isAuthenticated;
-      _successMessage = 'You have logged in successfully!';
+    if (authProvider.userData != null) {
+      await _saveUserIdToLocalStorage(authProvider.userData!.id.toString());
+      _isAuthenticated = true;
+      await initializeLoginStatus();
     }
-    print('Is Authenticated: $_isAuthenticated');
+    print('User Data from google login: ${authProvider.userData}');
 
     notifyListeners();
   }

@@ -111,6 +111,22 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: height * 0.03),
+                            (widget.tier['benefit_limit'] != null &&
+                                    widget.tier['content_type'] != null)
+                                ? Text(
+                                    'Beniefit you will get: ${widget.tier['benefit_limit']}${widget.tier['content_type']} for ${provider.subscriptionType == 'yearly' ? 'a Year' : 'a Month'}',
+                                    style: AppTextStyles.bodyText,
+                                  )
+                                : widget.tier['benefit_limit'] != null
+                                    ? Text(
+                                        'Beniefit you will get: ${widget.tier['benefit_limit']} for ${provider.subscriptionType == 'yearly' ? 'a Year' : 'a Month'}',
+                                        style: AppTextStyles.bodyText,
+                                      )
+                                    : Text(
+                                        'Beniefit you will get: N/A for ${provider.subscriptionType == 'yearly' ? 'a Year' : 'a Month'}',
+                                        style: AppTextStyles.bodyText,
+                                      ),
+                            SizedBox(height: height * 0.03),
                             Text(
                               'Price: ${provider.subscriptionType == 'yearly' ? 'ETB ${widget.tier['annual_price']}' : 'ETB ${widget.tier['monthly_price']}'} / ${provider.subscriptionType}',
                               style: AppTextStyles.bodyText,

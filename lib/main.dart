@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:app_links/app_links.dart';
+import 'package:book_mobile/screens/wellcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -190,8 +191,12 @@ class _MyAppState extends State<MyApp> {
       Navigator.pushNamed(context, '/purchase-order');
     } else if (uri.pathSegments.contains('user-activity')) {
       Navigator.pushNamed(context, '/user-activity');
+    } else if (uri.pathSegments.contains('forgot-password')) {
+      Navigator.pushNamed(context, '/forgot-password');
+    } else if (uri.pathSegments.contains('welcome')) {
+      Navigator.pushNamed(context, '/welcome');
     } else {
-      // Handle other routes here
+      Navigator.pushNamed(context, '/');
     }
   }
 
@@ -199,6 +204,8 @@ class _MyAppState extends State<MyApp> {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => const SplashScreen());
+      case '/welcome':
+        return MaterialPageRoute(builder: (_) => const WelcomeScreen());
       case '/home':
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '/forgot-password':
@@ -213,12 +220,12 @@ class _MyAppState extends State<MyApp> {
         return MaterialPageRoute(builder: (_) => const ProfileScreen());
       case '/allAudio':
         return MaterialPageRoute(builder: (_) => const AllAudioScreen());
+      case '/allEbook':
+        return MaterialPageRoute(builder: (_) => const AllBooksScreen());
       case '/settings':
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
       case '/notification':
         return MaterialPageRoute(builder: (_) => const NotificationScreen());
-      case '/allEbook':
-        return MaterialPageRoute(builder: (_) => const AllBooksScreen());
       case '/edit-profile':
         return MaterialPageRoute(builder: (_) => const UpdateProfileScreen());
       case '/my-books':

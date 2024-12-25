@@ -235,6 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             _passwordController.text.trim(),
                                           );
                                         }
+                                        _handleLoginResponse();
                                       },
                                       backgroundColor: AppColors.color2,
                                       borderColor: AppColors.color3,
@@ -248,70 +249,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SquareTile(
                                     imagePath: 'assets/images/g_logo.png',
                                     onTap: () async {
-                                      try {
-                                        await loginProvider.loginWithGoogle();
+                                      await loginProvider.loginWithGoogle();
 
-                                        if (loginProvider.isAuthenticated) {
-                                          if (context.mounted) {
-                                            Navigator.of(context)
-                                                .pushReplacement(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      const HomeScreen()),
-                                            );
-                                          }
-                                        }
-                                      } catch (e) {
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Google Login Failed: $e'),
-                                            ),
-                                          );
-                                        }
-                                      }
+                                      _handleLoginResponse();
                                     },
                                   ),
                                   SizedBox(width: width * 0.1),
                                   SquareTile(
                                     imagePath: 'assets/images/fb_logo.png',
                                     onTap: () async {
-                                      try {
-                                        await loginProvider.loginWithFacebook();
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Logged in with Facebook'),
-                                            ),
-                                          );
-                                        }
-                                        // Check if user is authenticated after Facebook login and navigate
-
-                                        if (loginProvider.isAuthenticated) {
-                                          if (context.mounted) {
-                                            Navigator.of(context)
-                                                .pushReplacement(
-                                              MaterialPageRoute(
-                                                  builder: (_) =>
-                                                      const HomeScreen()),
-                                            );
-                                          }
-                                        }
-                                      } catch (e) {
-                                        if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Facebook Login Failed: $e'),
-                                            ),
-                                          );
-                                        }
-                                      }
+                                      await loginProvider.loginWithFacebook();
+                                      _handleLoginResponse();
                                     },
                                   )
                                 ],

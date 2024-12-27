@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:book_mobile/providers/content_access_provider.dart';
+import 'package:book_mobile/screens/all_author_screen.dart';
 import 'package:book_mobile/screens/wellcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -197,6 +198,8 @@ class _MyAppState extends State<MyApp> {
       Navigator.pushNamed(context, '/forgot-password');
     } else if (uri.pathSegments.contains('welcome')) {
       Navigator.pushNamed(context, '/welcome');
+    } else if (uri.pathSegments.contains('authors')) {
+      Navigator.pushNamed(context, '/authors');
     } else {
       Navigator.pushNamed(context, '/');
     }
@@ -242,6 +245,8 @@ class _MyAppState extends State<MyApp> {
       case '/announcements':
         return MaterialPageRoute(
             builder: (_) => const AnnouncementListScreen());
+      case '/authors':
+        return MaterialPageRoute(builder: (_) => const AuthorsScreen());
       default:
         return null;
     }

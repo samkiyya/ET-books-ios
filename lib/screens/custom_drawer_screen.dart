@@ -25,7 +25,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     {'label': 'My Books', 'icon': Icons.book},
     {'label': 'Notification', 'icon': Icons.notifications},
     {'label': 'Subscribe', 'icon': Icons.subscriptions},
-    // {'label': 'Author', 'icon': Icons.person},
+    {'label': 'Authors', 'icon': Icons.person},
     {'label': 'Share App', 'icon': Icons.share},
     // {'label': 'Share Code', 'icon': Icons.code},
     {'label': 'Settings', 'icon': Icons.settings},
@@ -141,9 +141,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
       case 'announcs':
         Navigator.pushNamed(context, '/announcements');
         break;
-      // case 'Author':
-      //   // Author
-      //   break;
+      case 'Authors':
+        Navigator.pushNamed(context, '/authors');
+        // Author
+        break;
       case 'Share App':
         shareApp(context);
         break;

@@ -2,6 +2,7 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/models/order_model.dart';
+import 'package:book_mobile/providers/content_access_provider.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
 import 'package:book_mobile/screens/book_reader_screen.dart';
 import 'package:book_mobile/screens/buy_book_screen.dart';
@@ -11,6 +12,7 @@ import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final Map<String, dynamic> book;
@@ -85,6 +87,31 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void _handleButtonPress(BuildContext context) async {
     final currentBookId = widget.book['id'];
     final order = await fetchOrderForCurrentUser();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? userId = prefs.getString('userId');
+
+    final accessProvider = Provider.of<AccessProvider>(context, listen: false);
+    if (userId == null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Log in to continue'),
+          content: Text('Please log in to continue to buy this book.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    await accessProvider.fetchSubscriptionStatus(userId);
+    final bool? isSubscribed = accessProvider.hasReachedLimitAndApproved;
 
     if (order != null) {
       final orderedBookId = order['bookId'];
@@ -96,8 +123,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             MaterialPageRoute(builder: (context) => const OrderStatusScreen()),
           );
         }
-      } else if (order['status'] == 'APPROVED' &&
-          orderedBookId == currentBookId) {
+      } else if ((order['status'] == 'APPROVED' &&
+              orderedBookId == currentBookId) ||
+          isSubscribed == true) {
         if (context.mounted) {
           Navigator.push(
             context,
@@ -126,6 +154,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
+    final accessProvider = Provider.of<AccessProvider>(
+      context,
+    );
+    final isSubscribed = accessProvider.hasReachedLimitAndApproved;
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -255,7 +288,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           return const Text('Error loading data');
                         } else {
                           final order = snapshot.data;
-                          final buttonText = _determineButtonText(order);
+                          final buttonText = _determineButtonText(order,
+                              isSubscribed: isSubscribed ?? false);
                           return CustomButton(
                             text: buttonText,
                             onPressed: () => _handleButtonPress(context),
@@ -280,11 +314,12 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     );
   }
 
-  String _determineButtonText(Map<String, dynamic>? order) {
+  String _determineButtonText(Map<String, dynamic>? order,
+      {bool? isSubscribed}) {
     if (order != null) {
       if (order['status'] == 'PENDING') {
         return 'Check Order Status';
-      } else if (order['status'] == 'APPROVED') {
+      } else if (order['status'] == 'APPROVED' || isSubscribed == true) {
         return 'Read Book';
       }
     }

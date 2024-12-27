@@ -52,7 +52,12 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
             }
 
             if (provider.hasError) {
-              return Center(child: Text(provider.errorMessage));
+              return Center(
+                child: Text(
+                  provider.errorMessage,
+                  style: AppTextStyles.bodyText,
+                ),
+              );
             }
 
             if (provider.tiers.isEmpty) {

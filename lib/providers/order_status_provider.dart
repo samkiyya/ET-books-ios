@@ -41,14 +41,16 @@ class OrderStatusProvider with ChangeNotifier {
     );
   }
 
-  // Fetch orders for the logged-in user
+  // Fetch orders for the logged-in user with an online-first approach
   Future<void> fetchOrders() async {
     _isLoading = true;
     _errorMessage = '';
     _successMessage = '';
     _orders = [];
 
-    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      notifyListeners();
+    });
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -56,7 +58,9 @@ class OrderStatusProvider with ChangeNotifier {
       if (_token == null || _token!.isEmpty) {
         _errorMessage = 'Authentication required. Please log in First.';
         _isLoading = false;
-        notifyListeners();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          notifyListeners();
+        });
         return;
       }
 
@@ -70,22 +74,40 @@ class OrderStatusProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseBody = json.decode(response.body);
-        print('Response Body: $responseBody');
+        // print('Response Body: $responseBody');
 
         final List<dynamic> ordersData = responseBody['orders'];
-        print('Orders Data: $ordersData');
+        // print('Orders status Data: $ordersData');
         _orders = ordersData.map((json) => Order.fromJson(json)).toList();
-        print('Orders: $_orders');
+        // print('Orders: $_orders');
         _successMessage =
             responseBody['message'] ?? 'Orders fetched successfully.';
+
+        // Cache orders locally
+        await prefs.setString('cachedOrders', json.encode(ordersData));
       } else {
-        _errorMessage = 'Failed to fetch orders your order status.';
-        print(
-            'Failed to fetch orders: ${response.body} Status code: ${response.statusCode}');
+        _errorMessage = 'Failed to fetch your order status.';
+        // print(
+        //     'Failed to fetch orders status: ${response.body} Status code: ${response.statusCode}');
       }
     } catch (error) {
       if (error is SocketException) {
-        _errorMessage = 'No internet connection. Please check your network.';
+        _errorMessage =
+            'No internet connection. Displaying cached orders if available.';
+        // print('No internet connection: $error');
+
+        // Attempt to load cached orders
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        final cachedOrders = prefs.getString('cachedOrders');
+        if (cachedOrders != null) {
+          final Map<String, dynamic> ordersData = json.decode(cachedOrders);
+          _orders = [Order.fromJson(ordersData)];
+
+          _successMessage = 'Displaying cached orders.';
+        } else {
+          _errorMessage =
+              'No internet connection and no cached data available.';
+        }
       } else {
         _errorMessage = 'Failed to fetch orders. Please try again later.';
         print('Failed to fetch orders: $error');

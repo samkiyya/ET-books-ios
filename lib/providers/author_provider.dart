@@ -3,6 +3,7 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:book_mobile/models/author_model.dart';
 
 class AuthorProvider extends ChangeNotifier {
   Map<String, dynamic>? author;
@@ -10,6 +11,9 @@ class AuthorProvider extends ChangeNotifier {
   bool isFollowing = false;
   String errorMessage = '';
   String? _token;
+  List<Author> _authors = [];
+
+  List<Author> get authors => _authors;
 
   Future<void> fetchAuthorById(String id) async {
     isLoading = true;
@@ -89,6 +93,27 @@ class AuthorProvider extends ChangeNotifier {
       print(errorMessage);
     } finally {
       print('isFollowing: $isFollowing');
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchAuthors() async {
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.parse('${Network.baseUrl}/api/manage-user/filter-authors');
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _authors = (data['users'] as List)
+            .map((author) => Author.fromJson(author))
+            .toList();
+      }
+    } catch (error) {
+      print('Error fetching authors: $error');
+    } finally {
       isLoading = false;
       notifyListeners();
     }

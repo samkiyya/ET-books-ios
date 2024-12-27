@@ -123,7 +123,7 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                           ),
                         ),
                         child: Text(
-                          "Search By Books",
+                          "Search By Title",
                           style: AppTextStyles.buttonText.copyWith(
                               color: AppColors.color3, fontSize: width * 0.04),
                         ),

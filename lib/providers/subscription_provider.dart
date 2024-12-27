@@ -91,6 +91,7 @@ class SubscriptionProvider with ChangeNotifier {
   Future<void> createSubscriptionOrder({
     required String tierId,
     required String bankName,
+    required int benefitLimitRemain,
     required BuildContext context,
   }) async {
     if (_receiptImage == null) {

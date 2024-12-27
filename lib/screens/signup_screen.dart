@@ -8,6 +8,7 @@ import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:book_mobile/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -33,8 +34,206 @@ class _SignupScreenState extends State<SignupScreen> {
     'Bio': TextEditingController(),
     'referalCode': TextEditingController(),
   };
+  String? selectedCountry;
+
   String? selectedRole;
   File? imageFile;
+  final List<String> countries = [
+    "Afghanistan",
+    "Albania",
+    "Algeria",
+    "Andorra",
+    "Angola",
+    "Antigua and Barbuda",
+    "Argentina",
+    "Armenia",
+    "Australia",
+    "Austria",
+    "Azerbaijan",
+    "Bahamas",
+    "Bahrain",
+    "Bangladesh",
+    "Barbados",
+    "Belarus",
+    "Belgium",
+    "Belize",
+    "Benin",
+    "Bhutan",
+    "Bolivia",
+    "Bosnia and Herzegovina",
+    "Botswana",
+    "Brazil",
+    "Brunei",
+    "Bulgaria",
+    "Burkina Faso",
+    "Burundi",
+    "Cabo Verde",
+    "Cambodia",
+    "Cameroon",
+    "Canada",
+    "Central African Republic",
+    "Chad",
+    "Chile",
+    "China",
+    "Colombia",
+    "Comoros",
+    "Congo (Congo-Brazzaville)",
+    "Congo (Congo-Kinshasa)",
+    "Costa Rica",
+    "Croatia",
+    "Cuba",
+    "Cyprus",
+    "Czech Republic",
+    "Denmark",
+    "Djibouti",
+    "Dominica",
+    "Dominican Republic",
+    "Ecuador",
+    "Egypt",
+    "El Salvador",
+    "Equatorial Guinea",
+    "Eritrea",
+    "Estonia",
+    "Eswatini",
+    "Ethiopia",
+    "Fiji",
+    "Finland",
+    "France",
+    "Gabon",
+    "Gambia",
+    "Georgia",
+    "Germany",
+    "Ghana",
+    "Greece",
+    "Grenada",
+    "Guatemala",
+    "Guinea",
+    "Guinea-Bissau",
+    "Guyana",
+    "Haiti",
+    "Honduras",
+    "Hungary",
+    "Iceland",
+    "India",
+    "Indonesia",
+    "Iran",
+    "Iraq",
+    "Ireland",
+    "Israel",
+    "Italy",
+    "Jamaica",
+    "Japan",
+    "Jordan",
+    "Kazakhstan",
+    "Kenya",
+    "Kiribati",
+    "Korea North",
+    "Korea South",
+    "Kuwait",
+    "Kyrgyzstan",
+    "Laos",
+    "Latvia",
+    "Lebanon",
+    "Lesotho",
+    "Liberia",
+    "Libya",
+    "Liechtenstein",
+    "Lithuania",
+    "Luxembourg",
+    "Madagascar",
+    "Malawi",
+    "Malaysia",
+    "Maldives",
+    "Mali",
+    "Malta",
+    "Marshall Islands",
+    "Mauritania",
+    "Mauritius",
+    "Mexico",
+    "Micronesia",
+    "Moldova",
+    "Monaco",
+    "Mongolia",
+    "Montenegro",
+    "Morocco",
+    "Mozambique",
+    "Myanmar (Burma)",
+    "Namibia",
+    "Nauru",
+    "Nepal",
+    "Netherlands",
+    "New Zealand",
+    "Nicaragua",
+    "Niger",
+    "Nigeria",
+    "North Macedonia",
+    "Norway",
+    "Oman",
+    "Pakistan",
+    "Palau",
+    "Panama",
+    "Papua New Guinea",
+    "Paraguay",
+    "Peru",
+    "Philippines",
+    "Poland",
+    "Portugal",
+    "Qatar",
+    "Romania",
+    "Russia",
+    "Rwanda",
+    "Saint Kitts and Nevis",
+    "Saint Lucia",
+    "Saint Vincent and the Grenadines",
+    "Samoa",
+    "San Marino",
+    "Sao Tome and Principe",
+    "Saudi Arabia",
+    "Senegal",
+    "Serbia",
+    "Seychelles",
+    "Sierra Leone",
+    "Singapore",
+    "Slovakia",
+    "Slovenia",
+    "Solomon Islands",
+    "Somalia",
+    "South Africa",
+    "South Sudan",
+    "Spain",
+    "Sri Lanka",
+    "Sudan",
+    "Suriname",
+    "Sweden",
+    "Switzerland",
+    "Syria",
+    "Taiwan",
+    "Tajikistan",
+    "Tanzania",
+    "Thailand",
+    "Timor-Leste",
+    "Togo",
+    "Tonga",
+    "Trinidad and Tobago",
+    "Tunisia",
+    "Turkey",
+    "Turkmenistan",
+    "Tuvalu",
+    "Uganda",
+    "Ukraine",
+    "United Arab Emirates",
+    "United Kingdom",
+    "United States",
+    "Uruguay",
+    "Uzbekistan",
+    "Vanuatu",
+    "Vatican City",
+    "Venezuela",
+    "Vietnam",
+    "Yemen",
+    "Zambia",
+    "Zimbabwe"
+  ];
 
   String? _validateField(String key, String value) {
     // Required fields
@@ -126,11 +325,23 @@ class _SignupScreenState extends State<SignupScreen> {
                 ]),
               ),
               child: Padding(
-                padding: EdgeInsets.only(
-                    top: width * 0.0555556, left: width * 0.02037),
-                child: const Text(
-                  'Create Your Account',
-                  style: AppTextStyles.heading1,
+                padding: EdgeInsets.only(top: width * 0.1, left: width * 0.05),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.arrow_back, color: AppColors.color3),
+                      onPressed: () {
+                        Navigator.pop(
+                            context); // Navigate back to previous screen
+                      },
+                    ),
+                    Text(
+                      'Create Your Account',
+                      style: AppTextStyles.heading1.copyWith(
+                          color: AppColors.color3, fontSize: width * 0.05),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -178,32 +389,116 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Column(
                             children: [
                               // Dynamically generate CustomTextFields
-                              ...controllers.entries.map((entry) {
-                                return CustomTextField(
-                                  controller: entry.value,
-                                  labelText: entry.key,
-                                  validator: (value) =>
-                                      _validateField(entry.key, value!),
-                                  suffixIcon: entry.key == 'Password'
-                                      ? IconButton(
-                                          icon: Icon(
-                                            _hidePassword
-                                                ? Icons.visibility_off
-                                                : Icons.visibility,
-                                            color: AppColors.color1,
+                              ...controllers.entries.map(
+                                (entry) {
+                                  if (entry.key == 'Country') {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TypeAheadField<String>(
+                                            builder: (context, controller,
+                                                focusNode) {
+                                              return TextField(
+                                                  controller: entry.value,
+                                                  focusNode: focusNode,
+                                                  autofocus: true,
+                                                  decoration: InputDecoration(
+                                                    filled: true,
+                                                    fillColor: AppColors.color5,
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Country',
+                                                    labelStyle: const TextStyle(
+                                                        color:
+                                                            AppColors.color3),
+                                                  ));
+                                            },
+                                            loadingBuilder: (context) =>
+                                                const Text('Loading...'),
+                                            errorBuilder: (context, error) =>
+                                                const Text('Error!'),
+                                            emptyBuilder: (context) =>
+                                                const Text('No country found!'),
+                                            decorationBuilder:
+                                                (context, child) {
+                                              return Material(
+                                                type: MaterialType.card,
+                                                elevation: 8,
+                                                shadowColor: AppColors.color3,
+                                                color: AppColors.color5,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child: child,
+                                              );
+                                            },
+                                            suggestionsCallback: (pattern) {
+                                              return countries
+                                                  .where((country) => country
+                                                      .toLowerCase()
+                                                      .contains(pattern
+                                                          .toLowerCase()))
+                                                  .toList();
+                                            },
+                                            itemBuilder: (context, suggestion) {
+                                              return ListTile(
+                                                title: Text(suggestion,
+                                                    style:
+                                                        AppTextStyles.bodyText),
+                                              );
+                                            },
+                                            transitionBuilder:
+                                                (context, animation, child) {
+                                              return FadeTransition(
+                                                opacity: CurvedAnimation(
+                                                    parent: animation,
+                                                    curve:
+                                                        Curves.fastOutSlowIn),
+                                                child: child,
+                                              );
+                                            },
+                                            onSelected: (suggestion) {
+                                              entry.value.text = suggestion;
+                                              setState(() {
+                                                selectedCountry = suggestion;
+                                              });
+                                            },
                                           ),
-                                          onPressed: () {
-                                            setState(() {
-                                              _hidePassword = !_hidePassword;
-                                            });
-                                          },
-                                        )
-                                      : null,
-                                  obscureText: entry.key == 'Password'
-                                      ? _hidePassword
-                                      : false,
-                                );
-                              }),
+                                        ],
+                                      ),
+                                    );
+                                  } else {
+                                    return CustomTextField(
+                                      controller: entry.value,
+                                      labelText: entry.key,
+                                      validator: (value) =>
+                                          _validateField(entry.key, value!),
+                                      suffixIcon: entry.key == 'Password'
+                                          ? IconButton(
+                                              icon: Icon(
+                                                _hidePassword
+                                                    ? Icons.visibility_off
+                                                    : Icons.visibility,
+                                                color: AppColors.color1,
+                                              ),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _hidePassword =
+                                                      !_hidePassword;
+                                                });
+                                              },
+                                            )
+                                          : null,
+                                      obscureText: entry.key == 'Password'
+                                          ? _hidePassword
+                                          : false,
+                                    );
+                                  }
+                                },
+                              ),
                               SizedBox(height: height * 0.009),
                               // Role Selection
                               const Align(
@@ -321,10 +616,12 @@ class _SignupScreenState extends State<SignupScreen> {
                                                 controllers['Last Name']!.text,
                                             phone: controllers['Phone']!.text,
                                             city: controllers['City']!.text,
-                                            country:
-                                                controllers['Country']!.text,
+                                            country: selectedCountry,
                                             role: selectedRole,
                                             bio: controllers['Bio']!.text,
+                                            referalCode:
+                                                controllers['referalCode']!
+                                                    .text,
                                             context: context,
                                           );
                                         } else {

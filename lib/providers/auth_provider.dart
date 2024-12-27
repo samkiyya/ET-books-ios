@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:app_links/app_links.dart';
 import 'package:book_mobile/constants/constants.dart';
@@ -9,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AuthProvider with ChangeNotifier {
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  BuildContext get context => navigatorKey.currentContext!;
   final StorageService storageService;
 
   static const String _baseUrl = Network.baseUrl;
@@ -28,8 +31,11 @@ class AuthProvider with ChangeNotifier {
   String? get token => _token;
   UserData? get userData => _userData;
   String? get error => _error;
+  late StreamSubscription<Uri?> _appLinkSubscription;
 
-  AuthProvider({required this.storageService});
+  AuthProvider({required this.storageService}) {
+    _initAppLinks();
+  }
 
   /// Helper to update authentication state
   void _updateAuthState({
@@ -61,36 +67,29 @@ class AuthProvider with ChangeNotifier {
 
   /// Save token and user data to storage
   Future<void> _handleSuccessfulLogin(Map<String, dynamic> data) async {
-    _token = data['userToken'];
-    print('User Data before assign😒😒😒😒😒😒: ${jsonEncode(_userData)}');
+    try {
+      _token = data['userToken'] ?? "";
+      if (_token!.isEmpty) throw Exception("Invalid token");
 
-    // Initialize _userData with the parsed data from JSON
-    _userData = UserData.fromJson(data['userData']);
+      if (data['userData'] == null) throw Exception("User data is missing");
+      _userData = UserData.fromJson(data['userData']);
 
-    final prefs = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('userToken', _token ?? "");
+      await prefs.setString('userData', jsonEncode(_userData?.toJson()));
 
-    // Save the user token
-    await prefs.setString('userToken', _token!);
+      print('User ID: ${_userData?.id}');
+      print('User Data 🤣🤣: ${_userData?.toJson()}');
 
-    // Save the user data, using toJson() to convert it to a Map before encoding
-    await prefs.setString(
-        'userData', jsonEncode(_userData?.toJson())); // Fix here
-
-    // Save the user ID, making sure it's properly encoded as a string
-    await prefs.setString('userId', jsonEncode(_userData?.id)); // Fix here
-
-    // Print user ID for debugging
-    print('User ID: ${_userData?.id}');
-
-    // Print the user data for debugging (UserData instance)
-    print('User Data: $_userData');
-
-    _updateAuthState(
-      isAuthenticated: true,
-      token: _token,
-      userData: _userData,
-    );
-    print('User Data 🤣🤣: $_userData');
+      _updateAuthState(
+        isAuthenticated: true,
+        token: _token,
+        userData: _userData,
+      );
+    } catch (e) {
+      print("Error in _handleSuccessfulLogin: $e");
+      throw e;
+    }
   }
 
   /// Remove token and user data from storage
@@ -131,13 +130,59 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  void _initAppLinks() {
+    _appLinkSubscription = _appLinks.uriLinkStream.listen((Uri? uri) async {
+      if (uri != null) {
+        final token = uri.queryParameters['token'];
+        final userDataString = uri.queryParameters['userData'];
+
+        if (token != null && userDataString != null) {
+          try {
+            final userData = jsonDecode(userDataString);
+            print('Received token: $token');
+            print('Received user data: ${jsonEncode(userData)}');
+
+            await _handleSuccessfulLogin({
+              'userToken': token,
+              'userData': userData,
+            });
+
+            if (isAuthenticated) {
+              if (context.mounted) {
+                Navigator.of(context).pushReplacementNamed('/home');
+              }
+            } else {
+              if (context.mounted) {
+                Navigator.of(context).pushReplacementNamed('/welcome');
+              }
+            }
+
+            // Important: After successful login, cancel the listener. You only need the one callback.
+            _appLinkSubscription.cancel();
+          } catch (e) {
+            print("Error decoding or handling user data: $e");
+          }
+        } else {
+          print('Required parameters not found in callback URL');
+          // Handle missing parameters (e.g., show an error message)
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _appLinkSubscription.cancel(); // Cancel the subscription in dispose
+    super.dispose();
+  }
+
   /// Login with Google
   Future<void> loginWithGoogle() async {
     try {
       final Uri loginUrl = Uri.parse("$_baseUrl/api/auth/google");
       if (await canLaunchUrl(loginUrl)) {
         await launchUrl(loginUrl, mode: LaunchMode.externalApplication);
-        await _handleGoogleCallback();
+        // await _handleGoogleCallback();
       } else {
         throw Exception("Could not launch Google login");
       }
@@ -148,37 +193,37 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _handleGoogleCallback() async {
-    try {
-      // Listen for deep links
-      _appLinks.uriLinkStream.listen((Uri? uri) async {
-        if (uri != null) {
-          final token = uri.queryParameters['token'];
-          final userDataString = uri.queryParameters['userData'];
+  // Future<void> _handleGoogleCallback() async {
+  //   try {
+  //     // Listen for deep links
+  //     _appLinks.uriLinkStream.listen((Uri? uri) async {
+  //       if (uri != null) {
+  //         final token = uri.queryParameters['token'];
+  //         final userDataString = uri.queryParameters['userData'];
 
-          if (token != null && userDataString != null) {
-            final userData = jsonDecode(userDataString);
+  //         if (token != null && userDataString != null) {
+  //           final userData = jsonDecode(userDataString);
 
-            // Log for debugging
-            print('Received token: $token');
-            print('Received user data: ${jsonEncode(userData)}');
+  //           // Log for debugging
+  //           print('Received token: $token');
+  //           print('Received user data: ${jsonEncode(userData)}');
 
-            // Save token and user data
-            await _handleSuccessfulLogin({
-              'userToken': token,
-              'userData': userData,
-            });
-          } else {
-            print('Required parameters not found in callback URL');
-          }
-        }
-      });
-    } catch (e) {
-      throw Exception("Fetching Google callback response failed: $e");
-    } finally {
-      _updateAuthState(isLoading: false);
-    }
-  }
+  //           // Save token and user data
+  //           await _handleSuccessfulLogin({
+  //             'userToken': token,
+  //             'userData': userData,
+  //           });
+  //         } else {
+  //           print('Required parameters not found in callback URL');
+  //         }
+  //       }
+  //     });
+  //   } catch (e) {
+  //     throw Exception("Fetching Google callback response failed: $e");
+  //   } finally {
+  //     _updateAuthState(isLoading: false);
+  //   }
+  // }
 
   /// Login with Facebook
   Future<void> loginWithFacebook() async {

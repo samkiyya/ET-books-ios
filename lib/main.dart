@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:app_links/app_links.dart';
+import 'package:book_mobile/providers/content_access_provider.dart';
 import 'package:book_mobile/screens/wellcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -130,6 +131,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => UpdateProfileProvider()),
         ChangeNotifierProvider(create: (_) => AuthorProvider()),
         ChangeNotifierProvider(create: (_) => UserActivityProvider()),
+        ChangeNotifierProvider(create: (_) => AccessProvider()),
       ],
       child: MaterialApp(
           title: 'Flutter Signup',

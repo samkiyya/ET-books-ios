@@ -91,11 +91,17 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
         throw Exception('Failed to get file content type');
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       });
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error downloading file: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error downloading file: $e')));
+      }
     }
   }
 

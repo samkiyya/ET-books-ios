@@ -21,6 +21,7 @@ class SubscriptionOrderScreen extends StatefulWidget {
 
 class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
   final _bankNameController = TextEditingController();
+  // final int benefitLimitRemaining = 0;
   final Map<String, String> _validationErrors = {};
   final UserActivityTracker _tracker = UserActivityTracker();
 
@@ -292,6 +293,8 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                               await provider.createSubscriptionOrder(
                                 tierId: widget.tier['id'].toString(),
                                 bankName: _bankNameController.text.trim(),
+                                benefitLimitRemain:
+                                    widget.tier['benefit_limit'] ?? 0,
                                 context: context,
                               );
                               final actionDetails = {

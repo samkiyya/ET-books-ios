@@ -48,9 +48,13 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
   @override
   void dispose() {
     // Stop tracking when the user leaves the screen
-    final userActivityProvider =
-        Provider.of<UserActivityProvider>(context, listen: false);
-    userActivityProvider.stopTracking(widget.bookId);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final userActivityProvider =
+            Provider.of<UserActivityProvider>(context, listen: false);
+        userActivityProvider.stopTracking(widget.bookId);
+      }
+    });
     super.dispose();
   }
 

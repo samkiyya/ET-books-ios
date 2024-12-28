@@ -1,6 +1,7 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
 import 'package:book_mobile/widgets/book_sharing_modal.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/constants/size.dart';
@@ -87,7 +88,7 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
               // List of Audio Books
               homeProvider.isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(),
+                      child: LoadingWidget(),
                     )
                   : homeProvider.hasError
                       ? const Center(

@@ -1,3 +1,4 @@
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/constants/size.dart';
@@ -157,8 +158,8 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                 final comments = provider.getComments(widget.announcement.id);
                 if (provider.isLoading) {
                   return const Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    child: LoadingWidget(
+                      
                     ),
                   );
                 } else if (comments.isEmpty) {

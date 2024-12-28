@@ -46,11 +46,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 text: 'LOG IN',
                 onPressed: () {
                   Navigator.pushNamed(context, '/login');
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) => const LoginScreen()),
-                  // );
                 },
                 backgroundColor: Colors.transparent,
                 borderColor: AppColors.color3,
@@ -62,12 +57,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 text: 'SIGN UP',
                 onPressed: () {
                   Navigator.pushNamed(context, '/signup');
-
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) => const SignupScreen()),
-                  // );
                 },
                 backgroundColor: AppColors.color2,
                 borderColor: AppColors.color3,

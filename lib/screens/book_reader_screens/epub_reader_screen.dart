@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
 
@@ -85,7 +86,7 @@ class _EpubReaderScreenState extends State<EpubReaderScreen> {
                   Visibility(
                     visible: isLoading,
                     child: const Center(
-                      child: CircularProgressIndicator(),
+                      child: LoadingWidget(),
                     ),
                   ),
                 ],
@@ -111,7 +112,7 @@ class ChapterDrawer extends StatelessWidget {
             controller.getChapters()), // Fix the Future type mismatch
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LoadingWidget());
           }
           final chapters = snapshot.data!;
           return ListView.builder(

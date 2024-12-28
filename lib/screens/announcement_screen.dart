@@ -1,5 +1,6 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/screens/video_player_screen.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
@@ -56,9 +57,8 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
             Consumer<AnnouncementProvider>(builder: (context, provider, child) {
           if (provider.isLoading) {
             return const Center(
-                child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.color3),
-            ));
+              child: LoadingWidget(),
+            );
           }
           if (provider.announcements.isEmpty) {
             return Center(

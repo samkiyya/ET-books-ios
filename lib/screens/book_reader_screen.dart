@@ -1,6 +1,7 @@
 import 'package:book_mobile/screens/book_reader_screens/docx_reader_screen.dart';
 import 'package:book_mobile/screens/book_reader_screens/epub_reader_screen.dart';
 import 'package:book_mobile/screens/book_reader_screens/pdf_reader_screen.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -115,7 +116,7 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
   @override
   Widget build(BuildContext context) {
     return _isLoading
-        ? const Center(child: CircularProgressIndicator())
+        ? const Center(child: LoadingWidget())
         : _localFilePath == null
             ? const Center(child: Text('Failed to load file'))
             : _getFileReaderScreen();

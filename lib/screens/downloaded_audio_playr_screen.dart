@@ -1,4 +1,5 @@
 import 'package:book_mobile/constants/logger.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:book_mobile/widgets/audio_controlls.dart';
@@ -119,7 +120,7 @@ class _DownloadedAudioPlayerScreenState
           backgroundColor: AppColors.color1,
         ),
         body: const Center(
-          child: CircularProgressIndicator(),
+          child: LoadingWidget(),
         ),
       );
     }

@@ -227,7 +227,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 //                       }
 //                     },
 //               child: authProvider.isLoading
-//                   ? const CircularProgressIndicator()
+//                   ? const LoadingWidget()
 //                   : const Text('Resend Verification Email'),
 //             ),
 //             const SizedBox(height: 16),

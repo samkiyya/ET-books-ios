@@ -1,3 +1,4 @@
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -67,7 +68,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
                   ),
                 ],
               )
-            : const CircularProgressIndicator(),
+            : const LoadingWidget(),
       ),
     );
   }

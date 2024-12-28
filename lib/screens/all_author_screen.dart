@@ -1,6 +1,7 @@
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/author_provider.dart';
 import 'package:book_mobile/widgets/authors_card.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,7 @@ class AuthorsScreen extends StatelessWidget {
           future: authorProvider.fetchAuthors(), // Call fetchAuthors once
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(child: LoadingWidget());
             }
 
             if (snapshot.hasError) {

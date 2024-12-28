@@ -3,6 +3,7 @@ import 'package:book_mobile/widgets/audio_controlls.dart';
 import 'package:book_mobile/widgets/audio_palyer_header.dart';
 import 'package:book_mobile/widgets/episode_list.dart';
 import 'package:book_mobile/widgets/error_boundary.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:book_mobile/widgets/volume_controll.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
@@ -155,7 +156,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen> {
           backgroundColor: AppColors.color1,
         ),
         body: const Center(
-          child: CircularProgressIndicator(),
+          child: LoadingWidget(),
         ),
       );
     }

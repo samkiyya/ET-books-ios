@@ -115,8 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ) // Loading state
             : Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: width * 0.0148148,
-                    vertical: height * 0.0072072),
+                    horizontal: width * 0.03, vertical: height * 0.01),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,7 +141,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               },
                               child: Container(
                                 width: width * 0.1,
-                                height: height * 0.051,
+                                height: height * 0.05,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(100),
                                   color: Theme.of(context).primaryColor,
@@ -159,7 +158,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       SizedBox(height: height * 0.03),
                       Text(
-                        '${userProfile['fname'] ?? 'No first name available'} ${userProfile['lname'] ?? 'No last name available'}',
+                        '${userProfile['fname'] ?? ''} ${userProfile['lname'] ?? ''}',
                         style: AppTextStyles.heading2,
                       ),
                       SizedBox(height: height * 0.01),
@@ -194,99 +193,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(height: height * 0.03),
                       // Card for Level, Subscription, Followers and Following
                       Card(
-                        color: AppColors.color2, // Custom card color
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        elevation: 5,
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: width * 0.02,
-                              vertical: height * 0.01),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Level
-                              Column(
-                                children: [
-                                  Text(
-                                    'Level',
-                                    style: TextStyle(
-                                        fontSize: width * 0.045,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    '${userProfile['levelUser']?['name'] ?? 'Unknown'}',
-                                    style: TextStyle(
-                                      fontSize: width * 0.045,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              VerticalDivider(
-                                color: Colors.black26,
-                                thickness: 1,
-                                width: width * 0.03,
-                              ),
-                              // Subscription
-                              Column(
-                                children: [
-                                  Text(
-                                    'Subscription',
-                                    style: TextStyle(
-                                        fontSize: width * 0.045,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    '${userProfile['subscription']?['name'] ?? 'Free'}',
-                                    style: TextStyle(fontSize: width * 0.045),
-                                  ),
-                                ],
-                              ),
-                              VerticalDivider(
-                                color: Colors.black26,
-                                thickness: 1,
-                                width: width * 0.045,
-                              ),
-                              // Followers
-                              userProfile['role'] == "AUTHOR"
-                                  ? Column(
-                                      children: [
-                                        Text(
-                                          'Followers',
-                                          style: TextStyle(
-                                              fontSize: width * 0.045,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          '${userProfile['followerCount']?.toInt() ?? 0}',
-                                          style: TextStyle(
-                                              fontSize: width * 0.045),
-                                        ),
-                                      ],
-                                    )
-                                  :
+  color: AppColors.color2, // Custom card color
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+  elevation: 5,
+  child: Padding(
+    padding: EdgeInsets.symmetric(
+      horizontal: width * 0.02,
+      vertical: height * 0.01,
+    ),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        return Wrap(
+          alignment: WrapAlignment.center,
+          spacing: width * 0.02, // Horizontal spacing between elements
+          runSpacing: height * 0.01, // Vertical spacing between rows
+          children: [
+            // Level Column
+            _buildColumn(
+              title: 'Level',
+              value: '${userProfile['levelUser']?['name'] ?? 'Unknown'}',
+              showDivider: true,
+              width:width
+            ),
+            // Subscription Column
+            _buildColumn(
+              title: 'Subscription',
+              value: '${userProfile['subscription']?['name'] ?? 'Free'}',
+              showDivider: true,
+              width:width
+            ),
+            // Followers or Following Column
+            userProfile['role'] == "AUTHOR"
+                ? _buildColumn(
+                    title: 'Followers',
+                    value: '${userProfile['followerCount']?.toInt() ?? 0}',
+                    showDivider: false,
+                    width:width
+                  )
+                : _buildColumn(
+                    title: 'Following',
+                    value: '${userProfile['followingCount']?.toInt() ?? 0}',
+                    showDivider: false,
+                    width:width
+                  ),
+          ],
+        );
+      },
+    ),
+  ),
+),
 
-                                  // Following
-                                  Column(
-                                      children: [
-                                        Text(
-                                          'Following',
-                                          style: TextStyle(
-                                              fontSize: width * 0.045,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Text(
-                                          '${userProfile['followingCount']?.toInt() ?? 0}',
-                                          style: TextStyle(
-                                              fontSize: width * 0.045),
-                                        ),
-                                      ],
-                                    ),
-                            ],
-                          ),
-                        ),
-                      ),
+
                       SizedBox(height: height * 0.03),
                       CustomButton(
                           text: 'Change Password',
@@ -307,4 +266,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
+  // Helper function to build the individual column with optional divider
+Widget _buildColumn({
+  required String title,
+  required String value,
+  required bool showDivider,
+  required double width,
+}) {
+  return Column(
+    children: [
+      Text(
+        title,
+        style: TextStyle(
+          fontSize: width * 0.045,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      Text(
+        value,
+        style: TextStyle(fontSize: width * 0.045),
+      ),
+      if (showDivider)
+        VerticalDivider(
+          color: Colors.black26,
+          thickness: 1,
+          width: width * 0.03,
+        ),
+    ],
+  );
+}
+
 }

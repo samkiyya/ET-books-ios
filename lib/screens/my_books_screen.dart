@@ -229,12 +229,15 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                                               AppColors.color3,
                                                         ),
                                                         onPressed: () async {
+                                                          final down = await BookService
+                                                              .getFileExtension(
+                                                                  '${Network.baseUrl}/${book['pdfFilePath']}');
                                                           await BookService
                                                               .openBook(
                                                                   context,
                                                                   book['id'],
-                                                                  book[
-                                                                      'title']);
+                                                                  book['title'],
+                                                                  down);
                                                         },
                                                       )
                                                     : IconButton(

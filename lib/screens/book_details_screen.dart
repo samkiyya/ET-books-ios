@@ -4,6 +4,7 @@ import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/models/order_model.dart';
 import 'package:book_mobile/providers/content_access_provider.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
+import 'package:book_mobile/screens/author_screen.dart';
 import 'package:book_mobile/screens/book_reader_screen.dart';
 import 'package:book_mobile/screens/buy_book_screen.dart';
 import 'package:book_mobile/screens/home_screen.dart';
@@ -236,7 +237,35 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               ),
                             ),
                             SizedBox(height: height * 0.01),
-                            _buildDetailRow("Author", widget.book['author']),
+
+                            // _buildDetailRow("Author", widget.book['author']),
+                            Row(
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    print(
+                                        'Author id: ${widget.book['author_id']}');
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AuthorScreen(
+                                          authorId: (widget.book['author_id']
+                                              .toString()),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    'By: ${widget.book['author']}',
+                                    style: TextStyle(
+                                        color:
+                                            AppColors.color3.withOpacity(0.7)),
+                                  ),
+                                ),
+                              ],
+                            ),
+
                             _buildDetailRow("Publication Year",
                                 widget.book['publicationYear']),
                             _buildDetailRow(

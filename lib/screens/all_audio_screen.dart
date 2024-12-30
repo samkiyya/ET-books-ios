@@ -68,21 +68,28 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
                           _searchQuery = value;
                         });
                       },
+                      customHint: _filterType == 'bookTitle'
+                          ? 'search by title'
+                          : "Search by episode",
                     ),
                   ),
                 ],
               ),
               SizedBox(height: height * 0.03),
               // Filter Buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildFilterButton(
-                      context, "Search By Title", 'bookTitle', width, height),
-                  SizedBox(width: width * 0.03),
-                  _buildFilterButton(
-                      context, "Search By Episode", 'episode', width, height),
-                ],
+              Padding(
+                padding:
+                    EdgeInsets.only(left: width * 0.03, right: width * 0.03),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _buildFilterButton(
+                        context, "Search By Title", 'bookTitle', width, height),
+                    SizedBox(width: width * 0.03),
+                    _buildFilterButton(
+                        context, "Search By Episode", 'episode', width, height),
+                  ],
+                ),
               ),
               SizedBox(height: height * 0.03),
               // List of Audio Books
@@ -192,13 +199,21 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
 
   Widget _buildFilterButton(BuildContext context, String label, String type,
       double width, double height) {
+    bool isActive = _filterType == type;
+
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [AppColors.color1, AppColors.color2],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: isActive
+            ? const LinearGradient(
+                colors: [AppColors.color3, AppColors.color3],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(
+                colors: [AppColors.color6, AppColors.color2],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
         borderRadius: BorderRadius.circular(12),
       ),
       child: ElevatedButton(
@@ -218,8 +233,10 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
         ),
         child: Text(
           label,
-          style: AppTextStyles.buttonText
-              .copyWith(color: AppColors.color6, fontSize: width * 0.04),
+          style: AppTextStyles.buttonText.copyWith(
+              color: isActive ? AppColors.color4 : AppColors.color1,
+              fontSize:
+                  width * 0.038), // Change text color based on active state
         ),
       ),
     );

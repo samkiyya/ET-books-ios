@@ -1,5 +1,6 @@
 import 'package:book_mobile/constants/logger.dart';
 import 'package:book_mobile/widgets/loading_widget.dart';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:book_mobile/widgets/audio_controlls.dart';
@@ -9,6 +10,7 @@ import 'package:book_mobile/widgets/progress_bar.dart';
 import 'package:book_mobile/widgets/volume_controll.dart';
 import '../services/audio_player_service.dart';
 import '../constants/styles.dart';
+
 
 class DownloadedAudioPlayerScreen extends StatefulWidget {
   final String title;

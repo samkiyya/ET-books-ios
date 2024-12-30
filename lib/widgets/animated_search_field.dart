@@ -4,7 +4,13 @@ import 'package:flutter/material.dart';
 
 class AnimatedSearchTextField extends StatefulWidget {
   final Function(String) onChanged;
-  const AnimatedSearchTextField({super.key, required this.onChanged});
+  final String? customHint; // Ensure this is marked as final
+
+  const AnimatedSearchTextField({
+    super.key,
+    required this.onChanged,
+    this.customHint,
+  });
 
   @override
   State<AnimatedSearchTextField> createState() =>
@@ -38,7 +44,7 @@ class _AnimatedSearchTextFieldState extends State<AnimatedSearchTextField> {
         ),
         child: Row(
           children: [
-            if (opened) // Only render Expanded when opened is true
+            if (opened)
               Expanded(
                 child: Padding(
                   padding: EdgeInsets.only(left: width * 0.03),
@@ -56,8 +62,8 @@ class _AnimatedSearchTextFieldState extends State<AnimatedSearchTextField> {
                     },
                     style: AppTextStyles.bodyText.copyWith(
                         color: AppColors.color1, fontWeight: FontWeight.w500),
-                    decoration: const InputDecoration(
-                      hintText: 'Search',
+                    decoration: InputDecoration(
+                      hintText: widget.customHint ?? 'Search...',
                       hintStyle: TextStyle(color: AppColors.color1),
                       border: InputBorder.none,
                     ),

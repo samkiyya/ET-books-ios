@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/screens/custom_drawer_screen.dart';
 import 'package:book_mobile/providers/home_provider.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -175,9 +176,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
         body: homeProvider.isLoading
             ? const Center(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
+                child: LoadingWidget(),
               )
             : homeProvider.hasError
                 ? const Center(

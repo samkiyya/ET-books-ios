@@ -65,6 +65,9 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                           _searchQuery = value;
                         });
                       },
+                      customHint: _filterType == 'Book'
+                          ? "Search by Title ..."
+                          : "Search by author ...",
                     ),
                   ),
                   // Filter Buttons (Book / Author)
@@ -77,109 +80,11 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.color1,
-                            AppColors.color2
-                          ], // Gradient colors
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.color5
-                                .withOpacity(0.5), // Shadow for 3D effect
-                            offset: const Offset(3, 3), // Position of shadow
-                            blurRadius: 6, // Blur for soft edges
-                          ),
-                          BoxShadow(
-                            color: AppColors.color3
-                                .withOpacity(0.5), // Light shadow for highlight
-                            offset: const Offset(-2, -2),
-                            blurRadius: 4,
-                          ),
-                        ],
-                        borderRadius:
-                            BorderRadius.circular(12), // Rounded corners
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _filterType = 'Book';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors
-                              .transparent, // Make background transparent to use gradient
-                          shadowColor:
-                              Colors.transparent, // Disable default shadow
-                          padding: EdgeInsets.symmetric(
-                              horizontal: width * 0.02,
-                              vertical: height * 0.01), // Button size
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          "Search By Title",
-                          style: AppTextStyles.buttonText.copyWith(
-                              color: AppColors.color3, fontSize: width * 0.04),
-                        ),
-                      ),
-                    ),
-                    // Second Button
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [
-                            AppColors.color2,
-                            AppColors.color1,
-                          ], // Gradient colors
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.color5
-                                .withOpacity(0.5), // Shadow for 3D effect
-                            offset: const Offset(3, 3),
-                            blurRadius: 6,
-                          ),
-                          BoxShadow(
-                            color: AppColors.color5
-                                .withOpacity(0.5), // Light shadow for highlight
-                            offset: const Offset(-2, -2),
-                            blurRadius: 4,
-                          ),
-                        ],
-                        borderRadius:
-                            BorderRadius.circular(12), // Rounded corners
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _filterType = 'Author';
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.transparent,
-                          shadowColor: Colors.transparent,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: width * 0.02,
-                              vertical: height * 0.01),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          "Search By Authors",
-                          style: AppTextStyles.buttonText.copyWith(
-                              color: AppColors.color3, fontSize: width * 0.04),
-                        ),
-                      ),
-                    ),
+                    _buildFilterButton(
+                        context, "Search By Title", 'Book', width, height),
+                    SizedBox(width: width * 0.03),
+                    _buildFilterButton(
+                        context, "Search By Author", 'Author', width, height),
                   ],
                 ),
               ),
@@ -233,25 +138,10 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  print('Author id: ${book['author_id']}');
-
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AuthorScreen(
-                                        authorId:
-                                            (book['author_id'].toString()),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  'By: ${book['author']}',
-                                  style: TextStyle(
-                                      color: AppColors.color3.withOpacity(0.7)),
-                                ),
+                              Text(
+                                'By: ${book['author']}',
+                                style: TextStyle(
+                                    color: AppColors.color3.withOpacity(0.7)),
                               ),
                               Text(
                                 "Price: ${book['price']} ETB",
@@ -281,6 +171,51 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilterButton(BuildContext context, String label, String type,
+      double width, double height) {
+    bool isActive = _filterType == type;
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: isActive
+            ? const LinearGradient(
+                colors: [AppColors.color3, AppColors.color3],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(
+                colors: [AppColors.color6, AppColors.color2],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _filterType = type;
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: EdgeInsets.symmetric(
+              horizontal: width * 0.02, vertical: height * 0.01),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: Text(
+          label,
+          style: AppTextStyles.buttonText.copyWith(
+              color: isActive ? AppColors.color4 : AppColors.color1,
+              fontSize:
+                  width * 0.038), // Change text color based on active state
         ),
       ),
     );

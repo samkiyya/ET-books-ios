@@ -162,7 +162,11 @@ class _DownloadedBooksScreenState extends State<DownloadedBooksScreen> {
                                     style: AppTextStyles.bodyText),
                                 onTap: () async {
                                   await BookService.openBook(
-                                      context, book['id'], book['title']);
+                                    context,
+                                    book['id'],
+                                    book['title'],
+                                    book['extension'],
+                                  );
                                 },
                                 trailing: IconButton(
                                   icon: const Icon(Icons.delete,

@@ -80,6 +80,7 @@ class AuthorProvider extends ChangeNotifier {
         body: {'user_id': userId},
         headers: {'Authorization': 'Bearer $_token'},
       );
+      print('response of authors: ${response.body}');
 
       if (response.statusCode == 200) {
         await fetchAuthorById(userId);
@@ -101,18 +102,45 @@ class AuthorProvider extends ChangeNotifier {
   Future<void> fetchAuthors() async {
     isLoading = true;
     notifyListeners();
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
+    print('Token: $_token');
+    if (_token == null || _token!.isEmpty) {
+      errorMessage = 'Authentication required. Please log in First.';
+      isLoading = false;
+      notifyListeners();
+      return;
+    }
     final url = Uri.parse('${Network.baseUrl}/api/manage-user/filter-authors');
     try {
-      final response = await http.get(url);
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $_token'},
+      );
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        _authors = (data['users'] as List)
-            .map((author) => Author.fromJson(author))
-            .toList();
+
+        if (data['users'] != null) {
+          // Map the authors from the API response
+          _authors = (data['users'] as List).map((author) {
+            // Create Author instance using the updated model
+            return Author.fromJson(author);
+          }).toList();
+          print('authors fetched: $_authors');
+        } else {
+          errorMessage = 'No authors found in the response.';
+          print('Error: $errorMessage');
+        }
+      } else {
+        errorMessage =
+            'Failed to load authors. Status Code: ${response.statusCode}';
+        print('Errors: $errorMessage');
       }
     } catch (error) {
-      print('Error fetching authors: $error');
+      errorMessage = 'Error fetching authors: $error';
+
+      print('catched error: $errorMessage');
     } finally {
       isLoading = false;
       notifyListeners();

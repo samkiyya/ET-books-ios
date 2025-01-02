@@ -1,16 +1,21 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/models/bottom_bar_item_model.dart';
 import 'package:book_mobile/models/order_model.dart';
 import 'package:book_mobile/providers/content_access_provider.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
+import 'package:book_mobile/providers/review_provider.dart';
 import 'package:book_mobile/screens/author_screen.dart';
 import 'package:book_mobile/screens/book_reader_screen.dart';
 import 'package:book_mobile/screens/buy_book_screen.dart';
 import 'package:book_mobile/screens/home_screen.dart';
+import 'package:book_mobile/screens/review_screen.dart';
 import 'package:book_mobile/screens/view_order_status_screen.dart';
+import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
+import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
+import 'package:book_mobile/widgets/animated_rating_button.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
-import 'package:book_mobile/widgets/custom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,30 +30,72 @@ class BookDetailScreen extends StatefulWidget {
 }
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
-  int _currentIndex = 0;
+  final NotchBottomBarController _controller =
+      NotchBottomBarController(index: 3);
 
+  final List<String> _routes = [
+    '/announcements',
+    '/subscription-tier',
+    '/home',
+    '/self',
+    '/authors',
+  ];
   void _navigateToScreen(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        Navigator.pushNamed(context, '/home');
-        break;
-      case 1:
-        Navigator.pushNamed(context, '/filter-book');
-        break;
-      case 2:
-        Navigator.pushNamed(context, '/profile');
-        break;
-      default:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
-        break;
+    if (index == 3) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BookDetailScreen(book: widget.book),
+        ),
+      );
+    } else if (index >= 0 && index < _routes.length) {
+      Navigator.pushNamed(context, _routes[index]);
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     }
     setState(() {
-      _currentIndex = index;
+      _controller.jumpTo(index);
     });
   }
+
+  final List<BottomBarItem> _bottomBarItems = [
+    BottomBarItem(
+      activeItem: Icon(Icons.announcement, color: AppColors.color1),
+      inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
+      itemLabel: 'Announcements',
+    ),
+    BottomBarItem(
+      activeItem: Icon(Icons.subscriptions, color: AppColors.color1),
+      inActiveItem: Icon(Icons.subscriptions_outlined, color: AppColors.color2),
+      itemLabel: 'Subscribe',
+    ),
+    BottomBarItem(
+      activeItem: Icon(Icons.home, color: AppColors.color1),
+      inActiveItem: Icon(Icons.home_outlined, color: AppColors.color2),
+      itemLabel: 'Home',
+    ),
+    BottomBarItem(
+      activeItem: Icon(
+        Icons.people,
+        color: AppColors.color1,
+      ),
+      inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
+      itemLabel: 'Authors',
+    ),
+    // BottomBarItem(
+    //   activeItem: Icon(Icons.person, color: AppColors.color1),
+    //   inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
+    //   itemLabel: 'Profile',
+    // ),
+    BottomBarItem(
+      inActiveItem: Icon(Icons.library_books, color: AppColors.color1),
+      activeItem: Icon(Icons.book_outlined, color: AppColors.color2),
+      itemLabel: 'ebook Detail',
+    )
+  ];
 
   Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
     final statusProvider =
@@ -158,6 +205,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     final accessProvider = Provider.of<AccessProvider>(
       context,
     );
+    // final reviewProvider = Provider.of<ReviewProvider>(context);
+
     final isSubscribed = accessProvider.hasReachedLimitAndApproved;
 
     return SafeArea(
@@ -270,30 +319,62 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                 widget.book['publicationYear']),
                             _buildDetailRow(
                                 "Language", widget.book['language']),
+                            _buildDetailRow("Pages", widget.book['pages']),
                             _buildDetailRow(
                                 "Price", "${widget.book['price']} ETB"),
+
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
                                   child: _buildDetailRow(
                                     "⭐ ",
-                                    "${widget.book['rating']}  (${widget.book['rateCount']} reviews)",
+                                    "${widget.book['rating']}",
                                   ),
                                 ),
-                                const VerticalDivider(
-                                  width: 1,
-                                  thickness: 1,
-                                ),
                                 Expanded(
-                                  child: _buildDetailRow(
-                                      "Pages", widget.book['pages']),
-                                )
+                                  child: ElevatedButton(
+                                    style: ButtonStyle(
+                                      backgroundColor: WidgetStateProperty.all(
+                                          AppColors.color2),
+                                      elevation: WidgetStateProperty.all(5),
+                                      shape: WidgetStateProperty.all(
+                                          RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      )),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              BookReviewsScreen(
+                                                  bookId: widget.book['id'],
+                                                  book:widget.book,),
+                                                  
+                                        ),
+                                      );
+                                    },
+                                    child: Tooltip(
+                                      message:
+                                          "View Reviews", // Hint text when hovered or long-pressed
+                                      child: _buildDetailRow(
+                                        "${widget.book['rateCount']}",
+                                        " reviews",
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                             _buildDetailRow("Status", widget.book['status']),
                             _buildDetailRow(
                                 "Description", widget.book['description']),
+
+                            AnimatedRatingButton(
+                              bookId: widget.book['id'],
+                              initialRating: 0,
+                            ),
                           ],
                         ),
                       ),
@@ -335,16 +416,37 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: CustomBottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) => _navigateToScreen(context, index),
+        bottomNavigationBar: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return AnimatedNotchBottomBar(
+              notchBottomBarController: _controller,
+              onTap: (index) => _navigateToScreen(context, index),
+              bottomBarItems: _bottomBarItems,
+              showShadow: true,
+              showLabel: true,
+              itemLabelStyle: TextStyle(color: Colors.black, fontSize: 12),
+              showBlurBottomBar: true,
+              blurOpacity: 0.6,
+              blurFilterX: 10.0,
+              blurFilterY: 10.0,
+              kIconSize: 30,
+              kBottomRadius: 10,
+              showTopRadius: true,
+              showBottomRadius: true,
+              topMargin: 15,
+              durationInMilliSeconds: 300,
+              bottomBarHeight: 70,
+              elevation: 8,
+            );
+          },
         ),
       ),
     );
   }
 
   String _determineButtonText(Map<String, dynamic>? order,
-      {bool? isSubscribed}) {
+      {required bool isSubscribed}) {
     if (order != null) {
       if (order['status'] == 'PENDING') {
         return 'Check Order Status';

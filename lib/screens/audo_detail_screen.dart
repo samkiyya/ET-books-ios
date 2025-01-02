@@ -1,10 +1,12 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/models/bottom_bar_item_model.dart';
 import 'package:book_mobile/models/order_model.dart';
+import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
+import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/widgets/custom_nav_bar.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/screens/buy_audio_screen.dart';
 import 'package:book_mobile/screens/book_reader_screen.dart';
@@ -23,6 +25,70 @@ class AudioDetailScreen extends StatefulWidget {
 }
 
 class _AudioDetailScreenState extends State<AudioDetailScreen> {
+  final NotchBottomBarController _controller =
+      NotchBottomBarController(index: 3); // Default to "home"
+
+  final List<String> _routes = [
+    '/announcements',
+    '/subscription-tier',
+    '/home',
+    '/self'
+    '/authors',
+  ];
+  void _navigateToScreen(BuildContext context, int index) {
+     if (index == 3) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AudioDetailScreen(audioBook: widget.audioBook),
+      ),
+    );
+  } else if (index >= 0 && index < _routes.length) {
+      Navigator.pushNamed(context, _routes[index]);
+    }
+     else {
+      Navigator.pushNamed(context, '/home');
+    }
+    setState(() {
+      _controller.jumpTo(index);
+    });
+  }
+
+  final List<BottomBarItem> _bottomBarItems = [
+    BottomBarItem(
+      activeItem: Icon(Icons.announcement, color: AppColors.color1),
+      inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
+      itemLabel: 'Announcements',
+    ),
+    BottomBarItem(
+      activeItem: Icon(Icons.subscriptions, color: AppColors.color1),
+      inActiveItem: Icon(Icons.subscriptions_outlined, color: AppColors.color2),
+      itemLabel: 'Subscribe',
+    ),
+    BottomBarItem(
+      activeItem: Icon(Icons.home, color: AppColors.color1),
+      inActiveItem: Icon(Icons.home_outlined, color: AppColors.color2),
+      itemLabel: 'Home',
+    ),
+    BottomBarItem(
+      activeItem: Icon(
+        Icons.people,
+        color: AppColors.color1,
+      ),
+      inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
+      itemLabel: 'Authors',
+    ),
+    // BottomBarItem(
+    //   activeItem: Icon(Icons.person, color: AppColors.color1),
+    //   inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
+    //   itemLabel: 'Profile',
+    // ),
+    BottomBarItem(
+      activeItem: Icon(Icons.audio_file, color: AppColors.color1),
+      inActiveItem: Icon(Icons.audio_file_outlined, color: AppColors.color2),
+      itemLabel: 'Self',
+    ),
+  ];
   Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
     final statusProvider =
         Provider.of<OrderStatusProvider>(context, listen: false);
@@ -158,7 +224,8 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => BookReaderScreen(
-                       bookId: widget.audioBook['id'], filePath:
+                        bookId: widget.audioBook['id'],
+                        filePath:
                             '${Network.baseUrl}/${widget.audioBook['pdfFilePath']}',
                         bookTitle: widget.audioBook['title'],
                       ),
@@ -340,9 +407,30 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: CustomBottomNavigationBar(
-          currentIndex: 2,
-          onTap: (index) => Navigator.pop(context),
+        bottomNavigationBar: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            return AnimatedNotchBottomBar(
+              notchBottomBarController: _controller,
+              onTap: (index) => _navigateToScreen(context, index),
+              bottomBarItems: _bottomBarItems,
+              showShadow: true,
+              showLabel: true,
+              itemLabelStyle: TextStyle(color: Colors.black, fontSize: 12),
+              showBlurBottomBar: true,
+              blurOpacity: 0.6,
+              blurFilterX: 10.0,
+              blurFilterY: 10.0,
+              kIconSize: 30,
+              kBottomRadius: 10,
+              showTopRadius: true,
+              showBottomRadius: true,
+              topMargin: 15,
+              durationInMilliSeconds: 300,
+              bottomBarHeight: 70,
+              elevation: 8,
+            );
+          },
         ),
       ),
     );

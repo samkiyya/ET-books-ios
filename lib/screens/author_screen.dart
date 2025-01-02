@@ -2,6 +2,7 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/screens/book_details_screen.dart';
+import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/author_provider.dart';
@@ -40,7 +41,6 @@ class _AuthorScreenState extends State<AuthorScreen> {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
     final authorProvider = Provider.of<AuthorProvider>(context);
-    final isLoading = authorProvider.isLoading;
     final author = authorProvider.author;
     final errorMessage = authorProvider.errorMessage;
 
@@ -54,9 +54,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
         ),
         body: !isDataFetched
             ? const Center(
-                child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation(AppColors.color3),
-              )) // Only show when data is not fetched
+                child: LoadingWidget(),) // Only show when data is not fetched
             : errorMessage.isNotEmpty
                 ? Center(
                     child: Text(errorMessage,
@@ -67,11 +65,10 @@ class _AuthorScreenState extends State<AuthorScreen> {
                         padding: const EdgeInsets.all(16.0),
                         child: SingleChildScrollView(
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               // Profile Section
                               Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   // Profile Picture
                                   Center(
@@ -146,7 +143,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                       ),
                                       const SizedBox(height: 16),
                                       SizedBox(
-                                        height: 180,
+                                        height: height*0.25,
                                         child: ListView.builder(
                                           scrollDirection: Axis.horizontal,
                                           itemCount: author['books'].length,
@@ -170,7 +167,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                                   margin: const EdgeInsets.only(
                                                       right: 16),
                                                   child: SizedBox(
-                                                    width: 130,
+                                                    width: width*0.35,
                                                     child: Padding(
                                                       padding:
                                                           const EdgeInsets.only(
@@ -188,9 +185,9 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                                                   fit: BoxFit
                                                                       .cover,
                                                                 )
-                                                              : const Icon(
+                                                              :  Icon(
                                                                   Icons.book,
-                                                                  size: 100,
+                                                                  size: width*0.27,
                                                                   color: AppColors
                                                                       .color1,
                                                                 ),
@@ -220,6 +217,10 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                                               color: AppColors
                                                                   .color4,
                                                             ),
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                           ),
                                                           Text(
                                                             'Published: ${book['publicationYear']}',
@@ -229,6 +230,10 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                                               color: AppColors
                                                                   .color4,
                                                             ),
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
                                                           ),
                                                         ],
                                                       ),

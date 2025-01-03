@@ -2,14 +2,14 @@ import 'package:book_mobile/providers/review_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class RatingDialog extends StatefulWidget {
+class UpdateRatingDialog extends StatefulWidget {
   final int bookId;
   final double initialRating;
   final String? initialComment;
   final int? reviewId;
   final bool isEditing;
 
-  const RatingDialog({
+  const UpdateRatingDialog({
     super.key,
     required this.bookId,
     required this.initialRating,
@@ -19,10 +19,10 @@ class RatingDialog extends StatefulWidget {
   });
 
   @override
-  State<RatingDialog> createState() => _RatingDialogState();
+  State<UpdateRatingDialog> createState() => _UpdateRatingDialogState();
 }
 
-class _RatingDialogState extends State<RatingDialog> {
+class _UpdateRatingDialogState extends State<UpdateRatingDialog> {
   late double _rating;
   final _commentController = TextEditingController();
   bool isSubmitting = false;
@@ -69,27 +69,31 @@ class _RatingDialogState extends State<RatingDialog> {
             controller: _commentController,
             decoration: const InputDecoration(labelText: "Comment"),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    setState(() {
-                            isSubmitting = true;
-                          });
-                    final reviewProvider =
-                        Provider.of<ReviewProvider>(context, listen: false);
-
-                    await reviewProvider.addReview(widget.bookId,
-                        _commentController.text, _rating.toInt());
-
-                    setState(() {
-                            isSubmitting = true;
+          isSubmitting
+              ? CircularProgressIndicator()
+              : Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        setState(() {
+                          isSubmitting = true;
+                        });
+                        try {
+                          final reviewProvider = Provider.of<ReviewProvider>(
+                              context,
+                              listen: false);
+                          await reviewProvider.updateReview(
+                              widget.reviewId!,
+                              widget.bookId,
+                              _commentController.text,
+                              _rating.toInt());
+                          setState(() {
+                            isSubmitting =false;
                           });
                           Navigator.pop(context);
                           Provider.of<ReviewProvider>(context, listen: false)
@@ -98,15 +102,15 @@ class _RatingDialogState extends State<RatingDialog> {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text('Successuflly reviewed')));
                           });
-                  } catch (e) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text(e.toString())));
-                  }
-                },
-                child: const Text("Submit"),
-              ),
-            ],
-          ),
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(e.toString())));
+                        }
+                      },
+                      child: const Text("Submit"),
+                    ),
+                  ],
+                ),
         ],
       ),
     );

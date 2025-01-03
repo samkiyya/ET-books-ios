@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 
 class ReviewProvider with ChangeNotifier {
   final ReviewService _reviewService = ReviewService();
-  
+
   List<Review> _reviews = [];
   double _averageRating = 0.0;
   bool _loading = false;
-   int _reviewCount = 0;
+  int _reviewCount = 0;
 
   List<Review> get reviews => _reviews;
   double get averageRating => _averageRating;
@@ -23,7 +23,7 @@ class ReviewProvider with ChangeNotifier {
     try {
       _reviews = await _reviewService.fetchReviews(bookId);
       _reviewCount = _reviews.length;
-            await fetchAverageRating(bookId);
+      await fetchAverageRating(bookId);
 
       notifyListeners();
     } catch (e) {
@@ -39,7 +39,7 @@ class ReviewProvider with ChangeNotifier {
     try {
       final avg = await _reviewService.fetchAverageRating(bookId);
       _averageRating = avg.averageRating;
-      
+
       notifyListeners();
     } catch (e) {
       throw e;
@@ -57,11 +57,24 @@ class ReviewProvider with ChangeNotifier {
   }
 
   // Update review
-  Future<void> updateReview(int reviewId, int bookId, String comment, int reviewRating) async {
+  Future<void> updateReview(
+      int reviewId, int bookId, String comment, int reviewRating) async {
     try {
-      await _reviewService.updateReview(reviewId, bookId, comment, reviewRating);
+      await _reviewService.updateReview(
+          reviewId, bookId, comment, reviewRating);
       await fetchReviews(bookId);
       await fetchAverageRating(bookId);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  // Delete review
+  Future<void> deleteReview(int reviewId, int bookId) async {
+    try {
+      await _reviewService.deleteReview(reviewId);
+      await fetchReviews(bookId); // Refresh the reviews for the book
+      await fetchAverageRating(bookId); // Refresh the average rating
     } catch (e) {
       throw e;
     }

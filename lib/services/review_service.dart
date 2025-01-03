@@ -52,6 +52,7 @@ class ReviewService {
       Uri.parse("$_baseUrl/api/user-review/$reviewId"),
       headers: {
         "Authorization": "Bearer $_token",
+        "Content-Type": "application/json",
       },
       body: jsonEncode({
         "bookId": bookId,
@@ -59,6 +60,9 @@ class ReviewService {
         "reviewRating": reviewRating,
       }),
     );
+    print(
+        'book detail sending: book id: $bookId reviewId: $reviewId comment: $comment rating: $reviewRating');
+    print('review response: ${response.body}');
 
     if (response.statusCode != 200) {
       throw Exception("Failed to update review");
@@ -109,6 +113,27 @@ class ReviewService {
       return AverageRating.fromJson(jsonDecode(response.body));
     } else {
       throw Exception("Failed to load average rating");
+    }
+  }
+
+  // Delete review
+  Future<void> deleteReview(int reviewId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
+    print('Token: $_token');
+    if (_token == null) {
+      print('User has no token');
+      return;
+    }
+    final response = await http.delete(
+      Uri.parse("$_baseUrl/api/user-review/$reviewId"),
+      headers: {
+        "Authorization": "Bearer $_token",
+      },
+    );
+
+    if (response.statusCode != 204) {
+      throw Exception("Failed to delete review: ${response.statusCode}");
     }
   }
 }

@@ -6,6 +6,7 @@ import 'package:book_mobile/screens/subscription_screen.dart';
 import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
 import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class SubscriptionTierScreen extends StatefulWidget {
@@ -28,9 +29,9 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
   ];
   void _navigateToScreen(BuildContext context, int index) {
     if (index >= 0 && index < _routes.length) {
-      Navigator.pushNamed(context, _routes[index]);
+      context.push( _routes[index]);
     } else {
-      Navigator.pushNamed(context, '/home');
+      context.push( '/home');
     }
     setState(() {
       _controller.jumpTo(index);
@@ -41,7 +42,7 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
     BottomBarItem(
       activeItem: Icon(Icons.announcement, color: AppColors.color1),
       inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
-      itemLabel: 'Announcements',
+      itemLabel: 'News',
     ),
     BottomBarItem(
       activeItem: Icon(Icons.subscriptions, color: AppColors.color1),

@@ -5,11 +5,9 @@ import 'package:book_mobile/models/bottom_bar_item_model.dart';
 import 'package:book_mobile/models/order_model.dart';
 import 'package:book_mobile/providers/content_access_provider.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
-import 'package:book_mobile/providers/review_provider.dart';
 import 'package:book_mobile/screens/author_screen.dart';
 import 'package:book_mobile/screens/book_reader_screen.dart';
 import 'package:book_mobile/screens/buy_book_screen.dart';
-import 'package:book_mobile/screens/home_screen.dart';
 import 'package:book_mobile/screens/review_screen.dart';
 import 'package:book_mobile/screens/view_order_status_screen.dart';
 import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
@@ -17,6 +15,7 @@ import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_c
 import 'package:book_mobile/widgets/animated_rating_button.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,12 +48,9 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         ),
       );
     } else if (index >= 0 && index < _routes.length) {
-      Navigator.pushNamed(context, _routes[index]);
+      context.push(_routes[index]);
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      context.go('/home');
     }
     setState(() {
       _controller.jumpTo(index);
@@ -65,7 +61,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     BottomBarItem(
       activeItem: Icon(Icons.announcement, color: AppColors.color1),
       inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
-      itemLabel: 'Announcements',
+      itemLabel: 'News',
     ),
     BottomBarItem(
       activeItem: Icon(Icons.subscriptions, color: AppColors.color1),
@@ -305,11 +301,26 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                       ),
                                     );
                                   },
-                                  child: Text(
-                                    'By: ${widget.book['author']}',
-                                    style: TextStyle(
-                                        color:
-                                            AppColors.color3.withOpacity(0.7)),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: 'By: ',
+                                          style: TextStyle(
+                                              color: AppColors.color3
+                                                  .withOpacity(0.7)),
+                                        ),
+                                        TextSpan(
+                                          text: '${widget.book['author']}',
+                                          style: TextStyle(
+                                            color: AppColors.color3
+                                                .withOpacity(0.9),
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -349,15 +360,14 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                         MaterialPageRoute(
                                           builder: (context) =>
                                               BookReviewsScreen(
-                                                  bookId: widget.book['id'],
-                                                  book:widget.book,),
-                                                  
+                                            bookId: widget.book['id'],
+                                            book: widget.book,
+                                          ),
                                         ),
                                       );
                                     },
                                     child: Tooltip(
-                                      message:
-                                          "View Reviews", // Hint text when hovered or long-pressed
+                                      message: "View Reviews",
                                       child: _buildDetailRow(
                                         "${widget.book['rateCount']}",
                                         " reviews",

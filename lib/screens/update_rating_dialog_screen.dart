@@ -92,9 +92,7 @@ class _UpdateRatingDialogState extends State<UpdateRatingDialog> {
                               widget.bookId,
                               _commentController.text,
                               _rating.toInt());
-                          setState(() {
-                            isSubmitting =false;
-                          });
+
                           Navigator.pop(context);
                           Provider.of<ReviewProvider>(context, listen: false)
                               .fetchReviews(widget.bookId)
@@ -105,6 +103,11 @@ class _UpdateRatingDialogState extends State<UpdateRatingDialog> {
                         } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(e.toString())));
+                        } finally {
+                          setState(() {
+                            isSubmitting = false;
+                          });
+                          Navigator.pop(context);
                         }
                       },
                       child: const Text("Submit"),

@@ -88,13 +88,14 @@ class _RatingDialogState extends State<RatingDialog> {
                     await reviewProvider.addReview(widget.bookId,
                         _commentController.text, _rating.toInt());
 
-                    setState(() {
-                            isSubmitting = true;
-                          });
+                    
                           Navigator.pop(context);
                           Provider.of<ReviewProvider>(context, listen: false)
                               .fetchReviews(widget.bookId)
                               .then((_) {
+                                setState(() {
+                            isSubmitting = false;
+                          });
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text('Successuflly reviewed')));
                           });

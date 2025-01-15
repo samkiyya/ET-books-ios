@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/constants/payment_methods.dart';
 import 'package:book_mobile/providers/purchase_order_provider.dart';
 import 'package:book_mobile/providers/user_activity_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
@@ -9,6 +10,8 @@ import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+
 
 class BuyBookScreen extends StatefulWidget {
   final Map<String, dynamic> book;
@@ -24,6 +27,9 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
   final _transactionController = TextEditingController();
   final _bankNameController = TextEditingController();
   File? _receiptImage;
+  String selectedBank='';
+
+  late final List<String> bankLists = PaymentMethods.banks;
 
   String? _validateField(String key, String value) {
     if (value.isEmpty) {
@@ -148,13 +154,86 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                 SizedBox(height: height * 0.0045),
 
                                 // Bank Name
-                                CustomTextField(
-                                  label: 'Bank Name',
-                                  controller: _bankNameController,
-                                  hintText: "Enter Bank Name",
-                                  validator: (value) =>
-                                      _validateField('Bank Name', value!),
-                                ),
+Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          TypeAheadField<String>(
+                                            builder: (context, controller,
+                                                focusNode) {
+                                              return TextField(
+                                                  controller: _bankNameController,
+                                                  focusNode: focusNode,
+                                                  autofocus: true,
+                                                  decoration: InputDecoration(
+                                                    filled: true,
+                                                    fillColor: AppColors.color5,
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    labelText: 'Bank Name',
+                                                    labelStyle: const TextStyle(
+                                                        color:
+                                                            AppColors.color3),
+                                                  ));
+                                            },
+                                            loadingBuilder: (context) =>
+                                                const Text('Loading...'),
+                                            errorBuilder: (context, error) =>
+                                                const Text('Error!'),
+                                            emptyBuilder: (context) =>
+                                                const Text('No bank found!'),
+                                            decorationBuilder:
+                                                (context, child) {
+                                              return Material(
+                                                type: MaterialType.card,
+                                                elevation: 8,
+                                                shadowColor: AppColors.color3,
+                                                color: AppColors.color5,
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child: child,
+                                              );
+                                            },
+                                            suggestionsCallback: (pattern) {
+                                              return bankLists
+                                                  .where((bank) => bank
+                                                      .toLowerCase()
+                                                      .contains(pattern
+                                                          .toLowerCase()))
+                                                  .toList();
+                                            },
+                                            itemBuilder: (context, suggestion) {
+                                              return ListTile(
+                                                title: Text(suggestion,
+                                                    style:
+                                                        AppTextStyles.bodyText),
+                                              );
+                                            },
+                                            transitionBuilder:
+                                                (context, animation, child) {
+                                              return FadeTransition(
+                                                opacity: CurvedAnimation(
+                                                    parent: animation,
+                                                    curve:
+                                                        Curves.fastOutSlowIn),
+                                                child: child,
+                                              );
+                                            },
+                                            onSelected: (suggestion) {
+                                              _bankNameController.text = suggestion;
+                                              setState(() {
+                                                selectedBank = suggestion;
+                                              });
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+
                                 SizedBox(height: height * 0.02),
 
                                 // Row for Image Upload
@@ -236,7 +315,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                           await orderProvider.purchaseBook(
                             id: widget.book['id'].toString(),
                             transactionNumber: _transactionController.text,
-                            bankName: _bankNameController.text,
+                            bankName: selectedBank,
                             // bookType: widget.book['type'].toString(),
                             bookType: 'PDF',
                             context: context,

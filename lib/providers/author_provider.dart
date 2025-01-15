@@ -49,8 +49,25 @@ class AuthorProvider extends ChangeNotifier {
         throw Exception(response.body);
       }
     } catch (e) {
-      errorMessage = 'Error fetching author: $e';
-      print(errorMessage);
+      if (e is Exception) {
+        // Check if e contains a specific structure
+        String errorString = e.toString();
+
+        // Attempt to extract the JSON part
+        if (errorString.contains('Exception:')) {
+          try {
+            final error = json.decode(errorString.split('Exception:')[1]);
+            errorMessage = error['message'];
+            print("error from json author $errorMessage");
+          } catch (e) {
+            errorMessage = 'Error fetching author';
+            print("Error: $errorMessage");
+          }
+        }
+      } else {
+        errorMessage = 'Error fetching author';
+        print("Error: $errorMessage");
+      }
     } finally {
       isLoading = false;
       notifyListeners();
@@ -125,6 +142,8 @@ class AuthorProvider extends ChangeNotifier {
           // Map the authors from the API response
           _authors = (data['users'] as List).map((author) {
             // Create Author instance using the updated model
+            print('author: $author');
+            // isFollowing = _authors['author']['isFollowing'] ?? false;
             return Author.fromJson(author);
           }).toList();
           print('authors fetched: $_authors');

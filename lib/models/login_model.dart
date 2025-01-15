@@ -5,7 +5,7 @@ class UserData {
   final String? email;
   final String? token;
   final String? password;
-  final String role;
+  final String? role;
   final String? image;
 
   UserData({

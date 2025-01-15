@@ -5,6 +5,7 @@ class Announcement {
   final String status;
   final String reason;
   final String content;
+  final String role;
   final String? imageUrl;
   final String? videoUrl;
   bool allowComments;
@@ -12,6 +13,7 @@ class Announcement {
   final DateTime updatedAt;
   int likesCount;
   final int commentsCount;
+  final String creatorName;
   bool isLiked;
 
   Announcement(
@@ -28,6 +30,8 @@ class Announcement {
       required this.updatedAt,
       required this.likesCount,
       required this.commentsCount,
+      required this.creatorName,
+      required this.role,
       this.isLiked = false});
 
   factory Announcement.fromJson(Map<String, dynamic> json) {
@@ -38,8 +42,10 @@ class Announcement {
       status: json['status'] ?? '',
       reason: json['reason'] ?? '',
       content: json['content'] ?? '',
+      role: json['role'],
       imageUrl: json['image'],
       videoUrl: json['video'],
+      creatorName: json['creatorName']?? 'some one',
       allowComments: json['allowComments'] ?? false,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])

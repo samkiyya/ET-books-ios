@@ -7,6 +7,7 @@ import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_c
 import 'package:book_mobile/widgets/authors_card.dart';
 import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class AuthorsScreen extends StatefulWidget {
@@ -31,9 +32,9 @@ class _AuthorsScreenState extends State<AuthorsScreen> {
 
   void _navigateToScreen(BuildContext context, int index) {
     if (index >= 0 && index < _routes.length) {
-      Navigator.pushNamed(context, _routes[index]);
+      context.push(_routes[index]);
     } else {
-      Navigator.pushNamed(context, '/home');
+      context.go('/home');
     }
     setState(() {
       _controller.jumpTo(index);
@@ -44,7 +45,7 @@ class _AuthorsScreenState extends State<AuthorsScreen> {
     BottomBarItem(
       activeItem: Icon(Icons.announcement, color: AppColors.color1),
       inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
-      itemLabel: 'Announcements',
+      itemLabel: 'News',
     ),
     BottomBarItem(
       activeItem: Icon(Icons.subscriptions, color: AppColors.color1),
@@ -109,6 +110,7 @@ class _AuthorsScreenState extends State<AuthorsScreen> {
           animation: _controller,
           builder: (context, _) {
             return AnimatedNotchBottomBar(
+              // color:AppColors.color5,
               notchBottomBarController: _controller,
               onTap: (index) => _navigateToScreen(context, index),
               bottomBarItems: _bottomBarItems,
@@ -132,10 +134,15 @@ class _AuthorsScreenState extends State<AuthorsScreen> {
         ),
         body: !isDataFetched
             ? const Center(
-                child: LoadingWidget(),) // Show loading while fetching
+                child: LoadingWidget(),
+              ) // Show loading while fetching
             : authorProvider.authors.isEmpty
                 ? const Center(
-                    child: Text('No authors found.')) // No authors found
+                    child: Text(
+                      'No authors found.',
+                      style: AppTextStyles.bodyText,
+                    ),
+                  ) // No authors found
                 : RefreshIndicator(
                     onRefresh: () => authorProvider.fetchAuthors(),
                     child: ListView.builder(
@@ -144,36 +151,38 @@ class _AuthorsScreenState extends State<AuthorsScreen> {
                         final author = authorProvider.authors[index];
                         return Column(
                           children: [
-                            AuthorCard(author: author,),
-                             Center(
-                                child: ElevatedButton(
-                                  onPressed: authorProvider.isLoading
-                                      ? null
-                                      : () {
-                                          // Disable button while updating follow status
+                            AuthorCard(
+                              author: author,
+                            ),
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: authorProvider.isLoading
+                                    ? null
+                                    : () {
+                                        // Disable button while updating follow status
+                                        setState(() {
+                                          authorProvider.isLoading = true;
+                                        });
+                                        authorProvider
+                                            .toggleFollow(author.id.toString())
+                                            .then((_) {
                                           setState(() {
-                                            authorProvider.isLoading = true;
+                                            // Enable the button once the action is completed
+                                            authorProvider.isLoading = false;
                                           });
-                                          authorProvider
-                                              .toggleFollow(author.id.toString())
-                                              .then((_) {
-                                            setState(() {
-                                              // Enable the button once the action is completed
-                                              authorProvider.isLoading = false;
-                                            });
-                                          });
-                                        },
-                                  child: authorProvider.isLoading
-                                      ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
-                                      : Text(
-                                          authorProvider.isFollowing
-                                              ? 'Unfollow'
-                                              : 'Follow',
-                                        ),
-                                ),
+                                        });
+                                      },
+                                child: authorProvider.isLoading
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : Text(
+                                        authorProvider.isFollowing
+                                            ? 'Unfollow'
+                                            : 'Follow',
+                                      ),
                               ),
+                            ),
                           ],
                         );
                       },

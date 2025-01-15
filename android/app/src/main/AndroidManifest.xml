@@ -25,14 +25,33 @@ package="com.example.book_mobile">
             android:windowSoftInputMode="adjustResize">
             
             <!-- Disable default Flutter deep linking -->
-            <meta-data android:name="flutter_deeplinking_enabled" android:value="false" />
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="true" />
             <!-- App Link sample -->
-            <intent-filter android:autoVerify="true">
+            <intent-filter android:autoVerify="true" >
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="sam" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" />
-                <data android:scheme="samuel" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" />
+                <data android:scheme="kiyya" android:host="samuel.firstapp.com" pathprefix="/gcallback"/>
+                <data android:scheme="kiyyas"/>
+                <!-- <data android:scheme="samuel" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" /> -->
+            </intent-filter>
+            <intent-filter android:autoVerify="true" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="kiyya" android:host="samuel.firstapp.com"/>
+                <data android:scheme="kiyyas"/>
+                <!-- <data android:scheme="samuel" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" /> -->
+            </intent-filter>
+            <intent-filter android:autoVerify="true" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="samuel.firstapp.com"/>
+                <data android:scheme="https"/>
+                <!-- <data android:scheme="samuel" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" /> -->
             </intent-filter>
 
             <!-- Deep Link sample -->

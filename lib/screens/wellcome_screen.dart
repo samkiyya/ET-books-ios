@@ -3,6 +3,7 @@ import 'package:book_mobile/constants/styles.dart';
 // import 'package:book_mobile/screens/signup_screen.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 // import 'login_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -45,7 +46,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               CustomButton(
                 text: 'LOG IN',
                 onPressed: () {
-                  Navigator.pushNamed(context, '/login');
+                  context.push('/login');
                 },
                 backgroundColor: Colors.transparent,
                 borderColor: AppColors.color3,
@@ -56,7 +57,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               CustomButton(
                 text: 'SIGN UP',
                 onPressed: () {
-                  Navigator.pushNamed(context, '/signup');
+                  context.push('/signup');
                 },
                 backgroundColor: AppColors.color2,
                 borderColor: AppColors.color3,

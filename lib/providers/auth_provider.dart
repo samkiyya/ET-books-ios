@@ -5,20 +5,23 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/models/login_model.dart';
 import 'package:book_mobile/services/storage_service.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AuthProvider with ChangeNotifier {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  BuildContext get context => navigatorKey.currentContext!;
+  BuildContext? get context => navigatorKey.currentContext;
   final StorageService storageService;
+  bool _is2FAEnabled = false;
 
   static const String _baseUrl = Network.baseUrl;
 
   bool _isAuthenticated = false;
   bool _isLoading = false;
   bool _isLoggingOut = false;
+  bool get is2FAEnabled => _is2FAEnabled;
 
   String? _token;
   UserData? _userData;
@@ -148,12 +151,12 @@ class AuthProvider with ChangeNotifier {
             });
 
             if (isAuthenticated) {
-              if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed('/home');
+              if (context != null && context!.mounted) {
+                context!.go('/home');
               }
             } else {
-              if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed('/welcome');
+              if (context != null && context!.mounted) {
+                context!.go('/welcome');
               }
             }
 
@@ -172,7 +175,7 @@ class AuthProvider with ChangeNotifier {
 
   @override
   void dispose() {
-    _appLinkSubscription.cancel(); // Cancel the subscription in dispose
+    _appLinkSubscription.cancel();
     super.dispose();
   }
 
@@ -257,9 +260,11 @@ class AuthProvider with ChangeNotifier {
 
   /// Handle password reset
   Future<void> forgotPassword(String email) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       final response = await http.post(
-        Uri.parse("$_baseUrl/api/auth/forgot-password"),
+        Uri.parse("$_baseUrl/api/user/forgot-password"),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({"email": email}),
       );
@@ -268,25 +273,46 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       throw Exception("Forgot password error: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
-  Future<void> resetPassword(String email, String newPassword) async {
+  Future<void> resetPassword({
+    required String resetToken,
+    required String newPassword,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+    print("reset token from the deeplink: $resetToken");
     try {
       final response = await http.post(
-        Uri.parse("$_baseUrl/api/auth/reset-password"),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({"email": email, "newPassword": newPassword}),
+        Uri.parse("$_baseUrl/api/user/reset-password/$resetToken"),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({"password": newPassword}),
       );
+
+      print('Response of password reset: ${response.body}');
       if (response.statusCode != 200) {
-        throw Exception("Failed to reset password");
+        _error = json.decode(response.body)['message'] ??
+            'Unknown error during reset password';
+        throw Exception("Failed to reset password ${response.body}");
       }
     } catch (e) {
       throw Exception("Reset password error: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   Future<void> changePassword(String oldPassword, String newPassword) async {
+    _isLoading = true;
+    notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
     try {
@@ -309,11 +335,16 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       throw Exception("Failed to change password: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
   /// Verify account using a token
   Future<void> verifyAccount(String token) async {
+    _isLoading = true;
+    notifyListeners();
     try {
       var url = Uri.parse('$_baseUrl/api/user/verify/account/$token');
       var response = await http.post(url);
@@ -324,6 +355,9 @@ class AuthProvider with ChangeNotifier {
       }
     } catch (e) {
       throw Exception("Verification failed: $e");
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
@@ -361,6 +395,14 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> toggle2FA() async {
+    _isLoading = true;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
+    if (_token == null) {
+      throw Exception("No token found");
+    }
+
     try {
       var url = Uri.parse('$_baseUrl/api/user/toggle/2fa');
       var response = await http.post(
@@ -375,41 +417,9 @@ class AuthProvider with ChangeNotifier {
         throw Exception(
             json.decode(response.body)['message'] ?? 'Failed to toggle 2FA');
       }
+      _is2FAEnabled = !_is2FAEnabled;
     } catch (e) {
       throw Exception("Failed to toggle 2FA: $e");
-    }
-  }
-
-  Future<bool> verify2FA(String verificationCode) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-      var url = Uri.parse('$_baseUrl/api/user/verify/2fa');
-      var response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          "verificationCode": verificationCode,
-          "userId": _userData?.id,
-        }),
-      );
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        await _handleSuccessfulLogin(data);
-        // _is2FARequired = false;
-        return true;
-      }
-      if (response.statusCode != 200) {
-        throw Exception(
-            json.decode(response.body)['message'] ?? '2FA verification failed');
-      } else {
-        _error = data['message'] ?? 'Two-factor verification failed';
-        return false;
-      }
-    } catch (e) {
-      throw Exception("2FA verification failed: $e");
     } finally {
       _isLoading = false;
       notifyListeners();

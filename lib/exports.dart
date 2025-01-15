@@ -1,4 +1,7 @@
+// exporting constant/util files
 export 'package:book_mobile/constants/styles.dart';
+
+//exporting providers
 export 'package:book_mobile/providers/announcement_provider.dart';
 export 'package:book_mobile/providers/auth_provider.dart';
 export 'package:book_mobile/providers/author_provider.dart';
@@ -13,7 +16,10 @@ export 'package:book_mobile/providers/subscription_provider.dart';
 export 'package:book_mobile/providers/subscription_tiers_provider.dart';
 export 'package:book_mobile/providers/update_profile_provider.dart';
 export 'package:book_mobile/providers/user_interaction_provider.dart';
+export 'package:book_mobile/providers/content_access_provider.dart';
+export 'package:book_mobile/providers/review_provider.dart';
 
+//exporting screens
 export 'package:book_mobile/screens/all_audio_screen.dart';
 export 'package:book_mobile/screens/all_book_screen.dart';
 export 'package:book_mobile/screens/announcement_screen.dart';
@@ -32,3 +38,9 @@ export 'package:book_mobile/screens/subscription_tier_screen.dart';
 export 'package:book_mobile/screens/update_profile_screen.dart';
 export 'package:book_mobile/services/background_service.dart';
 export 'package:book_mobile/services/storage_service.dart';
+export 'package:book_mobile/screens/all_author_screen.dart';
+export 'package:book_mobile/screens/subscription_screen.dart';
+export 'package:book_mobile/screens/wellcome_screen.dart';
+export 'package:book_mobile/screens/password_reset_screen.dart';
+export 'package:book_mobile/screens/verification_screen.dart';
+export 'package:book_mobile/screens/otp_screen.dart';

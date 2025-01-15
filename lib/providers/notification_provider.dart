@@ -80,7 +80,7 @@ class NotificationProvider with ChangeNotifier {
           print('Unexpected API response format: ${response.body}');
         }
       } else {
-        print('Failed to load notifications: ${response.body}');
+        print('Failed to load notifications: ${response.body}, ${response.statusCode}');
       }
     } catch (e) {
       print('Error loading notifications: $e');

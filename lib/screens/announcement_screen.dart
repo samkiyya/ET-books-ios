@@ -1,5 +1,6 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/models/bottom_bar_item_model.dart';
+import 'package:book_mobile/screens/author_screen.dart';
 import 'package:book_mobile/screens/video_player_screen.dart';
 import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
 import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
@@ -9,6 +10,7 @@ import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/announcement_provider.dart';
 import 'package:book_mobile/screens/announcement_detail_screen.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class AnnouncementListScreen extends StatefulWidget {
@@ -31,9 +33,9 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
   ];
   void _navigateToScreen(BuildContext context, int index) {
     if (index >= 0 && index < _routes.length) {
-      Navigator.pushNamed(context, _routes[index]);
+      context.push(_routes[index]);
     } else {
-      Navigator.pushNamed(context, '/home');
+      context.go('/home');
     }
     setState(() {
       _controller.jumpTo(index);
@@ -44,7 +46,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
     BottomBarItem(
       activeItem: Icon(Icons.announcement, color: AppColors.color1),
       inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
-      itemLabel: 'Announcements',
+      itemLabel: 'News',
     ),
     BottomBarItem(
       activeItem: Icon(Icons.subscriptions, color: AppColors.color1),
@@ -251,6 +253,34 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                           style: AppTextStyles.bodyText,
                         ),
                         SizedBox(height: height * 0.01),
+                        TextButton(
+                          onPressed: () {
+                            if (announcement.role == 'AUTHOR') {
+                              print('Author id: ${announcement.creatorId}');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AuthorScreen(
+                                    authorId:
+                                        (announcement.creatorId.toString()),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: Text(
+                            'Created by: ${announcement.creatorName}',
+                            style: TextStyle(
+                              color: AppColors.color3,
+                              decoration: announcement.role == 'AUTHOR'
+                                  ? TextDecoration.underline
+                                  : null,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: height * 0.01,
+                        ),
                         Row(
                           children: [
                             // Comment Button with a count

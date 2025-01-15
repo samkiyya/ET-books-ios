@@ -17,6 +17,7 @@ class SignupProvider with ChangeNotifier {
   String _successMessage = '';
   File? _profileImage;
   bool _isUploading = false;
+  String deviceInfo = '';
 
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
@@ -52,6 +53,7 @@ class SignupProvider with ChangeNotifier {
     String? role,
     String? bio,
     String? referalCode,
+    String? deviceInfo,
     required BuildContext context,
   }) async {
     _isLoading = true;
@@ -69,6 +71,10 @@ class SignupProvider with ChangeNotifier {
     if (phone != null && phone.isNotEmpty) {
       payload['phone'] = phone;
     }
+    if (deviceInfo != null && deviceInfo.isNotEmpty) {
+      payload['deviceInfo'] = deviceInfo;
+    }
+
     if (city != null && city.isNotEmpty) {
       payload['city'] = city;
     }
@@ -141,7 +147,7 @@ class SignupProvider with ChangeNotifier {
       if (response.statusCode == 201) {
         _successMessage = responseData['message'] ??
             'You have registered successfully. Please verify your email.';
-        print(responseBody);
+        print('Device Info: $deviceInfo');
       } else if (response.statusCode == 400) {
         _errorMessage =
             responseData['error'] ?? 'Bad request. Please check your inputs.';

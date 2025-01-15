@@ -24,9 +24,9 @@ class Author {
   factory Author.fromJson(Map<String, dynamic> json) {
     return Author(
       id: json['id'],
-      name: json['name'], // Directly map the full name
-      bio: json['bio'],
-      imageFilePath: json['image'],
+      name: json['name']??'unknown', // Directly map the full name
+      bio: json['bio']??"No bio available",
+      imageFilePath: json['image']??"",
       booksCount: json['books'].length ?? 0, // Count of books
       rating: json['rating'] != null ? json['rating'].toDouble() : 0.0,
       followers: json['followerCount'] ?? 0,
@@ -68,18 +68,18 @@ class Book {
 
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      publicationYear: json['publicationYear'],
-      language: json['language'],
-      price: json['price'],
-      audioPrice: json['audio_price'],
+      id: json['id']??0,
+      title: json['title']??'unknown',
+      description: json['description']??'No description available',
+      publicationYear: json['publicationYear']??'NAN',
+      language: json['language']??'unknown',
+      price: json['price']??'NAN',
+      audioPrice: json['audio_price']??'NAN',
       rating: json['rating'] != null ? json['rating'].toDouble() : 0.0,
-      rateCount: json['rateCount'],
-      pages: json['pages'],
-      sold: json['sold'],
-      status: json['status'],
+      rateCount: json['rateCount']??0,
+      pages: json['pages']??0,
+      sold: json['sold']??0,
+      status: json['status']??'unknown',
     );
   }
 }

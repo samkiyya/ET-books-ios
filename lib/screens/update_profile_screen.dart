@@ -1,10 +1,12 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/providers/profile_provider.dart';
 import 'package:book_mobile/providers/update_profile_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -24,6 +26,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final countryController = TextEditingController();
   String? formattedDate;
   bool isLoading = true; // To track profile loading state
+  String profileUrl='';
 
   @override
   void initState() {
@@ -45,6 +48,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       bioController.text = profile['bio'] ?? '';
       cityController.text = profile['city'] ?? '';
       countryController.text = profile['country'] ?? '';
+      profileUrl='${Network.baseUrl}/${profile['imageFilePath']}'??'';
       // Safely parse createdAt
       if (profile['createdAt'] != null) {
         final DateTime joinedOn = DateTime.parse(profile['createdAt']);
@@ -91,8 +95,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: width * 0.2,
-                        backgroundImage: const NetworkImage(
-                          'https://xsgames.co/randomusers/avatar.php?g=pixel',
+                        backgroundImage:  NetworkImage(
+                          profileUrl,
                         ),
                       ),
                       Positioned(
@@ -227,7 +231,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 Text(
                                   'Joined on: $formattedDate',
                                   style: AppTextStyles.bodyText
-                                      .copyWith(fontSize: width * 0.04),
+                                      .copyWith(fontSize: width * 0.035),
                                 ),
                                 ElevatedButton(
                                   onPressed: () async {
@@ -241,6 +245,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                             content: Text(
                                                 'Account deleted successfully!')),
                                       );
+                                      context.go('/signup');
                                     } else if (provider
                                         .errorMessage.isNotEmpty) {
                                       ScaffoldMessenger.of(context)

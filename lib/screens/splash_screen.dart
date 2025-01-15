@@ -5,6 +5,7 @@ import 'package:book_mobile/screens/home_screen.dart';
 // import 'package:book_mobile/screens/verification_screen.dart';
 import 'package:book_mobile/screens/wellcome_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
 // import 'package:book_mobile/screens/home_screen.dart';
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _initializeLogin();
     _setupAnimation();
-    _navigateToNextScreen(context);
+    _navigateToNextScreen();
   }
 
   Future<void> _initializeLogin() async {
@@ -50,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen>
     _controller.forward();
   }
 
-  void _navigateToNextScreen(BuildContext context) async {
+  void _navigateToNextScreen() async {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
     if (!mounted) return;
@@ -59,23 +60,9 @@ class _SplashScreenState extends State<SplashScreen>
     if (!mounted) return;
 
     if (loginProvider.isAuthenticated && !loginProvider.isTokenExpired) {
-      if (context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
-        );
-      }
-    } else if (loginProvider.isAuthenticated && loginProvider.isTokenExpired) {
-      if (context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-        );
-      }
+      context.go('/home');
     } else {
-      if (context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const WelcomeScreen()),
-        );
-      }
+      context.go('/welcome');
     }
   }
 

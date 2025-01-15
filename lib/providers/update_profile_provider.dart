@@ -107,6 +107,8 @@ class UpdateProfileProvider with ChangeNotifier {
     if (response.statusCode == 204) {
       // Handle success response (Account deleted)
       _isLoading = false;
+      prefs.remove('userToken');
+      prefs.clear();
       notifyListeners();
     } else if (response.statusCode == 401) {
       // Handle unauthorized response (Token expired)

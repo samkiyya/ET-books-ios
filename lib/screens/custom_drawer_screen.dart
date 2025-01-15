@@ -2,6 +2,7 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -124,7 +125,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         _audioBook(context);
         break;
       case 'All Books':
-        Navigator.pushNamed(context, '/allEbook');
+        context.push('/allEbook');
         break;
       case 'Downloaded':
         _downloaded(context);
@@ -139,10 +140,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
         _subscription(context);
         break;
       case 'announcs':
-        Navigator.pushNamed(context, '/announcements');
+        context.push('/announcements');
         break;
       case 'Authors':
-        Navigator.pushNamed(context, '/authors');
+        context.push('/authors');
         // Author
         break;
       case 'Share App':
@@ -228,10 +229,8 @@ ${Network.appPlayStoreUrl}${Network.appPackageName}
                 try {
                   await authProvider.logout();
                   if (context.mounted) {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
+                    context.go(
                       '/login',
-                      (route) => false,
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Logged out successfully')),
@@ -254,30 +253,30 @@ ${Network.appPlayStoreUrl}${Network.appPackageName}
   }
 
   void _audioBook(BuildContext context) {
-    Navigator.pushNamed(context, '/allAudio');
+    context.push('/allAudio');
   }
 
   void _downloaded(BuildContext context) {
-    Navigator.pushNamed(context, '/downloaded');
+    context.push('/downloaded');
   }
 
   void _myBooks(BuildContext context) {
-    Navigator.pushNamed(context, '/my-books');
+    context.push('/my-books');
   }
 
   void _notification(BuildContext context) {
-    Navigator.pushNamed(context, '/notification');
+    context.push('/notification');
   }
 
   void _subscription(BuildContext context) {
-    Navigator.pushNamed(context, '/subscription-tier');
+    context.push('/subscription-tier');
   }
 
   void _settings(BuildContext context) {
-    Navigator.pushNamed(context, '/settings');
+    context.push('/settings');
   }
 
   void _contactUs(BuildContext context) {
-    Navigator.pushNamed(context, '/contact-us');
+    context.push('/contact-us');
   }
 }

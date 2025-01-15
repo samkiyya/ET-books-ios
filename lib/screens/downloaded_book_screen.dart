@@ -5,6 +5,7 @@ import 'package:book_mobile/services/book_service.dart';
 import 'package:book_mobile/services/file_services.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class DownloadedBooksScreen extends StatefulWidget {
   const DownloadedBooksScreen({super.key});
@@ -123,7 +124,7 @@ class _DownloadedBooksScreenState extends State<DownloadedBooksScreen> {
                             ),
                             CustomButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/my-books');
+                                context.go('/my-books');
                               },
                               text: 'Go to your Books',
                               borderColor: AppColors.color3,

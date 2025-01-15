@@ -1,6 +1,7 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/notification_provider.dart';
+import 'package:book_mobile/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -61,6 +63,56 @@ class SettingsScreen extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color: AppColors.color6,
               ),
+            ),
+            SizedBox(height: height * 0.02),
+            // Toggle Two-Factor Authentication (2FA)
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                return ListTile(
+                  title: Text(
+                    'Enable Two-Factor Authentication (2FA)',
+                    style: AppTextStyles.buttonText.copyWith(
+                      fontSize: width * 0.045,
+                      color: AppColors.color3,
+                    ),
+                  ),
+                  trailing: authProvider.isLoading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(),
+                        )
+                      : Switch(
+                          value: authProvider.is2FAEnabled,
+                          onChanged: (value) async {
+                            try {
+                              await authProvider.toggle2FA();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    value
+                                        ? '2FA has been enabled.'
+                                        : '2FA has been disabled.',
+                                  ),
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Error: ${e.toString()}',
+                                    style: const TextStyle(
+                                      color: AppColors.color3,
+                                    ),
+                                  ),
+                                  backgroundColor: AppColors.color5,
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                );
+              },
             ),
           ],
         ),

@@ -1,6 +1,6 @@
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/review_provider.dart';
-import 'package:book_mobile/screens/rating_dialog_screen.dart';
+import 'package:book_mobile/screens/update_rating_dialog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +25,30 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
         .fetchAverageRating(widget.bookId);
   }
 
+  void _confirmDelete(BuildContext context, int reviewId) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Confirm Deletion"),
+        content: const Text("Are you sure you want to delete this review?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Provider.of<ReviewProvider>(context, listen: false)
+                  .deleteReview(reviewId, widget.bookId);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text("Delete"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +59,6 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
       ),
       body: Stack(
         children: [
-          // Animated Icon Background
           AnimatedPositioned(
             duration: const Duration(seconds: 5),
             top: 0,
@@ -57,12 +80,10 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
               ),
             ),
           ),
-
-          // Content Section
           Column(
             children: [
               Container(
-                width: double.infinity, // Ensure it spans the full width
+                width: double.infinity,
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: AppColors.color2,
@@ -101,7 +122,7 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
                     Consumer<ReviewProvider>(
                       builder: (context, reviewProvider, _) {
                         return Text(
-                          'Average Rating: ${reviewProvider.averageRating.toStringAsFixed(1)}', // Real average rating
+                          'Average Rating: ${reviewProvider.averageRating.toStringAsFixed(1)}',
                           style: AppTextStyles.bodyText.copyWith(
                             color: Colors.white,
                           ),
@@ -112,8 +133,6 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
                 ),
               ),
               const SizedBox(height: 16.0),
-
-              // Reviews list below the top card
               Expanded(
                 child: Consumer<ReviewProvider>(
                   builder: (context, reviewProvider, _) {
@@ -154,31 +173,41 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.edit,
-                                        color: AppColors.color3, size: 30),
-                                    onPressed: () {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) => Padding(
-                                          padding: EdgeInsets.only(
-                                            bottom: MediaQuery.of(context)
-                                                .viewInsets
-                                                .bottom,
-                                          ),
-                                          child: RatingDialog(
-                                            // Use RatingDialog here
-                                            bookId: widget.bookId,
-                                            initialRating:
-                                                review.reviewRating.toDouble(),
-                                            initialComment: review.comment,
-                                            reviewId: review.id,
-                                            isEditing: true,
-                                          ),
-                                        ),
-                                      );
-                                    },
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.edit,
+                                            color: AppColors.color3, size: 30),
+                                        onPressed: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            builder: (context) => Padding(
+                                              padding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom,
+                                              ),
+                                              child: UpdateRatingDialog(
+                                                bookId: widget.bookId,
+                                                initialRating: review
+                                                    .reviewRating
+                                                    .toDouble(),
+                                                initialComment: review.comment,
+                                                reviewId: review.id,
+                                                isEditing: true,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.red, size: 30),
+                                        onPressed: () =>
+                                            _confirmDelete(context, review.id),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),

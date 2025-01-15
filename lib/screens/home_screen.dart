@@ -9,6 +9,7 @@ import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.d
 import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
 import 'package:book_mobile/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/screens/custom_drawer_screen.dart';
@@ -24,7 +25,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-      final NotchBottomBarController _controller =
+  final NotchBottomBarController _controller =
       NotchBottomBarController(index: 2); // Default to "home"
 
   final List<String> _routes = [
@@ -36,12 +37,9 @@ class _HomeScreenState extends State<HomeScreen>
   ];
   void _navigateToScreen(BuildContext context, int index) {
     if (index >= 0 && index < _routes.length) {
-      Navigator.pushNamed(context, _routes[index]);
+      context.push(_routes[index]);
     } else {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      context.go('/home');
     }
     setState(() {
       _controller.jumpTo(index);
@@ -52,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen>
     BottomBarItem(
       activeItem: Icon(Icons.announcement, color: AppColors.color1),
       inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
-      itemLabel: 'Announcements',
+      itemLabel: 'News',
     ),
     BottomBarItem(
       activeItem: Icon(Icons.subscriptions, color: AppColors.color1),
@@ -200,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen>
             IconButton(
               icon: Icon(Icons.notifications, size: width * 0.09),
               onPressed: () {
-                Navigator.pushNamed(context, '/notification');
+                context.push('/notification');
               },
             ),
             Container(
@@ -218,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen>
                     size: width * 0.09,
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, '/profile');
+                    context.push('/profile');
                   },
                 ),
               ),
@@ -302,9 +300,6 @@ class _HomeScreenState extends State<HomeScreen>
                                         ),
                                         child: Padding(
                                           padding: EdgeInsets.only(
-                                              left: width * 0.03,
-                                              right: width * 0.03,
-                                              top: height * 0.003,
                                               bottom: height * 0.003),
                                           child: Card(
                                             margin: EdgeInsets.symmetric(
@@ -475,31 +470,11 @@ class _HomeScreenState extends State<HomeScreen>
                                                     overflow:
                                                         TextOverflow.ellipsis,
                                                   ),
-                                                  TextButton(
-                                                    onPressed: () {
-                                                      print(
-                                                          'Author id: ${book['author_id']}');
-
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              AuthorScreen(
-                                                            authorId: (book[
-                                                                    'author_id']
-                                                                .toString()),
-                                                          ),
-                                                        ),
-                                                      );
-                                                    },
-                                                    child: Text(
-                                                      'By: ${book['author']}',
-                                                      style: TextStyle(
-                                                          color: AppColors
-                                                              .color3
-                                                              .withOpacity(
-                                                                  0.7)),
-                                                    ),
+                                                  Text(
+                                                    'By: ${book['author']}',
+                                                    style: TextStyle(
+                                                        color: AppColors.color3
+                                                            .withOpacity(0.7)),
                                                   ),
                                                   Text(
                                                     "Price: ${book['price']} ETB",
@@ -599,14 +574,17 @@ class _HomeScreenState extends State<HomeScreen>
                                                     child: Column(
                                                       children: [
                                                         Card(
-                                                          margin:
-                                                              EdgeInsets.symmetric(
+                                                          margin: EdgeInsets
+                                                              .symmetric(
                                                                   horizontal:
-                                                                      width * 0.02),
+                                                                      width *
+                                                                          0.02),
                                                           child: Container(
                                                             width: width * 0.3,
-                                                            padding: EdgeInsets.all(
-                                                                width * 0.02),
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    width *
+                                                                        0.02),
                                                             child: Column(
                                                               crossAxisAlignment:
                                                                   CrossAxisAlignment
@@ -618,11 +596,12 @@ class _HomeScreenState extends State<HomeScreen>
                                                                       BorderRadius
                                                                           .circular(
                                                                               8),
-                                                                  child:
-                                                                      Image.network(
+                                                                  child: Image
+                                                                      .network(
                                                                     '${Network.baseUrl}/${audioBook['imageFilePath']}',
-                                                                    height: height *
-                                                                        0.07,
+                                                                    height:
+                                                                        height *
+                                                                            0.07,
                                                                     width: double
                                                                         .infinity,
                                                                     fit: BoxFit
@@ -634,9 +613,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                                       return Icon(
                                                                         Icons
                                                                             .audiotrack,
-                                                                        size:
-                                                                            height *
-                                                                                0.07,
+                                                                        size: height *
+                                                                            0.07,
                                                                         color: Colors
                                                                             .grey,
                                                                       );
@@ -644,15 +622,17 @@ class _HomeScreenState extends State<HomeScreen>
                                                                   ),
                                                                 ),
                                                                 SizedBox(
-                                                                    height: height *
-                                                                        0.01),
-                                                        
+                                                                    height:
+                                                                        height *
+                                                                            0.01),
+
                                                                 // Audio Book Title
                                                                 Text(
                                                                   audioBook[
                                                                           'title'] ??
                                                                       "No Title",
-                                                                  style: TextStyle(
+                                                                  style:
+                                                                      TextStyle(
                                                                     fontSize:
                                                                         width *
                                                                             0.035,
@@ -666,13 +646,15 @@ class _HomeScreenState extends State<HomeScreen>
                                                                           .ellipsis,
                                                                 ),
                                                                 SizedBox(
-                                                                    height: height *
-                                                                        0.005),
-                                                        
+                                                                    height:
+                                                                        height *
+                                                                            0.005),
+
                                                                 // Audio Book Author
                                                                 Text(
                                                                   'By: ${audioBook['author'] ?? "Unknown Author"}',
-                                                                  style: TextStyle(
+                                                                  style:
+                                                                      TextStyle(
                                                                     fontSize:
                                                                         width *
                                                                             0.03,
@@ -685,13 +667,15 @@ class _HomeScreenState extends State<HomeScreen>
                                                                           .ellipsis,
                                                                 ),
                                                                 SizedBox(
-                                                                    height: height *
-                                                                        0.005),
-                                                        
+                                                                    height:
+                                                                        height *
+                                                                            0.005),
+
                                                                 // Audio Book Author
                                                                 Text(
                                                                   '${audioBook['audio_price'] ?? "N/A"} ETB',
-                                                                  style: TextStyle(
+                                                                  style:
+                                                                      TextStyle(
                                                                     fontSize:
                                                                         width *
                                                                             0.04,
@@ -704,13 +688,15 @@ class _HomeScreenState extends State<HomeScreen>
                                                                           .ellipsis,
                                                                 ),
                                                                 SizedBox(
-                                                                    height: height *
-                                                                        0.005),
-                                                        
+                                                                    height:
+                                                                        height *
+                                                                            0.005),
+
                                                                 // Audio Book Author
                                                                 Text(
                                                                   '${audioBook['audioCount'] ?? "N/A"} ${audioBook['audioCount'] > 1 ? "Episodes" : "Episode"}',
-                                                                  style: TextStyle(
+                                                                  style:
+                                                                      TextStyle(
                                                                     fontSize:
                                                                         width *
                                                                             0.03,

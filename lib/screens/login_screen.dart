@@ -1,6 +1,8 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
+import 'package:book_mobile/exports.dart';
 import 'package:book_mobile/screens/home_screen.dart';
+import 'package:book_mobile/screens/otp_screen.dart';
 import 'package:book_mobile/screens/signup_screen.dart';
 import 'package:book_mobile/screens/forgot_password_screen.dart'; // Add your Forgot Password Screen import
 import 'package:book_mobile/widgets/custom_button.dart';
@@ -8,8 +10,10 @@ import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:book_mobile/widgets/modal.dart';
 import 'package:book_mobile/widgets/square_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/login_provider.dart';
+import 'package:book_mobile/services/device_info.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,6 +27,28 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _hidePassword = true;
+
+  String? deviceName;
+  final DeviceInfoService _deviceInfoService = DeviceInfoService();
+  Map<String, dynamic> _deviceData = {};
+  String _getDeviceType(BuildContext context) {
+    return _deviceInfoService.detectDeviceType(context);
+  }
+
+  Future<void> _getDeviceInfo() async {
+    final deviceData = await _deviceInfoService.getDeviceData();
+    setState(() {
+      _deviceData = deviceData;
+    });
+    String brand = _deviceData['brand'] ?? 'Unknown';
+    String board = _deviceData['board'] ?? 'Unknown';
+    String model = _deviceData['model'] ?? 'Unknown';
+    String deviceId = _deviceData['id'] ?? 'Unknown';
+    String deviceType = _getDeviceType(context);
+    deviceName =
+        "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
+    print('device information is: $deviceName');
+  }
 
   @override
   void initState() {
@@ -46,9 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onClose: () {
             Navigator.of(context).pop();
             if (isSuccess) {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
-              );
+             context.go('/home');
             }
           },
         );
@@ -70,6 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLoginResponse() {
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
+    // Handle successful login
     if (loginProvider.successMessage.isNotEmpty &&
         loginProvider.isAuthenticated) {
       _showResponseDialog(
@@ -80,11 +105,44 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       loginProvider.clearMessages();
     }
-    //else if (loginProvider.isAuthenticated) {
-    //   Navigator.of(context).pushReplacement(
-    //     MaterialPageRoute(builder: (_) => const HomeScreen()),
-    //   );
-    // }
+    // Handle 2FA requirement
+    else if (loginProvider.is2FARequired &&
+        loginProvider.errorMessage.isNotEmpty) {
+      _showResponseDialog(
+        context,
+        'You need to set up a two-factor authentication code. Check your email for the code.',
+        "Close",
+        false,
+      );
+      loginProvider.clearMessages();
+      // Navigate to OTP screen
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const OtpScreen()),
+      );
+    }
+    // Handle account deactivation
+    else if (loginProvider.isAccountDeactivated &&
+        loginProvider.errorMessage.isNotEmpty) {
+      _showResponseDialog(
+        context,
+        'Your account has been deactivated. Please contact support.',
+        "Close",
+        false,
+      );
+      loginProvider.clearMessages();
+    }
+    // Handle email verification required
+    else if (loginProvider.isEmailVerificationRequired &&
+        loginProvider.errorMessage.isNotEmpty) {
+      _showResponseDialog(
+        context,
+        'Please verify your email address. Check your inbox for the verification link.',
+        "Close",
+        false,
+      );
+      loginProvider.clearMessages();
+    }
+    // Handle errors during login
     else if (loginProvider.errorMessage.isNotEmpty) {
       _showResponseDialog(
         context,
@@ -117,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
+    final authprovider = Provider.of<AuthProvider>(context);
     return SafeArea(
       child: Scaffold(
         body: Stack(
@@ -228,11 +287,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                                   Colors.white)))
                                   : CustomButton(
                                       text: 'LOGIN',
-                                      onPressed: () {
+                                      onPressed: () async {
+                                        await _getDeviceInfo();
                                         if (_formKey.currentState!.validate()) {
                                           loginProvider.login(
                                             _emailController.text.trim(),
                                             _passwordController.text.trim(),
+                                            deviceName,
                                           );
                                         }
                                         _handleLoginResponse();
@@ -249,17 +310,31 @@ class _LoginScreenState extends State<LoginScreen> {
                                   SquareTile(
                                     imagePath: 'assets/images/g_logo.png',
                                     onTap: () async {
-                                      await loginProvider.loginWithGoogle();
+                                      await authprovider.loginWithGoogle();
 
-                                      _handleLoginResponse();
+                                      if (authprovider.isAuthenticated) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          context.go('/home');
+                                        });
+                                      } else {
+                                        _handleLoginResponse();
+                                      }
                                     },
                                   ),
                                   SizedBox(width: width * 0.1),
                                   SquareTile(
                                     imagePath: 'assets/images/fb_logo.png',
                                     onTap: () async {
-                                      await loginProvider.loginWithFacebook();
-                                      _handleLoginResponse();
+                                      await authprovider.loginWithFacebook();
+                                      if (authprovider.isAuthenticated) {
+                                        WidgetsBinding.instance
+                                            .addPostFrameCallback((_) {
+                                          context.go('/home');
+                                        });
+                                      } else {
+                                        _handleLoginResponse();
+                                      }
                                     },
                                   )
                                 ],
@@ -268,12 +343,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Signup prompt
                               TextButton(
                                 onPressed: () {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const SignupScreen(),
-                                    ),
-                                  );
+                                  
+                                    context.push('/signup');
                                 },
                                 child: Text.rich(
                                   TextSpan(

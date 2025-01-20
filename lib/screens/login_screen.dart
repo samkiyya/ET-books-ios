@@ -1,10 +1,6 @@
 import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/exports.dart';
-import 'package:book_mobile/screens/home_screen.dart';
-import 'package:book_mobile/screens/otp_screen.dart';
-import 'package:book_mobile/screens/signup_screen.dart';
-import 'package:book_mobile/screens/forgot_password_screen.dart'; // Add your Forgot Password Screen import
+// Add your Forgot Password Screen import
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:book_mobile/widgets/modal.dart';
@@ -12,7 +8,6 @@ import 'package:book_mobile/widgets/square_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/providers/login_provider.dart';
 import 'package:book_mobile/services/device_info.dart';
 
 class LoginScreen extends StatefulWidget {

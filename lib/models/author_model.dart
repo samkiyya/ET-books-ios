@@ -1,24 +1,24 @@
 class Author {
   final int id;
-  final String name; // Full name field
+  final String name;
   final String bio;
   final String imageFilePath;
   final int booksCount;
   final double rating;
-  final int followers;
-  final bool isFollowing;
+  int followers;
+   bool isFollowing;
   final List<Book> books;
 
   Author({
     required this.id,
-    required this.name, // Full name passed directly
+    required this.name, 
     required this.bio,
     required this.imageFilePath,
     required this.booksCount,
     required this.rating,
-    required this.followers,
+     this.followers=0,
     required this.books,
-    required this.isFollowing,
+     this.isFollowing=false,
   });
 
   factory Author.fromJson(Map<String, dynamic> json) {

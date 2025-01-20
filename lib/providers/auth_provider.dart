@@ -29,6 +29,7 @@ class AuthProvider with ChangeNotifier {
   final AppLinks _appLinks = AppLinks();
 
   /// Public getters
+
   bool get isAuthenticated => _isAuthenticated;
   bool get isLoading => _isLoading;
   String? get token => _token;
@@ -38,8 +39,14 @@ class AuthProvider with ChangeNotifier {
 
   AuthProvider({required this.storageService}) {
     _initAppLinks();
+    load2FAPreferences();
   }
 
+ Future<void> load2FAPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    _is2FAEnabled = prefs.getBool('2faEnabled') ?? false;
+    notifyListeners();
+  }
   /// Helper to update authentication state
   void _updateAuthState({
     bool? isAuthenticated,
@@ -196,37 +203,6 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Future<void> _handleGoogleCallback() async {
-  //   try {
-  //     // Listen for deep links
-  //     _appLinks.uriLinkStream.listen((Uri? uri) async {
-  //       if (uri != null) {
-  //         final token = uri.queryParameters['token'];
-  //         final userDataString = uri.queryParameters['userData'];
-
-  //         if (token != null && userDataString != null) {
-  //           final userData = jsonDecode(userDataString);
-
-  //           // Log for debugging
-  //           print('Received token: $token');
-  //           print('Received user data: ${jsonEncode(userData)}');
-
-  //           // Save token and user data
-  //           await _handleSuccessfulLogin({
-  //             'userToken': token,
-  //             'userData': userData,
-  //           });
-  //         } else {
-  //           print('Required parameters not found in callback URL');
-  //         }
-  //       }
-  //     });
-  //   } catch (e) {
-  //     throw Exception("Fetching Google callback response failed: $e");
-  //   } finally {
-  //     _updateAuthState(isLoading: false);
-  //   }
-  // }
 
   /// Login with Facebook
   Future<void> loginWithFacebook() async {
@@ -418,6 +394,8 @@ class AuthProvider with ChangeNotifier {
             json.decode(response.body)['message'] ?? 'Failed to toggle 2FA');
       }
       _is2FAEnabled = !_is2FAEnabled;
+      prefs.setBool('2faEnabled', _is2FAEnabled);
+
     } catch (e) {
       throw Exception("Failed to toggle 2FA: $e");
     } finally {

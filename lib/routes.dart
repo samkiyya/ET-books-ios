@@ -111,6 +111,10 @@ static Map<String, String> deepLinks = {
         builder: (context, state) => const OtpScreen(),
       ),
       GoRoute(
+        path:'/status',
+        builder: (context, state) => const OrderStatusScreen(),
+      ),
+      GoRoute(
         path: '/subscriptionOrder/:tier',
         builder: (context, state) {
           final tier = state.pathParameters;

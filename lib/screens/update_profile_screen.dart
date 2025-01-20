@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 
 class UpdateProfileScreen extends StatefulWidget {
   const UpdateProfileScreen({super.key});
@@ -26,12 +27,35 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final countryController = TextEditingController();
   String? formattedDate;
   bool isLoading = true; // To track profile loading state
-  String profileUrl='';
+  String profileUrl = '';
 
   @override
   void initState() {
     super.initState();
     _fetchUserProfile();
+  }
+
+  void _pickAndUploadImage(UpdateProfileProvider provider) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      await provider.updateProfileImage(pickedFile.path);
+
+      if (provider.errorMessage.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile image updated successfully!')),
+        );
+        // Refresh profile image
+        setState(() {
+          _fetchUserProfile();
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(provider.errorMessage)),
+        );
+      }
+    }
   }
 
   Future<void> _fetchUserProfile() async {
@@ -48,7 +72,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
       bioController.text = profile['bio'] ?? '';
       cityController.text = profile['city'] ?? '';
       countryController.text = profile['country'] ?? '';
-      profileUrl='${Network.baseUrl}/${profile['imageFilePath']}'??'';
+      profileUrl = '${Network.baseUrl}/${profile['imageFilePath']}';
       // Safely parse createdAt
       if (profile['createdAt'] != null) {
         final DateTime joinedOn = DateTime.parse(profile['createdAt']);
@@ -95,7 +119,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     children: [
                       CircleAvatar(
                         radius: width * 0.2,
-                        backgroundImage:  NetworkImage(
+                        backgroundImage: NetworkImage(
                           profileUrl,
                         ),
                       ),
@@ -104,7 +128,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                         right: 0,
                         child: GestureDetector(
                           onTap: () {
-                            // Add your image picker logic here
+                            final provider = Provider.of<UpdateProfileProvider>(
+                                context,
+                                listen: false);
+                            _pickAndUploadImage(provider);
                           },
                           child: Container(
                             width: width * 0.1,
@@ -113,11 +140,31 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               color: Theme.of(context).primaryColor,
                               shape: BoxShape.circle,
                             ),
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: AppColors.color3,
-                              size: width * 0.09,
-                            ),
+                            child: provider.isLoading
+                                ? Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      CircularProgressIndicator(
+                                        value: provider.uploadProgress,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                      Text(
+                                        '${(provider.uploadProgress * 100).toStringAsFixed(0)}%',
+                                        style: TextStyle(
+                                          fontSize: width * 0.03,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : Icon(
+                                    Icons.camera_alt,
+                                    color: AppColors.color3,
+                                    size: width * 0.09,
+                                  ),
                           ),
                         ),
                       ),

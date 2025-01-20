@@ -293,7 +293,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Level Column
             _buildColumn(
               title: 'Level',
-              value: '${userProfile['levelUser']?['name'] ?? 'Unknown'}',
+              value: '${userProfile['level']?['level_name'] ?? 'Unknown'}',
               showDivider: true,
               width:width
             ),

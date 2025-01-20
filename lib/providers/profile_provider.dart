@@ -31,6 +31,9 @@ class ProfileProvider with ChangeNotifier {
 
   // Fetch user profile with an online-first approach
   Future<void> fetchUserProfile() async {
+    loadToken();
+    print('Fetching user profile...');
+    print('Token to fetch profile: $_token');
     if (_token == null) {
       print('No token available.');
       return;
@@ -43,18 +46,20 @@ class ProfileProvider with ChangeNotifier {
         url,
         headers: {'Authorization': 'Bearer $_token'},
       );
+      print('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success']) {
           _userProfile = data['user'];
-
+          print('User profile: $_userProfile');
+          
           // Cache the profile locally
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('cachedUserProfile', json.encode(_userProfile));
 
-          notifyListeners();
           print('User profile fetched from server.');
+          notifyListeners();
         }
       } else {
         print('Error fetching profile from server: ${response.statusCode}');

@@ -6,6 +6,7 @@ import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/models/order_model.dart';
 import 'package:book_mobile/widgets/modal.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
@@ -53,7 +54,9 @@ class PurchaseOrderProvider with ChangeNotifier {
               ? 'success'
               : 'error', // Set type based on success or error
           onClose: () {
-            Navigator.of(context).pop();
+            isSuccess
+                ? context.go('/status')
+                : context.pop();
           },
         );
       },

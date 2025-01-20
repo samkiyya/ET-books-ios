@@ -55,6 +55,7 @@ class OrderStatusProvider with ChangeNotifier {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = prefs.getString('userToken');
+      print('Token: $_token');
       if (_token == null || _token!.isEmpty) {
         _errorMessage = 'Authentication required. Please log in First.';
         _isLoading = false;
@@ -77,7 +78,7 @@ class OrderStatusProvider with ChangeNotifier {
         // print('Response Body: $responseBody');
 
         final List<dynamic> ordersData = responseBody['orders'];
-        // print('Orders status Data: $ordersData');
+        print('Orders status Data: $ordersData');
         _orders = ordersData.map((json) => Order.fromJson(json)).toList();
         // print('Orders: $_orders');
         _successMessage =

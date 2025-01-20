@@ -1,12 +1,13 @@
+import 'package:book_mobile/constants/payment_methods.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/user_activity_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/providers/subscription_provider.dart';
-import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SubscriptionOrderScreen extends StatefulWidget {
@@ -21,6 +22,9 @@ class SubscriptionOrderScreen extends StatefulWidget {
 
 class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
   final _bankNameController = TextEditingController();
+  String selectedBank = '';
+
+  late final List<String> bankLists = PaymentMethods.banks;
   // final int benefitLimitRemaining = 0;
   final Map<String, String> _validationErrors = {};
   final UserActivityTracker _tracker = UserActivityTracker();
@@ -135,11 +139,83 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                             SizedBox(height: height * 0.03),
 
                             // Bank Name Field
-                            CustomTextField(
-                              label: 'Bank Name',
-                              controller: _bankNameController,
-                              hintText: "Enter Bank Name",
-                            ),
+                            Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TypeAheadField<String>(
+                                        builder:
+                                            (context, controller, focusNode) {
+                                          return TextField(
+                                            controller: _bankNameController,
+                                            focusNode: focusNode,
+                                            autofocus: true,
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: AppColors.color5,
+                                              border: OutlineInputBorder(),
+                                              labelText: 'Bank Name',
+                                              labelStyle: TextStyle(
+                                                  color: AppColors.color3),
+                                            ),
+                                          );
+                                        },
+                                        loadingBuilder: (context) =>
+                                            const Text('Loading...'),
+                                        errorBuilder: (context, error) =>
+                                            const Text('Error!'),
+                                        emptyBuilder: (context) =>
+                                            const Text('No bank found!'),
+                                        decorationBuilder: (context, child) {
+                                          return Material(
+                                            type: MaterialType.card,
+                                            elevation: 8,
+                                            shadowColor: AppColors.color3,
+                                            color: AppColors.color5,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: child,
+                                          );
+                                        },
+                                        suggestionsCallback: (pattern) {
+                                          final suggestions = bankLists
+                                              .where((bank) => bank
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      pattern.toLowerCase()))
+                                              .toList();
+                                          print(
+                                              'Suggestions: $suggestions'); // Debugging line
+                                          return suggestions;
+                                        },
+                                        itemBuilder: (context, suggestion) {
+                                          return ListTile(
+                                            title: Text(suggestion,
+                                                style: AppTextStyles.bodyText),
+                                          );
+                                        },
+                                        transitionBuilder:
+                                            (context, animation, child) {
+                                          return FadeTransition(
+                                            opacity: CurvedAnimation(
+                                                parent: animation,
+                                                curve: Curves.fastOutSlowIn),
+                                            child: child,
+                                          );
+                                        },
+                                        onSelected: (suggestion) {
+                                          _bankNameController.text = suggestion;
+                                          setState(() {
+                                            selectedBank = suggestion;
+                                          });
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
                             if (_validationErrors.containsKey('bankName'))
                               Text(
                                 _validationErrors['bankName']!,
@@ -292,7 +368,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
 
                               await provider.createSubscriptionOrder(
                                 tierId: widget.tier['id'].toString(),
-                                bankName: _bankNameController.text.trim(),
+                                bankName: selectedBank,
                                 benefitLimitRemain:
                                     widget.tier['benefit_limit'] ?? 0,
                                 context: context,

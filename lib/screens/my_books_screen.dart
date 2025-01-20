@@ -8,6 +8,7 @@ import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/services/book_service.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class DownloadScreen extends StatefulWidget {
   const DownloadScreen({super.key});
@@ -46,14 +47,18 @@ class _DownloadScreenState extends State<DownloadScreen> {
 
     // Filter orders based on the selected category
     final filteredOrders = orderProvider.orders.where((order) {
-      final isApproved = order.status == 'APPROVED';
+      final isApproved = order.status.toUpperCase() == 'APPROVED';
+      // print('is approved: $isApproved');
       if (_selectedCategory == 'PDF') {
-        return isApproved && order.type == 'pdf' || order.type == 'both';
+        return (isApproved && order.type.toLowerCase() == 'pdf') ||
+            (isApproved && order.type.toLowerCase() == 'both');
       } else if (_selectedCategory == 'Audio') {
-        return isApproved && order.type == 'audio' || order.type == 'both';
+        return (isApproved && (order.type.toLowerCase() == 'audio'||order.type.toLowerCase()=='audiobook')) ||
+            (isApproved && order.type.toLowerCase() == 'both');
       }
       return false;
     }).toList();
+    print('filteredOrders: $filteredOrders');
 
     return SafeArea(
       child: Scaffold(
@@ -71,7 +76,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
             IconButton(
               icon: const Icon(Icons.download_done),
               onPressed: () {
-                Navigator.pushNamed(context, '/downloaded');
+                context.push('/downloaded');
               },
             ),
           ],
@@ -133,7 +138,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                             SizedBox(height: height * 0.01081),
                             CustomButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, '/allEbook');
+                                context.push('/allEbook');
                               },
                               text: 'Go to Books',
                               textStyle: AppTextStyles.buttonText.copyWith(

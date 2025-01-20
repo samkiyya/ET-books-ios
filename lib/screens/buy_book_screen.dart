@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-
 class BuyBookScreen extends StatefulWidget {
   final Map<String, dynamic> book;
   const BuyBookScreen({super.key, required this.book});
@@ -27,7 +26,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
   final _transactionController = TextEditingController();
   final _bankNameController = TextEditingController();
   File? _receiptImage;
-  String selectedBank='';
+  String selectedBank = '';
 
   late final List<String> bankLists = PaymentMethods.banks;
 
@@ -79,6 +78,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                           child: Image.network(
                             '${Network.baseUrl}/${widget.book['imageFilePath']}',
                             height: height * 0.13,
+                            width: width * 0.25,
                             fit: BoxFit.cover,
                             errorBuilder: (BuildContext context, Object error,
                                 StackTrace? stackTrace) {
@@ -154,85 +154,83 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                 SizedBox(height: height * 0.0045),
 
                                 // Bank Name
-Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          TypeAheadField<String>(
-                                            builder: (context, controller,
-                                                focusNode) {
-                                              return TextField(
-                                                  controller: _bankNameController,
-                                                  focusNode: focusNode,
-                                                  autofocus: true,
-                                                  decoration: InputDecoration(
-                                                    filled: true,
-                                                    fillColor: AppColors.color5,
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText: 'Bank Name',
-                                                    labelStyle: const TextStyle(
-                                                        color:
-                                                            AppColors.color3),
-                                                  ));
-                                            },
-                                            loadingBuilder: (context) =>
-                                                const Text('Loading...'),
-                                            errorBuilder: (context, error) =>
-                                                const Text('Error!'),
-                                            emptyBuilder: (context) =>
-                                                const Text('No bank found!'),
-                                            decorationBuilder:
-                                                (context, child) {
-                                              return Material(
-                                                type: MaterialType.card,
-                                                elevation: 8,
-                                                shadowColor: AppColors.color3,
-                                                color: AppColors.color5,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: child,
-                                              );
-                                            },
-                                            suggestionsCallback: (pattern) {
-                                              return bankLists
-                                                  .where((bank) => bank
-                                                      .toLowerCase()
-                                                      .contains(pattern
-                                                          .toLowerCase()))
-                                                  .toList();
-                                            },
-                                            itemBuilder: (context, suggestion) {
-                                              return ListTile(
-                                                title: Text(suggestion,
-                                                    style:
-                                                        AppTextStyles.bodyText),
-                                              );
-                                            },
-                                            transitionBuilder:
-                                                (context, animation, child) {
-                                              return FadeTransition(
-                                                opacity: CurvedAnimation(
-                                                    parent: animation,
-                                                    curve:
-                                                        Curves.fastOutSlowIn),
-                                                child: child,
-                                              );
-                                            },
-                                            onSelected: (suggestion) {
-                                              _bankNameController.text = suggestion;
-                                              setState(() {
-                                                selectedBank = suggestion;
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      TypeAheadField<String>(
+                                        builder:
+                                            (context, controller, focusNode) {
+                                          return TextField(
+                                            controller: _bankNameController,
+                                            focusNode: focusNode,
+                                            autofocus: true,
+                                            decoration: InputDecoration(
+                                              filled: true,
+                                              fillColor: AppColors.color5,
+                                              border: OutlineInputBorder(),
+                                              labelText: 'Bank Name',
+                                              labelStyle: TextStyle(
+                                                  color: AppColors.color3),
+                                            ),
+                                          );
+                                        },
+                                        loadingBuilder: (context) =>
+                                            const Text('Loading...'),
+                                        errorBuilder: (context, error) =>
+                                            const Text('Error!'),
+                                        emptyBuilder: (context) =>
+                                            const Text('No bank found!'),
+                                        decorationBuilder: (context, child) {
+                                          return Material(
+                                            type: MaterialType.card,
+                                            elevation: 8,
+                                            shadowColor: AppColors.color3,
+                                            color: AppColors.color5,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: child,
+                                          );
+                                        },
+                                        suggestionsCallback: (pattern) {
+                                          final suggestions = bankLists
+                                              .where((bank) => bank
+                                                  .toLowerCase()
+                                                  .contains(
+                                                      pattern.toLowerCase()))
+                                              .toList();
+                                          print(
+                                              'Suggestions: $suggestions'); // Debugging line
+                                          return suggestions;
+                                        },
+                                        itemBuilder: (context, suggestion) {
+                                          return ListTile(
+                                            title: Text(suggestion,
+                                                style: AppTextStyles.bodyText),
+                                          );
+                                        },
+                                        transitionBuilder:
+                                            (context, animation, child) {
+                                          return FadeTransition(
+                                            opacity: CurvedAnimation(
+                                                parent: animation,
+                                                curve: Curves.fastOutSlowIn),
+                                            child: child,
+                                          );
+                                        },
+                                        onSelected: (suggestion) {
+                                          _bankNameController.text = suggestion;
+                                          setState(() {
+                                            selectedBank = suggestion;
+                                          });
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
 
                                 SizedBox(height: height * 0.02),
 

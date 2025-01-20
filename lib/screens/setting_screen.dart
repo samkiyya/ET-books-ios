@@ -18,7 +18,7 @@ class SettingsScreen extends StatelessWidget {
         title: Text(
           'Settings',
           style: AppTextStyles.heading2
-              .copyWith(fontSize: width * 0.5, fontWeight: FontWeight.bold),
+              .copyWith(fontSize: width * 0.05, fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppColors.color1,
         foregroundColor: AppColors.color6,
@@ -28,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Switch to toggle notifications
+            // Notifications toggle
             SwitchListTile(
               title: Text(
                 'Enable Notifications',
@@ -37,10 +37,8 @@ class SettingsScreen extends StatelessWidget {
               ),
               value: context.watch<NotificationProvider>().notificationsEnabled,
               onChanged: (value) {
-                // Toggle notifications in the provider
                 context.read<NotificationProvider>().toggleNotifications();
 
-                // Show a Snackbar with feedback
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
@@ -52,8 +50,6 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
             ),
-            SizedBox(height: height * 0.007),
-            // Display the current status of notifications
             Text(
               context.watch<NotificationProvider>().notificationsEnabled
                   ? 'Notifications are currently enabled.'
@@ -64,11 +60,12 @@ class SettingsScreen extends StatelessWidget {
                 color: AppColors.color6,
               ),
             ),
-            SizedBox(height: height * 0.02),
-            // Toggle Two-Factor Authentication (2FA)
+            Divider(height: height * 0.04, color: AppColors.color3),
+
+            // Two-Factor Authentication (2FA) toggle
             Consumer<AuthProvider>(
               builder: (context, authProvider, child) {
-                return ListTile(
+                return SwitchListTile(
                   title: Text(
                     'Enable Two-Factor Authentication (2FA)',
                     style: AppTextStyles.buttonText.copyWith(
@@ -76,43 +73,52 @@ class SettingsScreen extends StatelessWidget {
                       color: AppColors.color3,
                     ),
                   ),
-                  trailing: authProvider.isLoading
+                  value: authProvider.is2FAEnabled,
+                  onChanged: (value) async {
+                    try {
+                      await authProvider.toggle2FA();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            value
+                                ? '2FA has been enabled.'
+                                : '2FA has been disabled.',
+                          ),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Error: ${e.toString()}',
+                            style: const TextStyle(
+                              color: AppColors.color3,
+                            ),
+                          ),
+                          backgroundColor: AppColors.color5,
+                        ),
+                      );
+                    }
+                  },
+                  secondary: authProvider.isLoading&&authProvider.is2FAEnabled==false
                       ? const SizedBox(
                           width: 24,
                           height: 24,
                           child: CircularProgressIndicator(),
                         )
-                      : Switch(
-                          value: authProvider.is2FAEnabled,
-                          onChanged: (value) async {
-                            try {
-                              await authProvider.toggle2FA();
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    value
-                                        ? '2FA has been enabled.'
-                                        : '2FA has been disabled.',
-                                  ),
-                                ),
-                              );
-                            } catch (e) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    'Error: ${e.toString()}',
-                                    style: const TextStyle(
-                                      color: AppColors.color3,
-                                    ),
-                                  ),
-                                  backgroundColor: AppColors.color5,
-                                ),
-                              );
-                            }
-                          },
-                        ),
+                      : null,
                 );
               },
+            ),
+             Text(
+              context.watch<AuthProvider>().is2FAEnabled
+                  ?'Two-Factor Authentication (2FA) is currently enabled.'
+                      : 'Two-Factor Authentication (2FA) is currently disabled.',
+              style: TextStyle(
+                fontSize: width * 0.042,
+                fontWeight: FontWeight.w500,
+                color: AppColors.color6,
+              ),
             ),
           ],
         ),

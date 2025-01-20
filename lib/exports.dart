@@ -44,3 +44,5 @@ export 'package:book_mobile/screens/wellcome_screen.dart';
 export 'package:book_mobile/screens/password_reset_screen.dart';
 export 'package:book_mobile/screens/verification_screen.dart';
 export 'package:book_mobile/screens/otp_screen.dart';
+export 'package:book_mobile/screens/view_order_status_screen.dart';
+

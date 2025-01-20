@@ -70,25 +70,25 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                                 horizontal: width * 0.025),
                             child: ListTile(
                               title: Text(
-                                'Order ID: ${order.id}',
+                                'Order No: ${order.orderNumber}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    fontSize: width * 0.045),
+                                    fontSize: width * 0.035),
                               ),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Status: ${order.status}'),
+                                  Text('Your Order Status: ${order.status}'),
                                   Text(
-                                    'Date: ${DateFormat('yyyy-MM-dd HH:mm').format(order.createdAt)}',
+                                    'Order Date: ${DateFormat('yyyy-MM-dd HH:mm').format(order.createdAt)}',
                                   ),
-                                  Text('Price: ${order.price} ETB'),
+                                  Text('Ordered Book Price: ${order.price} ETB'),
                                   if (order.orderBook.isNotEmpty)
                                     Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        SizedBox(height: height * 0.03),
+                                        SizedBox(height: height * 0.02),
                                         Text(
                                           'Book Title: ${order.orderBook['title']}',
                                           style: const TextStyle(

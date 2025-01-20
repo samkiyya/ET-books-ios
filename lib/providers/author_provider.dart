@@ -74,62 +74,50 @@ class AuthorProvider extends ChangeNotifier {
     }
   }
 
+   // Toggle follow/unfollow an author
   Future<void> toggleFollow(String userId) async {
-    isLoading = true;
-    errorMessage = '';
-    notifyListeners();
-
+    _setLoading(true);
     try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      _token = prefs.getString('userToken');
-      print('Token: $_token');
+      await _loadToken();
       if (_token == null || _token!.isEmpty) {
-        errorMessage = 'Authentication required. Please log in First.';
-        isLoading = false;
-        notifyListeners();
+        _setError('Authentication required. Please log in First.');
         return;
       }
-      final url = Uri.parse(
-        '${Network.baseUrl}/api/following/follow',
-      );
+
+      final url = Uri.parse('${Network.baseUrl}/api/following/follow');
       final response = await http.post(
         url,
         body: {'user_id': userId},
         headers: {'Authorization': 'Bearer $_token'},
       );
-      print('response of authors: ${response.body}');
 
-      if (response.statusCode == 200) {
-        await fetchAuthorById(userId);
-      } else if (response.statusCode == 201) {
-        await fetchAuthorById(userId);
+      print('Toggle follow response: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Toggle follow request for user: $userId');
+
+        await fetchAuthorById(userId); // Refresh the author data
       } else {
-        errorMessage = 'Error: ${response.body}';
+        _setError('Error toggling follow status. ${response.body}');
       }
     } catch (e) {
-      errorMessage = 'Error following/unfollowing: $e';
-      print(errorMessage);
+      _handleError(e, 'Error toggling follow status');
     } finally {
-      print('isFollowing: $isFollowing');
-      isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
 
+  // Fetch all authors
   Future<void> fetchAuthors() async {
-    isLoading = true;
-    notifyListeners();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('userToken');
-    print('Token: $_token');
-    if (_token == null || _token!.isEmpty) {
-      errorMessage = 'Authentication required. Please log in First.';
-      isLoading = false;
-      notifyListeners();
-      return;
-    }
-    final url = Uri.parse('${Network.baseUrl}/api/manage-user/filter-authors');
+    _setLoading(true);
+
     try {
+      await _loadToken();
+      if (_token == null || _token!.isEmpty) {
+        _setError('Authentication required. Please log in First.');
+        return;
+      }
+
+      final url = Uri.parse('${Network.baseUrl}/api/manage-user/filter-authors');
       final response = await http.get(
         url,
         headers: {'Authorization': 'Bearer $_token'},
@@ -137,32 +125,91 @@ class AuthorProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-
         if (data['users'] != null) {
-          // Map the authors from the API response
-          _authors = (data['users'] as List).map((author) {
-            // Create Author instance using the updated model
-            print('author: $author');
-            // isFollowing = _authors['author']['isFollowing'] ?? false;
-            return Author.fromJson(author);
-          }).toList();
-          print('authors fetched: $_authors');
+          _authors = (data['users'] as List)
+              .map((author) => Author.fromJson(author))
+              .toList();
+          print('Authors fetched: $_authors');
         } else {
-          errorMessage = 'No authors found in the response.';
-          print('Error: $errorMessage');
+          _setError('No authors found in the response.');
         }
       } else {
-        errorMessage =
-            'Failed to load authors. Status Code: ${response.statusCode}';
-        print('Errors: $errorMessage');
+        _setError('Failed to load authors. Status Code: ${response.statusCode}');
       }
-    } catch (error) {
-      errorMessage = 'Error fetching authors: $error';
-
-      print('catched error: $errorMessage');
+    } catch (e) {
+      _handleError(e, 'Error fetching authors');
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _setLoading(false);
     }
   }
+
+  // Private helper methods
+  void _setLoading(bool value) {
+    isLoading = value;
+    notifyListeners();
+  }
+
+  void _setError(String message) {
+    errorMessage = message;
+    isLoading = false;
+    notifyListeners();
+    print('Error: $message');
+  }
+
+  void _handleError(dynamic error, String defaultMessage) {
+    try {
+      if (error is Exception) {
+        String errorString = error.toString();
+        if (errorString.contains('Exception:')) {
+          final errorJson = json.decode(errorString.split('Exception:')[1]);
+          _setError(errorJson['message'] ?? defaultMessage);
+        } else {
+          _setError(defaultMessage);
+        }
+      } else {
+        _setError(defaultMessage);
+      }
+    } catch (_) {
+      _setError(defaultMessage);
+    }
+  }
+
+  Future<void> _loadToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
+    print('Loaded token: $_token');
+  }
+  Future<void> toggleFollowAuthors(String userId) async { 
+  try {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
+    if (_token == null || _token!.isEmpty) {
+      errorMessage = 'Authentication required. Please log in first.';
+      notifyListeners();
+      return;
+    }
+
+    final url = Uri.parse('${Network.baseUrl}/api/following/follow');
+    final response = await http.post(
+      url,
+      body: {'user_id': userId},
+      headers: {'Authorization': 'Bearer $_token'},
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final index = _authors.indexWhere((author) => author.id == (int.parse(userId)));
+      if (index != -1) {
+        _authors[index].isFollowing = !_authors[index].isFollowing;
+        // Update follow count accordingly
+        _authors[index].followers += _authors[index].isFollowing ? 1 : -1;
+        notifyListeners();
+      }
+    } else {
+      errorMessage = 'Error: ${response.body}';
+    }
+  } catch (e) {
+    errorMessage = 'Error following/unfollowing: $e';
+  }
+}
+
 }

@@ -2,6 +2,7 @@ class Order {
   final int id;
   final String price;
   final String bankName;
+  String? orderNumber;
   final String type;
   final String transactionNumber;
   final String status;
@@ -19,6 +20,7 @@ class Order {
     required this.createdAt,
     required this.orderBook,
     required this.orderUser,
+    this.orderNumber,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class Order {
       type: json['type'],
       transactionNumber: json['transactionNumber'],
       status: json['status'],
+      orderNumber: json['orderNumber'],
       createdAt: DateTime.parse(json['createdAt']),
       orderBook: json['orderBook'],
       orderUser: json['orderUser'],

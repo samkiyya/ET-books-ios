@@ -229,6 +229,7 @@ class AuthorCard extends StatelessWidget {
           SizedBox(height: 15),
 
           // Follow Button
+          
         ],
       ),
     );

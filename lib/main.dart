@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:app_links/app_links.dart';
 import 'package:book_mobile/routes.dart';
 import 'package:book_mobile/services/permission_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 import 'package:go_router/go_router.dart';

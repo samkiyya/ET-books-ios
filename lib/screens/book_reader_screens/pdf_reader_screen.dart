@@ -23,6 +23,8 @@ class PdfReaderScreen extends StatefulWidget {
 }
 
 class _PdfReaderScreenState extends State<PdfReaderScreen> {
+  int totalPages = 0;
+  int currentPage = 1;
   String? _localFilePath;
   bool _isLoading = true;
   late SharedPreferences _prefs;
@@ -210,6 +212,17 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                             pageLayoutMode: _scrollDirection == 'vertical'
                                 ? PdfPageLayoutMode.continuous
                                 : PdfPageLayoutMode.single,
+                            onDocumentLoaded:
+                                (PdfDocumentLoadedDetails details) {
+                              setState(() {
+                                totalPages = details.document.pages.count;
+                              });
+                            },
+                            onPageChanged: (PdfPageChangedDetails details) {
+                              setState(() {
+                                currentPage = details.newPageNumber;
+                              });
+                            },
                             onTap: (details) async {
                               _toggleAppBarVisibility();
                               SharedPreferences prefs =
@@ -228,26 +241,33 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                   child: Padding(
                     padding: EdgeInsets.all(width * 0.0074),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.arrow_back,
-                                  color: _getTextColor()),
-                              onPressed: () async {
-                                _pdfViewerController.previousPage();
-                              },
+                        IconButton(
+                          icon: Icon(Icons.arrow_back,
+                              color: _getTextColor()),
+                          onPressed: () async {
+                            _pdfViewerController.previousPage();
+                          },
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Text(
+                            'Page $currentPage of $totalPages',
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
                             ),
-                            IconButton(
-                              icon: Icon(Icons.arrow_forward,
-                                  color: _getTextColor()),
-                              onPressed: () async {
-                                _pdfViewerController.nextPage();
-                                _incrementPagesRead();
-                              },
-                            ),
-                          ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.arrow_forward,
+                              color: _getTextColor()),
+                          onPressed: () async {
+                            _pdfViewerController.nextPage();
+                            _incrementPagesRead();
+                          },
                         ),
                       ],
                     ),

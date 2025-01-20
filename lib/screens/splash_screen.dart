@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/screens/home_screen.dart';
 // import 'package:book_mobile/screens/verification_screen.dart';
-import 'package:book_mobile/screens/wellcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';

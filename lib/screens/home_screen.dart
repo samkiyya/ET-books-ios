@@ -1,12 +1,9 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/models/bottom_bar_item_model.dart';
 import 'package:book_mobile/screens/all_book_screen.dart';
 import 'package:book_mobile/screens/audo_detail_screen.dart';
 import 'package:book_mobile/screens/book_details_screen.dart';
 import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
-import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
-import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
 import 'package:book_mobile/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +22,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late AnimationController _iconAnimationController;
   final TextEditingController _searchController = TextEditingController();
@@ -499,6 +495,10 @@ class _HomeScreenState extends State<HomeScreen>
                                                     child: Column(
                                                       children: [
                                                         Card(
+                                                          color: AppColors
+                                                              .color3
+                                                              .withValues(
+                                                                  alpha: 0.65),
                                                           margin: EdgeInsets
                                                               .symmetric(
                                                                   horizontal:

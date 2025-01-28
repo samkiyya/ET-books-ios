@@ -121,6 +121,13 @@ static Map<String, String> deepLinks = {
           return SubscriptionOrderScreen(tier: tier);
         },
       ),
+      GoRoute(
+      path: '/notification/:id',
+      builder: (context, state) {
+        final notificationId = state.pathParameters['id'];
+        return NotificationDetailScreen(notificationId: int.parse(notificationId!));
+      },
+    ),
     ],
   );
 }

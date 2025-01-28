@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/providers/login_provider.dart';
-import 'package:book_mobile/screens/notification_detail_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:book_mobile/providers/notification_provider.dart';
+import 'package:book_mobile/routes.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
@@ -10,7 +10,6 @@ import 'package:http/http.dart' as http;
 
 const String taskName = "backgroundTask";
 const String apiUrl = '${Network.baseUrl}/api/notification/my';
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final FlutterLocalNotificationsPlugin flip = FlutterLocalNotificationsPlugin();
 
@@ -78,6 +77,11 @@ Future<void> _showLocalNotification(Map<String, dynamic> notification) async {
     'High Importance Notifications',
     importance: Importance.high,
     priority: Priority.high,
+    actions: <AndroidNotificationAction>[
+      AndroidNotificationAction('mark_as_read', 'Mark as Read',
+          showsUserInterface: true),
+      AndroidNotificationAction('dismiss', 'Dismiss', showsUserInterface: true),
+    ],
   );
 
   const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
@@ -132,9 +136,61 @@ Future<void> _initializeNotifications(LoginProvider loginProvider) async {
   await flip.initialize(
     initializationSettings,
     onDidReceiveNotificationResponse: (response) async {
+      if (response.actionId == 'mark_as_read') {
+        print('mark as read: ${response.payload}');
+        await _handleMarkAsRead(response.payload);
+      } else if (response.actionId == 'dismiss') {
+        print('mark as read with dismiss: ${response.payload}');
+        await _handleDismiss(response.payload);
+      }
       await _handleNotificationResponse(response, loginProvider);
     },
+    onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
   );
+}
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  print('notificationTapBackground');
+  print('notification(${notificationResponse.id}) action tapped: '
+      '${notificationResponse.actionId} with'
+      ' payload: ${notificationResponse.payload}');
+}
+
+// mark notification as read method
+@pragma('vm:entry-point')
+Future<void> _handleMarkAsRead(String? payload) async {
+  if (payload == null) return;
+
+  try {
+    final data = jsonDecode(payload);
+    final notificationId = data['id'];
+    print('Marking notification as read: $notificationId');
+
+    // Access NotificationProvider singleton
+    final notificationProvider = NotificationProvider();
+    await notificationProvider.toggleReadStatus(notificationId);
+  } catch (e) {
+    print('Error marking notification as read: $e');
+  }
+}
+
+// delete notification
+@pragma('vm:entry-point')
+Future<void> _handleDismiss(String? payload) async {
+  if (payload == null) return;
+
+  try {
+    final data = jsonDecode(payload);
+    final notificationId = data['id'];
+    print('Dismissing notification: $notificationId');
+
+    // Access NotificationProvider singleton
+    final notificationProvider = NotificationProvider();
+    await notificationProvider.deleteNotification(notificationId);
+  } catch (e) {
+    print('Error dismissing notification: $e');
+  }
 }
 
 /// Handle notification response
@@ -143,6 +199,7 @@ Future<void> _handleNotificationResponse(
   NotificationResponse response,
   LoginProvider loginProvider,
 ) async {
+  final router = MyRoute.myroutes;
   final payload = response.payload;
   await loginProvider.initializeLoginStatus();
 
@@ -150,14 +207,10 @@ Future<void> _handleNotificationResponse(
     final data = jsonDecode(payload);
     final notificationId = data['id'];
 
-    navigatorKey.currentState?.push(
-      MaterialPageRoute(
-        builder: (context) =>
-            NotificationDetailScreen(notificationId: notificationId),
-      ),
-    );
+    router.push('/notification/$notificationId');
   } else {
-    navigatorKey.currentState?.pushNamed('/login');
+// Navigate to the login screen using GoRouter
+    router.go('/login');
   }
 }
 

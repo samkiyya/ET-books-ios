@@ -1,16 +1,13 @@
 import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/models/bottom_bar_item_model.dart';
 import 'package:book_mobile/screens/author_screen.dart';
+import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
 import 'package:book_mobile/screens/video_player_screen.dart';
-import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
-import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
 import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/announcement_provider.dart';
 import 'package:book_mobile/screens/announcement_detail_screen.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class AnnouncementListScreen extends StatefulWidget {
@@ -21,58 +18,7 @@ class AnnouncementListScreen extends StatefulWidget {
 }
 
 class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
-  final NotchBottomBarController _controller =
-      NotchBottomBarController(index: 0); // Default to "home"
-
-  final List<String> _routes = [
-    '/announcements',
-    '/subscription-tier',
-    '/home',
-    '/authors',
-    '/profile',
-  ];
-  void _navigateToScreen(BuildContext context, int index) {
-    if (index >= 0 && index < _routes.length) {
-      context.push(_routes[index]);
-    } else {
-      context.go('/home');
-    }
-    setState(() {
-      _controller.jumpTo(index);
-    });
-  }
-
-  final List<BottomBarItem> _bottomBarItems = [
-    BottomBarItem(
-      activeItem: Icon(Icons.announcement, color: AppColors.color1),
-      inActiveItem: Icon(Icons.announcement_outlined, color: AppColors.color2),
-      itemLabel: 'News',
-    ),
-    BottomBarItem(
-      activeItem: Icon(Icons.subscriptions, color: AppColors.color1),
-      inActiveItem: Icon(Icons.subscriptions_outlined, color: AppColors.color2),
-      itemLabel: 'Subscribe',
-    ),
-    BottomBarItem(
-      activeItem: Icon(Icons.home, color: AppColors.color1),
-      inActiveItem: Icon(Icons.home_outlined, color: AppColors.color2),
-      itemLabel: 'Home',
-    ),
-    BottomBarItem(
-      activeItem: Icon(
-        Icons.people,
-        color: AppColors.color1,
-      ),
-      inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
-      itemLabel: 'Authors',
-    ),
-    BottomBarItem(
-      activeItem: Icon(Icons.person, color: AppColors.color1),
-      inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
-      itemLabel: 'Profile',
-    ),
-  ];
-
+ 
   @override
   void initState() {
     super.initState();
@@ -110,31 +56,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
           foregroundColor: AppColors.color6,
           backgroundColor: AppColors.color1,
         ),
-        bottomNavigationBar: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            return AnimatedNotchBottomBar(
-              notchBottomBarController: _controller,
-              onTap: (index) => _navigateToScreen(context, index),
-              bottomBarItems: _bottomBarItems,
-              showShadow: true,
-              showLabel: true,
-              itemLabelStyle: TextStyle(color: Colors.black, fontSize: 12),
-              showBlurBottomBar: true,
-              blurOpacity: 0.6,
-              blurFilterX: 10.0,
-              blurFilterY: 10.0,
-              kIconSize: 30,
-              kBottomRadius: 10,
-              showTopRadius: true,
-              showBottomRadius: true,
-              topMargin: 15,
-              durationInMilliSeconds: 300,
-              bottomBarHeight: 70,
-              elevation: 8,
-            );
-          },
-        ),
+        bottomNavigationBar: CustomNavigationBar(initialIndex: 0),
         body:
             Consumer<AnnouncementProvider>(builder: (context, provider, child) {
           if (provider.isLoading) {

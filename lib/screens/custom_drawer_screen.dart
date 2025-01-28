@@ -24,6 +24,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     {'label': 'All Books', 'icon': Icons.book},
     {'label': 'Downloaded', 'icon': Icons.download},
     {'label': 'My Books', 'icon': Icons.book},
+    {'label': 'my Orders', 'icon': Icons.shopping_cart},
     {'label': 'Notification', 'icon': Icons.notifications},
     {'label': 'Subscribe', 'icon': Icons.subscriptions},
     {'label': 'Authors', 'icon': Icons.person},
@@ -35,6 +36,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     // {'label': 'Enable 2FA', 'icon': Icons.security},
     {'label': 'Logout', 'icon': Icons.logout},
     // {'label': 'About', 'icon': Icons.info},
+
   ];
 
   @override
@@ -133,6 +135,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
       case 'My Books':
         _myBooks(context);
         break;
+      case 'my Orders':
+        context.push('/status');
+        break;
       case 'Notification':
         _notification(context);
         break;
@@ -146,6 +151,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         context.push('/authors');
         // Author
         break;
+
       case 'Share App':
         shareApp(context);
         break;
@@ -276,7 +282,7 @@ ${Network.appPlayStoreUrl}${Network.appPackageName}
     context.push('/settings');
   }
 
-  void _contactUs(BuildContext context) {
-    context.push('/contact-us');
-  }
+  // void _contactUs(BuildContext context) {
+  //   context.push('/contact-us');
+  // }
 }

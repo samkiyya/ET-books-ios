@@ -20,6 +20,7 @@ export 'package:book_mobile/providers/content_access_provider.dart';
 export 'package:book_mobile/providers/review_provider.dart';
 
 //exporting screens
+export 'package:book_mobile/screens/notification_detail_screen.dart';
 export 'package:book_mobile/screens/all_audio_screen.dart';
 export 'package:book_mobile/screens/all_book_screen.dart';
 export 'package:book_mobile/screens/announcement_screen.dart';

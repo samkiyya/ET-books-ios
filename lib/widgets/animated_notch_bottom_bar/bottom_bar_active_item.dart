@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class BottomBarActiveItem extends StatelessWidget {
   const BottomBarActiveItem(
-    this.index, {
+    this.index, {super.key, 
     required this.itemWidget,
     required this.onTap,
     required this.scrollPosition,

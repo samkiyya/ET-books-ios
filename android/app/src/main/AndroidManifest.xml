@@ -49,9 +49,17 @@ package="com.example.book_mobile">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="samuel.firstapp.com"/>
+                <data android:scheme="http" android:host="samideeplink.smartbingogames.com"/>
                 <data android:scheme="https"/>
                 <!-- <data android:scheme="samuel" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" /> -->
+            </intent-filter>
+
+            <intent-filter android:autoVerify="true" >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="samideeplink.smartbingogames.com" pathprefix="/*" />
+                <data android:scheme="https"/>
             </intent-filter>
 
             <!-- Deep Link sample -->
@@ -115,7 +123,7 @@ package="com.example.book_mobile">
         <receiver
             android:exported="false"
             android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />
+        <!-- <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" /> -->
         <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

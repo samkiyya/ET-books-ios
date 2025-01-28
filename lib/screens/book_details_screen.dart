@@ -1,7 +1,6 @@
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/models/bottom_bar_item_model.dart';
 import 'package:book_mobile/models/order_model.dart';
 import 'package:book_mobile/providers/content_access_provider.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';

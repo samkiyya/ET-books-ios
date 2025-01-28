@@ -6,11 +6,11 @@ import 'package:book_mobile/providers/purchase_order_provider.dart';
 import 'package:book_mobile/providers/user_activity_provider.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
+import 'package:book_mobile/widgets/searchable_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_mobile/constants/payment_methods.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class BuyAudioScreen extends StatefulWidget {
   final Map<String, dynamic> audioBook;
@@ -24,7 +24,6 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final _transactionController = TextEditingController();
-  final _bankNameController = TextEditingController();
   File? _receiptImage;
   String selectedBank = '';
 
@@ -80,6 +79,7 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                           child: Image.network(
                             '${Network.baseUrl}/${widget.audioBook['imageFilePath']}',
                             height: height * 0.13,
+                            width: width * 0.25,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
@@ -150,82 +150,14 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                                 ),
                                 SizedBox(height: height * 0.0045),
 
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      TypeAheadField<String>(
-                                        builder:
-                                            (context, controller, focusNode) {
-                                          return TextField(
-                                            controller: _bankNameController,
-                                            focusNode: focusNode,
-                                            autofocus: true,
-                                            decoration: InputDecoration(
-                                              filled: true,
-                                              fillColor: AppColors.color5,
-                                              border: OutlineInputBorder(),
-                                              labelText: 'Bank Name',
-                                              labelStyle: TextStyle(
-                                                  color: AppColors.color3),
-                                            ),
-                                          );
-                                        },
-                                        loadingBuilder: (context) =>
-                                            const Text('Loading...'),
-                                        errorBuilder: (context, error) =>
-                                            const Text('Error!'),
-                                        emptyBuilder: (context) =>
-                                            const Text('No bank found!'),
-                                        decorationBuilder: (context, child) {
-                                          return Material(
-                                            type: MaterialType.card,
-                                            elevation: 8,
-                                            shadowColor: AppColors.color3,
-                                            color: AppColors.color5,
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: child,
-                                          );
-                                        },
-                                        suggestionsCallback: (pattern) {
-                                          final suggestions = bankLists
-                                              .where((bank) => bank
-                                                  .toLowerCase()
-                                                  .contains(
-                                                      pattern.toLowerCase()))
-                                              .toList();
-                                          print(
-                                              'Suggestions: $suggestions'); // Debugging line
-                                          return suggestions;
-                                        },
-                                        itemBuilder: (context, suggestion) {
-                                          return ListTile(
-                                            title: Text(suggestion,
-                                                style: AppTextStyles.bodyText),
-                                          );
-                                        },
-                                        transitionBuilder:
-                                            (context, animation, child) {
-                                          return FadeTransition(
-                                            opacity: CurvedAnimation(
-                                                parent: animation,
-                                                curve: Curves.fastOutSlowIn),
-                                            child: child,
-                                          );
-                                        },
-                                        onSelected: (suggestion) {
-                                          _bankNameController.text = suggestion;
-                                          setState(() {
-                                            selectedBank = suggestion;
-                                          });
-                                        },
-                                      )
-                                    ],
-                                  ),
+                                CoustomSearchableDropdown(
+                                  onChanged: (String? value) {
+                                    setState(() {
+                                      selectedBank = value!;
+                                    });
+                                  },
+                                  data: bankLists,
+                                  hintText: 'Select Bank Name',
                                 ),
 
                                 SizedBox(height: height * 0.02),
@@ -263,11 +195,35 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                                               style: TextStyle(
                                                   color: AppColors.color3),
                                             )
-                                          : Image.file(
-                                              orderProvider.receiptImage!,
-                                              fit: BoxFit.cover,
-                                              height: height * 0.09,
-                                            ),
+                                          : orderProvider.isImage
+                                              ? Image.file(
+                                                  orderProvider.receiptImage!,
+                                                  fit: BoxFit.cover,
+                                                  height: height * 0.09,
+                                                )
+                                              : Row(
+                                                  children: [
+                                                    Icon(
+                                                        Icons.insert_drive_file,
+                                                        size: 40,
+                                                        color: Colors
+                                                            .white), // File icon
+                                                    SizedBox(width: 8),
+                                                    Expanded(
+                                                      child: Text(
+                                                          orderProvider
+                                                              .receiptImage!
+                                                              .path
+                                                              .split('/')
+                                                              .last, // Displaying just the filename
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style: TextStyle(
+                                                              color: Colors
+                                                                  .white)),
+                                                    ),
+                                                  ],
+                                                ),
                                     ),
                                   ],
                                 ),

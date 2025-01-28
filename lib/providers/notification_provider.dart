@@ -5,6 +5,13 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationProvider with ChangeNotifier {
+  static final NotificationProvider _instance =
+      NotificationProvider._internal();
+  factory NotificationProvider() => _instance;
+  NotificationProvider._internal() {
+    _loadNotificationPreferences();
+  }
+
   final String fetchUrl = '${Network.baseUrl}/api/notification/my';
   final String deleteUrl = '${Network.baseUrl}/api/notification/delete';
   final String toggleReadUrl =
@@ -18,9 +25,9 @@ class NotificationProvider with ChangeNotifier {
   // Getter for notifications enabled/disabled status
   bool get notificationsEnabled => _notificationsEnabled;
 
-  NotificationProvider() {
-    _loadNotificationPreferences();
-  }
+  // NotificationProvider() {
+  //   _loadNotificationPreferences();
+  // }
 
   // Fetch token from SharedPreferences
   Future<String?> _getToken() async {
@@ -80,7 +87,8 @@ class NotificationProvider with ChangeNotifier {
           print('Unexpected API response format: ${response.body}');
         }
       } else {
-        print('Failed to load notifications: ${response.body}, ${response.statusCode}');
+        print(
+            'Failed to load notifications: ${response.body}, ${response.statusCode}');
       }
     } catch (e) {
       print('Error loading notifications: $e');
@@ -96,6 +104,7 @@ class NotificationProvider with ChangeNotifier {
         return;
       }
 
+      print('token to delete notification is: $token');
       final response = await http.delete(
         Uri.parse('$deleteUrl/$id'),
         headers: {
@@ -108,7 +117,7 @@ class NotificationProvider with ChangeNotifier {
         _notifications.removeWhere((notification) => notification['id'] == id);
         notifyListeners();
       } else {
-        print('Failed to delete notification: ${response.body}');
+        print('Failed to delete notification response: ${response.body} ${response.statusCode}');
       }
     } catch (e) {
       print('Error deleting notification: $e');
@@ -131,7 +140,7 @@ class NotificationProvider with ChangeNotifier {
           'Content-Type': 'application/json',
         },
       );
-
+      print('response to mark as read: ${response.body}');
       if (response.statusCode == 200) {
         final index = _notifications
             .indexWhere((notification) => notification['id'] == id);

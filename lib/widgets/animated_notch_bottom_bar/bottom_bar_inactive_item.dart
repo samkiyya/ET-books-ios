@@ -4,8 +4,8 @@ import 'package:book_mobile/constants/bottom_bar_style.dart';
 
 /// Class to generate the inactive icon on bottom bar
 class BottomBarInActiveItem extends StatelessWidget {
-  BottomBarInActiveItem(
-    this.index, {
+  const BottomBarInActiveItem(
+    this.index, {super.key, 
     required this.itemWidget,
     required this.kIconSize,
     required this.onTap,

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class NotificationDetailScreen extends StatelessWidget {
-  final int notificationId; // Integer ID from API response
+  final int notificationId;
 
   const NotificationDetailScreen({super.key, required this.notificationId});
 

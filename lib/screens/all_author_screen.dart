@@ -1,7 +1,6 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/author_provider.dart';
-import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
 import 'package:book_mobile/widgets/authors_card.dart';
 import 'package:book_mobile/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +45,7 @@ final Map<String, bool> _loadingStates = {};
           foregroundColor: AppColors.color6,
           centerTitle: true,
         ),
-        bottomNavigationBar: CustomNavigationBar(initialIndex: 3),
+        // bottomNavigationBar: CustomNavigationBar(initialIndex: 3),
         body: !isDataFetched
             ? const Center(
                 child: LoadingWidget(),

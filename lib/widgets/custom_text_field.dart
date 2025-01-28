@@ -11,6 +11,8 @@ class CustomTextField extends StatelessWidget {
   final IconData? prefixIcon;
   final IconButton? suffixIcon;
   final bool obscureText;
+  final Color? fillColor;
+  final Color? hintColor;
   final String? Function(String?)? validator;
 
   const CustomTextField({
@@ -19,6 +21,8 @@ class CustomTextField extends StatelessWidget {
     this.label,
     this.labelText,
     this.hintText,
+    this.fillColor,
+    this.hintColor,
     this.icon,
     this.obscureText = false,
     this.validator,
@@ -50,12 +54,12 @@ class CustomTextField extends StatelessWidget {
             prefixIcon: prefixIcon != null
                 ? Icon(prefixIcon, color: AppColors.color1)
                 : null,
-            labelStyle: const TextStyle(color: AppColors.color3),
+            labelStyle: TextStyle(color: hintColor ?? AppColors.color3),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
             filled: true,
-            fillColor: AppColors.color5,
+            fillColor: fillColor ?? AppColors.color5,
             suffixIcon:
                 icon != null ? Icon(icon, color: AppColors.color1) : suffixIcon,
             labelText: labelText,

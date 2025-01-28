@@ -19,10 +19,6 @@ void main() async {
   final authProvider =
       AuthProvider(storageService: storageService); // Initialize AuthProvider
   final loginProvider = LoginProvider(authProvider: authProvider);
-  // final homeprovider = HomeProvider();
-  // final reviewProvider = ReviewProvider();
-
-  //  reviewProvider.setHomeProvider(homeprovider);
 
   // Initialize the background service
   await loginProvider.initializeLoginStatus();
@@ -34,7 +30,6 @@ void main() async {
     storageService: storageService,
   ));
 }
-
 
 class MyApp extends StatefulWidget {
   final StorageService storageService;

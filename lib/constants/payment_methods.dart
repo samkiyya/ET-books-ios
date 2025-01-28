@@ -29,7 +29,7 @@ class PaymentMethods {
     "Wegagen Bank",
     "ZamZam Bank",
     "Zemen Bank",
-     "Telebirr",
+    "Telebirr",
     "M-Birr",
     "HelloCash",
     "CBE Birr",

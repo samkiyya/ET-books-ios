@@ -11,48 +11,37 @@ class UserActivityProvider extends ChangeNotifier {
   bool isIdle = false;
   Timer? _timer;
   Timer? _idleTimer;
-  // int _lastInteractionTime = DateTime.now().millisecondsSinceEpoch;
 
-  // Start tracking screen time and idle status
   void startTracking(int bookId) {
-    // Track reading time every minute
     _timer = Timer.periodic(Duration(minutes: 1), (timer) {
       totalTimeSpent += 1; // Increment by 1 minute
       notifyListeners();
 
-      // Send reading activity to the backend every 5 minutes
-      if (totalTimeSpent % 60 == 0) {
+      if (totalTimeSpent % 5 == 0) { // Send every 5 minutes
         _sendReadingActivity(bookId);
       }
     });
 
-    // Track idle time
     _idleTimer = Timer.periodic(Duration(seconds: 30), (timer) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      int lastInteractionTime = prefs.getInt('last_interaction') ??
-          DateTime.now().millisecondsSinceEpoch;
-
+      int lastInteractionTime = prefs.getInt('last_interaction') ?? DateTime.now().millisecondsSinceEpoch;
       int currentTime = DateTime.now().millisecondsSinceEpoch;
 
-      // If more than 5 minutes of inactivity, set isIdle to true
-      if (currentTime - lastInteractionTime > 300000) {
+      if (currentTime - lastInteractionTime > 300000) { // 5 minutes
         isIdle = true;
       } else {
         isIdle = false;
       }
 
-      // Save the current time as the last interaction
       await prefs.setInt('last_interaction', currentTime);
       notifyListeners();
     });
   }
 
-  // Send user activity (book reading) data to the backend
   Future<void> _sendReadingActivity(int bookId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? userId = prefs.getString('userId');
-    final url =
-        '${Network.baseUrl}/api/asset-usage'; // Replace with actual endpoint
+    final url = '${Network.baseUrl}/api/asset-usage';
 
     final data = {
       "userId": userId,
@@ -79,16 +68,14 @@ class UserActivityProvider extends ChangeNotifier {
     }
   }
 
-  // Increment pages read
   void incrementPagesRead() {
     pagesRead += 1;
     notifyListeners();
   }
 
-  // Stop tracking when leaving the screen
   void stopTracking(int bookId) {
     if (totalTimeSpent > 0) {
-      _sendReadingActivity(bookId); // Send data when tracking stops
+      _sendReadingActivity(bookId);
     }
     _timer?.cancel();
     _idleTimer?.cancel();

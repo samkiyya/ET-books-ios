@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart'; // Add this import
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
@@ -12,21 +12,21 @@ class SubscriptionProvider with ChangeNotifier {
   bool _isUploading = false;
   String _errorMessage = '';
   String _successMessage = '';
-  File? _receiptImage;
-  final ImagePicker _picker = ImagePicker();
-
+  File? _receiptFile; // Changed from receiptImage to receiptFile
   DateTime? _startDate;
   DateTime? _endDate;
   String _subscriptionType = 'monthly';
+  bool _isImage = false;
 
   bool get isUploading => _isUploading;
   String get errorMessage => _errorMessage;
   String get successMessage => _successMessage;
-  File? get receiptImage => _receiptImage;
+  File? get receiptFile => _receiptFile; // Updated getter
 
   DateTime? get startDate => _startDate;
   DateTime? get endDate => _endDate;
   String get subscriptionType => _subscriptionType;
+  bool get isImage => _isImage;
 
   set errorMessage(String message) {
     _errorMessage = message;
@@ -72,30 +72,59 @@ class SubscriptionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> pickReceiptImage() async {
+  Future<void> pickReceiptFile() async {
     try {
-      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        _receiptImage = File(pickedFile.path);
-        notifyListeners();
+      // Use FilePicker to select any file type
+      final result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.custom,
+        allowedExtensions: [
+          'jpg',
+          'jpeg',
+          'png',
+          'pdf',
+        ],
+      );
+
+      if (result != null && result.files.isNotEmpty) {
+        // Get the first selected file
+        final pickedFile = result.files.first;
+
+        // Create a File object from the picked file path
+        if (pickedFile.path != null) {
+          final mimeType = lookupMimeType(pickedFile.path!);
+          _isImage = mimeType != null && mimeType.startsWith('image/');
+          _receiptFile = File(pickedFile.path!);
+          notifyListeners();
+        } else {
+          _errorMessage = 'No file selected';
+          notifyListeners();
+        }
       } else {
-        _errorMessage = 'No image selected';
+        _errorMessage = 'No file selected';
         notifyListeners();
       }
     } catch (e) {
-      _errorMessage = 'Failed to pick image: $e';
+      _errorMessage = 'Failed to pick file: $e';
       notifyListeners();
     }
+  }
+
+  String capitalize(String text) {
+    if (text.isEmpty) return text; // Handle empty string
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 
   Future<void> createSubscriptionOrder({
     required String tierId,
     required String bankName,
+    required String transactionNumber,
     required int benefitLimitRemain,
+    required String subscriptionType,
     required BuildContext context,
   }) async {
-    if (_receiptImage == null) {
-      errorMessage = 'Please select a receipt image';
+    if (_receiptFile == null) {
+      errorMessage = 'Please select a receipt file';
       return;
     }
     if (_startDate == null || _endDate == null) {
@@ -113,32 +142,36 @@ class SubscriptionProvider with ChangeNotifier {
     _isUploading = true;
     notifyListeners();
 
-    final mimeType = lookupMimeType(_receiptImage!.path);
+    final mimeType = lookupMimeType(_receiptFile!.path);
     if (mimeType == null) {
-      errorMessage = 'Invalid image type. Please upload a valid image';
+      errorMessage = 'Invalid file type. Please upload a valid file';
       _isUploading = false;
       notifyListeners();
       return;
     }
 
     final mimeSplit = mimeType.split('/');
-    final url = Uri.parse('${Network.baseUrl}/api/subscriptions');
+    final url = Uri.parse('${Network.baseUrl}/api/subscription-order/purchase');
+
     final request = http.MultipartRequest('POST', url)
       ..headers['Authorization'] = 'Bearer $token'
       ..fields['tier_id'] = tierId
       ..fields['bankName'] = bankName
+      ..fields['transactionNumber'] = transactionNumber
+      ..fields['subscriptionType'] = capitalize(subscriptionType)
       ..fields['start_date'] = _startDate!.toIso8601String()
       ..fields['end_date'] = _endDate!.toIso8601String();
 
     request.files.add(await http.MultipartFile.fromPath(
-      'receiptImage',
-      _receiptImage!.path,
+      'receiptImagePath',
+      _receiptFile!.path,
       contentType: MediaType(mimeSplit[0], mimeSplit[1]),
     ));
 
     try {
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
+      print('response: ${responseBody}');
 
       if (response.statusCode == 201) {
         final responseData = json.decode(responseBody);

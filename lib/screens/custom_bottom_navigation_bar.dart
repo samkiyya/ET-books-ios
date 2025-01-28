@@ -16,7 +16,7 @@ class CustomNavigationBar extends StatelessWidget {
     '/announcements',
     '/subscription-tier',
     '/home',
-    '/authors',
+    // '/authors',
     '/profile',
   ];
 
@@ -36,11 +36,11 @@ class CustomNavigationBar extends StatelessWidget {
       inActiveItem: Icon(Icons.home_outlined, color: AppColors.color2),
       itemLabel: 'Home',
     ),
-    BottomBarItem(
-      activeItem: Icon(Icons.people, color: AppColors.color1),
-      inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
-      itemLabel: 'Authors',
-    ),
+    // BottomBarItem(
+    //   activeItem: Icon(Icons.people, color: AppColors.color1),
+    //   inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),
+    //   itemLabel: 'Authors',
+    // ),
     BottomBarItem(
       activeItem: Icon(Icons.person, color: AppColors.color1),
       inActiveItem: Icon(Icons.person_outline, color: AppColors.color2),

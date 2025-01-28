@@ -8,10 +8,10 @@ import 'package:book_mobile/services/device_info.dart';
 import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:book_mobile/widgets/custom_text_field.dart';
 import 'package:book_mobile/widgets/modal.dart';
+import 'package:book_mobile/widgets/searchable_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -223,83 +223,14 @@ class _SignupScreenState extends State<SignupScreen> {
                               ...controllers.entries.map(
                                 (entry) {
                                   if (entry.key == 'Country') {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          TypeAheadField<String>(
-                                            builder: (context, controller,
-                                                focusNode) {
-                                              return TextField(
-                                                  controller: entry.value,
-                                                  focusNode: focusNode,
-                                                  autofocus: true,
-                                                  decoration: InputDecoration(
-                                                    filled: true,
-                                                    fillColor: AppColors.color5,
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    labelText: 'Country',
-                                                    labelStyle: const TextStyle(
-                                                        color:
-                                                            AppColors.color3),
-                                                  ));
-                                            },
-                                            loadingBuilder: (context) =>
-                                                const Text('Loading...'),
-                                            errorBuilder: (context, error) =>
-                                                const Text('Error!'),
-                                            emptyBuilder: (context) =>
-                                                const Text('No country found!'),
-                                            decorationBuilder:
-                                                (context, child) {
-                                              return Material(
-                                                type: MaterialType.card,
-                                                elevation: 8,
-                                                shadowColor: AppColors.color3,
-                                                color: AppColors.color5,
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: child,
-                                              );
-                                            },
-                                            suggestionsCallback: (pattern) {
-                                              return countries
-                                                  .where((country) => country
-                                                      .toLowerCase()
-                                                      .contains(pattern
-                                                          .toLowerCase()))
-                                                  .toList();
-                                            },
-                                            itemBuilder: (context, suggestion) {
-                                              return ListTile(
-                                                title: Text(suggestion,
-                                                    style:
-                                                        AppTextStyles.bodyText),
-                                              );
-                                            },
-                                            transitionBuilder:
-                                                (context, animation, child) {
-                                              return FadeTransition(
-                                                opacity: CurvedAnimation(
-                                                    parent: animation,
-                                                    curve:
-                                                        Curves.fastOutSlowIn),
-                                                child: child,
-                                              );
-                                            },
-                                            onSelected: (suggestion) {
-                                              entry.value.text = suggestion;
-                                              setState(() {
-                                                selectedCountry = suggestion;
-                                              });
-                                            },
-                                          ),
-                                        ],
-                                      ),
+                                    return CoustomSearchableDropdown(
+                                      onChanged: (String? value) {
+                                        setState(() {
+                                          selectedCountry = value!;
+                                        });
+                                      },
+                                      data: countries,
+                                      hintText: 'Select Bank Name',
                                     );
                                   } else {
                                     return CustomTextField(
@@ -454,7 +385,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                             referalCode:
                                                 controllers['referalCode']!
                                                     .text,
-                                                    
                                             deviceInfo: deviceName,
                                             context: context,
                                           );

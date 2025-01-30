@@ -9,7 +9,7 @@ package="com.example.book_mobile">
         </intent>
     </queries>
     <application
-        android:label="book_mobile"
+        android:label="Dr. MenoreRead"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

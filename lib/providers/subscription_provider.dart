@@ -149,7 +149,22 @@ class SubscriptionProvider with ChangeNotifier {
       notifyListeners();
       return;
     }
-
+    // Check if the MIME type is allowed
+    final allowedMimeTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'application/pdf',
+    ];
+    if (!allowedMimeTypes.contains(mimeType)) {
+      errorMessage = 'Only jpeg, jpg, png, gif, and pdf files are allowed';
+      _isUploading = false;
+      notifyListeners();
+      return;
+    }
+    print('MIME type of the file: $mimeType');
+    print('File path: ${_receiptFile!.path}');
     final mimeSplit = mimeType.split('/');
     final url = Uri.parse('${Network.baseUrl}/api/subscription-order/purchase');
 
@@ -167,6 +182,7 @@ class SubscriptionProvider with ChangeNotifier {
       _receiptFile!.path,
       contentType: MediaType(mimeSplit[0], mimeSplit[1]),
     ));
+    print('Headers: ${request.headers}');
 
     try {
       final response = await request.send();
@@ -180,8 +196,9 @@ class SubscriptionProvider with ChangeNotifier {
         _errorMessage = '';
       } else {
         final errorResponse = json.decode(responseBody);
-        _errorMessage =
-            errorResponse['message'] ?? 'Failed to create subscription';
+        _errorMessage = errorResponse['message'] ??
+            errorResponse['error'] ??
+            'Failed to create subscription';
         print(errorResponse);
       }
     } catch (e) {

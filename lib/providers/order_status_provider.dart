@@ -78,9 +78,9 @@ class OrderStatusProvider with ChangeNotifier {
         // print('Response Body: $responseBody');
 
         final List<dynamic> ordersData = responseBody['orders'];
-        print('Orders status Data: $ordersData');
+        // print('Orders status Data: $ordersData');
         _orders = ordersData.map((json) => Order.fromJson(json)).toList();
-        // print('Orders: $_orders');
+        print('Orders: $_orders');
         _successMessage =
             responseBody['message'] ?? 'Orders fetched successfully.';
 

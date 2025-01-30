@@ -29,7 +29,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _initializeProfile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
-    await profileProvider.loadToken();
     await profileProvider.fetchUserProfile();
   }
 

@@ -26,12 +26,12 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: json['id'],
-      price: json['price'],
-      bankName: json['bankName'],
-      type: json['type'],
-      transactionNumber: json['transactionNumber'],
-      status: json['status'],
-      orderNumber: json['orderNumber'],
+      price: json['price']??0,
+      bankName: json['bankName']??'unknown',
+      type: json['type']??'unknown',
+      transactionNumber: json['transactionNumber']??'',
+      status: json['status']??'',
+      orderNumber: json['orderNumber']??'unknown',
       createdAt: DateTime.parse(json['createdAt']),
       orderBook: json['orderBook'],
       orderUser: json['orderUser'],

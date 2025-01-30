@@ -61,7 +61,6 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   Future<void> _fetchUserProfile() async {
     final profileProvider =
         Provider.of<ProfileProvider>(context, listen: false);
-    await profileProvider.loadToken();
     await profileProvider.fetchUserProfile();
     if (profileProvider.userProfile != null) {
       // Pre-fill controllers with user data

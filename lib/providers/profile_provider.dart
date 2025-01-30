@@ -13,25 +13,10 @@ class ProfileProvider with ChangeNotifier {
 
   Map<String, dynamic>? get userProfile => _userProfile;
 
-  // Set token for authorization
-  void setToken(String token) {
-    _token = token;
-  }
-
-  Future<void> loadToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('userToken');
-    if (token != null) {
-      setToken(token); // Set in the provider
-      print('Token loaded: $token'); // Debugging
-    } else {
-      print('No token found');
-    }
-  }
-
   // Fetch user profile with an online-first approach
   Future<void> fetchUserProfile() async {
-    loadToken();
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('userToken');
     print('Fetching user profile...');
     print('Token to fetch profile: $_token');
     if (_token == null) {
@@ -53,7 +38,7 @@ class ProfileProvider with ChangeNotifier {
         if (data['success']) {
           _userProfile = data['user'];
           print('User profile: $_userProfile');
-          
+
           // Cache the profile locally
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('cachedUserProfile', json.encode(_userProfile));

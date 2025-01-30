@@ -127,6 +127,7 @@ class PurchaseOrderProvider with ChangeNotifier {
         notifyListeners();
         return;
       }
+print( "base url${Network.baseUrl}");
 
       final url = Uri.parse('${Network.baseUrl}/api/order/purchase');
       final headers = {
@@ -157,6 +158,7 @@ class PurchaseOrderProvider with ChangeNotifier {
 
       request.files.add(await http.MultipartFile.fromPath(
         'receiptImage',
+
         _receiptImage!.path,
         contentType: MediaType(mimeSplit[0], mimeSplit[1]),
       ));

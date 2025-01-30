@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:book_mobile/exports.dart';
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MyRoute{
-static Map<String, String> deepLinks = {
+class MyRoute {
+  static Map<String, String> deepLinks = {
     'gcallback?token=': '/home',
     'reset-password': '/reset-password/:token',
     'verify-email': '/verify-email/:token',
@@ -29,7 +32,59 @@ static Map<String, String> deepLinks = {
       GoRoute(
         path: '/gcallback',
         builder: (BuildContext context, GoRouterState state) {
-          return HomeScreen();
+          // Extract the token and user data from the query parameters
+          final token = state.uri.queryParameters['token'];
+          final userDataEncoded = state.uri.queryParameters['userData'];
+
+          if (token != null && userDataEncoded != null) {
+            // Decode the user data
+            final userData = json.decode(Uri.decodeComponent(userDataEncoded));
+
+            // Save the token and user data to local storage
+            _saveTokenAndUserData(token, userData).then((_) {
+              // Navigate to the home screen after saving the data
+              context.go('/home');
+            });
+          } else {
+            // Handle the case where the token or user data is missing
+            print('Token or user data not found in the redirect URL');
+          }
+
+          // Return a placeholder screen (optional)
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/fcallback',
+        builder: (BuildContext context, GoRouterState state) {
+          // Extract the token and user data from the query parameters
+          final token = state.uri.queryParameters['token'];
+          final userDataEncoded = state.uri.queryParameters['userData'];
+
+          if (token != null && userDataEncoded != null) {
+            // Decode the user data
+            final userData = json.decode(Uri.decodeComponent(userDataEncoded));
+
+            // Save the token and user data to local storage
+            _saveTokenAndUserData(token, userData).then((_) {
+              // Navigate to the home screen after saving the data
+              context.go('/home');
+            });
+          } else {
+            // Handle the case where the token or user data is missing
+            print('Token or user data not found in the redirect URL');
+          }
+
+          // Return a placeholder screen (optional)
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         },
       ),
       GoRoute(
@@ -111,7 +166,7 @@ static Map<String, String> deepLinks = {
         builder: (context, state) => const OtpScreen(),
       ),
       GoRoute(
-        path:'/status',
+        path: '/status',
         builder: (context, state) => const OrderStatusScreen(),
       ),
       GoRoute(
@@ -122,12 +177,22 @@ static Map<String, String> deepLinks = {
         },
       ),
       GoRoute(
-      path: '/notification/:id',
-      builder: (context, state) {
-        final notificationId = state.pathParameters['id'];
-        return NotificationDetailScreen(notificationId: int.parse(notificationId!));
-      },
-    ),
+        path: '/notification/:id',
+        builder: (context, state) {
+          final notificationId = state.pathParameters['id'];
+          return NotificationDetailScreen(
+              notificationId: int.parse(notificationId!));
+        },
+      ),
     ],
   );
+  static Future<void> _saveTokenAndUserData(
+      String token, Map<String, dynamic> userData) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userToken', token);
+    await prefs.setString('userData', json.encode(userData));
+    await prefs.setBool('isLoggedIn', true);
+    await prefs.setString('userId', userData['id'].toString());
+    print('Token and user data saved to local storage');
+  }
 }

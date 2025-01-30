@@ -32,6 +32,12 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+build/
+android/key.properties
+ios/Runner/GoogleService-Info.plist
+android/app/src/main/res/values/keys.xml
+android/app/src/main/res/values/strings.xml
+
 
 # Symbolication related
 app.*.symbols

@@ -153,48 +153,63 @@ class AnnouncementProvider with ChangeNotifier {
   }
 
   Future<void> likeAnnouncement(int announcementId) async {
-    final url = Uri.parse('$baseUrl/announcement/like');
-    final userId = await getUserId();
-    print('userId for like: $userId');
+  final url = Uri.parse('$baseUrl/announcement/like');
+  final userId = await getUserId();
+  print('UserId for like: $userId');
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'announcementId': announcementId,
-          'userId': userId,
-        }),
+  try {
+    SharedPreferences? prefs = await SharedPreferences.getInstance();
+
+    // Get token from shared preferences
+    String? token = prefs.getString('userToken');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode({
+        'announcementId': announcementId,
+        'userId': userId,
+      }),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final bool wasLiked = responseData['wasLiked'];
+
+      // Find announcement
+      final announcement = _announcements.firstWhere(
+        (a) => a.id == announcementId,
       );
 
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
-        final wasLiked = responseData['wasLiked'];
-        final announcement =
-            _announcements.firstWhere((a) => a.id == announcementId);
-
         if (wasLiked) {
-          announcement.likesCount += 1;
+          announcement.likesCount += 1; // Like added
           _error = 'You have liked this announcement';
         } else {
-          announcement.likesCount -= 1;
+          announcement.likesCount -= 1; // Like removed
           _error = 'You have unliked this announcement';
         }
 
         announcement.isLiked = wasLiked;
         print('isLiked: ${announcement.isLiked}');
-
         notifyListeners();
-      } else if (response.body
-          .contains('User already liked this announcement')) {
-        _error = 'You have already liked this announcement';
-        notifyListeners();
-      } else {
-        throw Exception('Failed to like the announcement');
-      }
-    } catch (e) {
-      _error = 'Something went wrong';
+      
+    } else if (response.statusCode == 400) {
+      _error = 'Invalid input data';
       notifyListeners();
+    } else if (response.statusCode == 500) {
+      _error = 'Server error, please try again later';
+      notifyListeners();
+    } else {
+      throw Exception('Failed to like the announcement');
     }
+  } catch (e) {
+    _error = 'Error: ${e.toString()}';
+    print('Like error: $e');
+    notifyListeners();
   }
+}
+
 }

@@ -250,6 +250,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                             _pdfViewerController.previousPage();
                           },
                         ),
+                        
                         Padding(
                           padding:
                               const EdgeInsets.symmetric(vertical: 8.0),

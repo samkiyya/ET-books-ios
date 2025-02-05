@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_core/theme.dart';
 
 class PdfReaderScreen extends StatefulWidget {
   final int bookId;
-  final String filePath; // Local or network URL of the PDF
+  final String filePath;
   final String bookTitle;
 
   const PdfReaderScreen({

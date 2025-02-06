@@ -42,7 +42,7 @@ class OrderStatusProvider with ChangeNotifier {
   }
 
   // Fetch orders for the logged-in user with an online-first approach
-  Future<void> fetchOrders() async {
+  Future<void> fetchOrders(String? deviceInfo) async {
     _isLoading = true;
     _errorMessage = '';
     _successMessage = '';
@@ -65,16 +65,18 @@ class OrderStatusProvider with ChangeNotifier {
         return;
       }
 
-      final url = Uri.parse('${Network.baseUrl}/api/order/logged-user');
+      final url = Uri.parse(
+          '${Network.baseUrl}/api/order/logged-user?deviceInfo=$deviceInfo');
       final response = await http.get(
         url,
         headers: {
           'Authorization': 'Bearer $_token',
         },
       );
+      print('order status response: ${response.body}');
+        final Map<String, dynamic> responseBody = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = json.decode(response.body);
         // print('Response Body: $responseBody');
 
         final List<dynamic> ordersData = responseBody['orders'];
@@ -87,7 +89,7 @@ class OrderStatusProvider with ChangeNotifier {
         // Cache orders locally
         await prefs.setString('cachedOrders', json.encode(ordersData));
       } else {
-        _errorMessage = 'Failed to fetch your order status.';
+        _errorMessage = responseBody['messsage']??'Failed to fetch your order status.';
         // print(
         //     'Failed to fetch orders status: ${response.body} Status code: ${response.statusCode}');
       }
@@ -115,7 +117,6 @@ class OrderStatusProvider with ChangeNotifier {
       }
     } finally {
       _isLoading = false;
-
       notifyListeners();
     }
   }

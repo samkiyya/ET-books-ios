@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:book_mobile/services/book_service.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:book_mobile/services/device_info.dart';
 
 class DownloadScreen extends StatefulWidget {
   const DownloadScreen({super.key});
@@ -23,6 +24,28 @@ class _DownloadScreenState extends State<DownloadScreen> {
   final Map<int, double> _downloadProgress = {};
   final Set<int> _downloadingIds = {};
 
+  String? deviceName;
+  final DeviceInfoService _deviceInfoService = DeviceInfoService();
+  Map<String, dynamic> _deviceData = {};
+  String _getDeviceType(BuildContext context) {
+    return _deviceInfoService.detectDeviceType(context);
+  }
+
+  Future<void> _getDeviceInfo() async {
+    final deviceData = await _deviceInfoService.getDeviceData();
+    setState(() {
+      _deviceData = deviceData;
+    });
+    String brand = _deviceData['brand'] ?? 'Unknown';
+    String board = _deviceData['board'] ?? 'Unknown';
+    String model = _deviceData['model'] ?? 'Unknown';
+    String deviceId = _deviceData['id'] ?? 'Unknown';
+    String deviceType = _getDeviceType(context);
+    deviceName =
+        "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
+    print('device information is: $deviceName');
+  }
+
   @override
   void initState() {
     super.initState();
@@ -30,9 +53,11 @@ class _DownloadScreenState extends State<DownloadScreen> {
   }
 
   Future<void> _fetchOrders() async {
+    await _getDeviceInfo();
+
     final orderProvider =
         Provider.of<OrderStatusProvider>(context, listen: false);
-    await orderProvider.fetchOrders();
+    await orderProvider.fetchOrders(deviceName);
     setState(() {
       _isLoading = false;
     });
@@ -53,7 +78,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
         return (isApproved && order.type.toLowerCase() == 'pdf') ||
             (isApproved && order.type.toLowerCase() == 'both');
       } else if (_selectedCategory == 'Audio') {
-        return (isApproved && (order.type.toLowerCase() == 'audio'||order.type.toLowerCase()=='audiobook')) ||
+        return (isApproved &&
+                (order.type.toLowerCase() == 'audio' ||
+                    order.type.toLowerCase() == 'audiobook')) ||
             (isApproved && order.type.toLowerCase() == 'both');
       }
       return false;
@@ -100,7 +127,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                           ? AppColors.color3
                           : AppColors.color2,
                     ),
-                    child: const Text('PDF Books'),
+                    child: const Text('E-Books'),
                   ),
                   ElevatedButton(
                     onPressed: () {
@@ -176,7 +203,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                     child: Image.network(
                                       "${Network.baseUrl}/${book['imageFilePath']}",
                                       width: width * 0.2,
-                                      fit: BoxFit.cover,
+                                      fit: BoxFit.contain,
                                       errorBuilder: (BuildContext context,
                                           Object error,
                                           StackTrace? stackTrace) {

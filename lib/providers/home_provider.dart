@@ -28,7 +28,7 @@ class HomeProvider with ChangeNotifier {
       final allBooksResponse =
           await http.get(Uri.parse("${Network.baseUrl}/api/book/get-all"));
       final audioResponse =
-          await http.get(Uri.parse("${Network.baseUrl}/api/book/audio"));
+          await http.get(Uri.parse("${Network.baseUrl}/api/book/user/audio"));
 
       // Parse responses and handle errors individually
       if (trendingResponse.statusCode == 200) {

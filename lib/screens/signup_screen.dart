@@ -230,7 +230,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         });
                                       },
                                       data: countries,
-                                      hintText: 'Select Bank Name',
+                                      hintText: 'Select Your Coutry',
                                     );
                                   } else {
                                     return CustomTextField(

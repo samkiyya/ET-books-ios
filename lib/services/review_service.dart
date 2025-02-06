@@ -31,10 +31,13 @@ class ReviewService {
         "reviewRating": reviewRating,
       }),
     );
-    print('review response: ${response.body}');
+    final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+    print('review response: $responseData');
 
     if (response.statusCode != 201) {
-      throw Exception("Failed to create review: ${response.statusCode}");
+      throw Exception(
+          "${responseData['message'] ?? 'Failed to create review'}");
     }
   }
 
@@ -60,6 +63,7 @@ class ReviewService {
         "reviewRating": reviewRating,
       }),
     );
+
     print(
         'book detail sending: book id: $bookId reviewId: $reviewId comment: $comment rating: $reviewRating');
     print('review response: ${response.body}');

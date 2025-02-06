@@ -54,145 +54,164 @@ class _AllAudioScreenState extends State<AllAudioScreen> {
           backgroundColor: AppColors.color1,
           foregroundColor: AppColors.color6,
         ),
-        body: Padding(
-          padding: EdgeInsets.all(width * 0.03),
-          child: Column(
-            children: [
-              // Search Box
-              Row(
-                children: [
-                  Expanded(
-                    child: AnimatedSearchTextField(
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                        });
-                      },
-                      customHint: _filterType == 'bookTitle'
-                          ? 'search by title'
-                          : "Search by episode",
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: height * 0.03),
-              // Filter Buttons
-              Padding(
-                padding:
-                    EdgeInsets.only(left: width * 0.03, right: width * 0.03),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: filteredBooks.isEmpty
+            ? Center(
+                child: Text(
+                  "No Audio book available.",
+                  style: TextStyle(
+                      color: AppColors.color3,
+                      fontSize: width * 0.045,
+                      fontWeight: FontWeight.bold),
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.all(width * 0.03),
+                child: Column(
                   children: [
-                    _buildFilterButton(
-                        context, "Search By Title", 'bookTitle', width, height),
-                    SizedBox(width: width * 0.03),
-                    _buildFilterButton(
-                        context, "Search By Episode", 'episode', width, height),
+                    // Search Box
+                    Row(
+                      children: [
+                        Expanded(
+                          child: AnimatedSearchTextField(
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                            customHint: _filterType == 'bookTitle'
+                                ? 'search by title'
+                                : "Search by episode",
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: height * 0.03),
+                    // Filter Buttons
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: width * 0.03, right: width * 0.03),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildFilterButton(context, "Search By Title",
+                              'bookTitle', width, height),
+                          SizedBox(width: width * 0.03),
+                          _buildFilterButton(context, "Search By Episode",
+                              'episode', width, height),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: height * 0.03),
+                    // List of Audio Books
+                    homeProvider.isLoading
+                        ? const Center(
+                            child: LoadingWidget(),
+                          )
+                        : homeProvider.hasError
+                            ? const Center(
+                                child: Text(
+                                  "An error occurred. Please try again.",
+                                  style: TextStyle(color: AppColors.color3),
+                                ),
+                              )
+                            : Expanded(
+                                child: ListView.builder(
+                                  itemCount: filteredBooks.length,
+                                  itemBuilder: (context, index) {
+                                    final book = filteredBooks[index];
+                                    return GestureDetector(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AudioDetailScreen(
+                                                  audioBook: book),
+                                        ),
+                                      ),
+                                      child: Card(
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: height * 0.01),
+                                        color: AppColors.color5,
+                                        child: ListTile(
+                                          leading: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(15),
+                                            child: Image.network(
+                                              '${Network.baseUrl}/${book['imageFilePath']}',
+                                              width: width * 0.2,
+                                              fit: BoxFit.contain,
+                                              errorBuilder:
+                                                  (BuildContext context,
+                                                      Object error,
+                                                      StackTrace? stackTrace) {
+                                                return Icon(
+                                                  Icons.broken_image,
+                                                  size: width * 0.2,
+                                                  color: Colors.grey,
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          title: Text(
+                                            book['title'] ?? "Unknown Title",
+                                            style: AppTextStyles.heading2
+                                                .copyWith(
+                                                    color: AppColors.color3,
+                                                    fontSize: width * 0.045),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          subtitle: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                "Author: ${book['author'] ?? 'Unknown'}",
+                                                style: AppTextStyles.bodyText
+                                                    .copyWith(
+                                                        color: AppColors.color3
+                                                            .withOpacity(0.8)),
+                                              ),
+                                              Text(
+                                                "Episodes: ${book['audioCount'] ?? '0'}",
+                                                style: AppTextStyles.bodyText
+                                                    .copyWith(
+                                                        color: AppColors.color3
+                                                            .withOpacity(0.8)),
+                                              ),
+                                              Text(
+                                                "Price: ${book['audio_price'] ?? 'Free'} ETB",
+                                                style: AppTextStyles.bodyText
+                                                    .copyWith(
+                                                        color:
+                                                            AppColors.color2),
+                                              ),
+                                            ],
+                                          ),
+                                          trailing: IconButton(
+                                            icon: const Icon(Icons.share,
+                                                color: AppColors.color3),
+                                            onPressed: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder: (_) =>
+                                                    BookSharingModal(
+                                                  book: book,
+                                                  appDownloadLink:
+                                                      "${Network.appPlayStoreUrl}${Network.appPackageName}",
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
                   ],
                 ),
               ),
-              SizedBox(height: height * 0.03),
-              // List of Audio Books
-              homeProvider.isLoading
-                  ? const Center(
-                      child: LoadingWidget(),
-                    )
-                  : homeProvider.hasError
-                      ? const Center(
-                          child: Text("An error occurred. Please try again."),
-                        )
-                      : Expanded(
-                          child: ListView.builder(
-                            itemCount: filteredBooks.length,
-                            itemBuilder: (context, index) {
-                              final book = filteredBooks[index];
-                              return GestureDetector(
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        AudioDetailScreen(audioBook: book),
-                                  ),
-                                ),
-                                child: Card(
-                                  margin: EdgeInsets.symmetric(
-                                      vertical: height * 0.01),
-                                  color: AppColors.color5,
-                                  child: ListTile(
-                                    leading: ClipRRect(
-                                      borderRadius: BorderRadius.circular(15),
-                                      child: Image.network(
-                                        '${Network.baseUrl}/${book['imageFilePath']}',
-                                        width: width * 0.2,
-                                        fit: BoxFit.cover,
-                                        errorBuilder: (BuildContext context,
-                                            Object error,
-                                            StackTrace? stackTrace) {
-                                          return Icon(
-                                            Icons.broken_image,
-                                            size: width * 0.2,
-                                            color: Colors.grey,
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    title: Text(
-                                      book['title'] ?? "Unknown Title",
-                                      style: AppTextStyles.heading2.copyWith(
-                                          color: AppColors.color3,
-                                          fontSize: width * 0.045),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "Author: ${book['author'] ?? 'Unknown'}",
-                                          style: AppTextStyles.bodyText
-                                              .copyWith(
-                                                  color: AppColors.color3
-                                                      .withOpacity(0.8)),
-                                        ),
-                                        Text(
-                                          "Episodes: ${book['audioCount'] ?? '0'}",
-                                          style: AppTextStyles.bodyText
-                                              .copyWith(
-                                                  color: AppColors.color3
-                                                      .withOpacity(0.8)),
-                                        ),
-                                        Text(
-                                          "Price: ${book['audio_price'] ?? 'Free'} ETB",
-                                          style: AppTextStyles.bodyText
-                                              .copyWith(
-                                                  color: AppColors.color2),
-                                        ),
-                                      ],
-                                    ),
-                                    trailing: IconButton(
-                                      icon: const Icon(Icons.share,
-                                          color: AppColors.color3),
-                                      onPressed: () {
-                                        showModalBottomSheet(
-                                          context: context,
-                                          builder: (_) => BookSharingModal(
-                                            book: book,
-                                            appDownloadLink:
-                                                "${Network.appPlayStoreUrl}${Network.appPackageName}",
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-            ],
-          ),
-        ),
       ),
     );
   }

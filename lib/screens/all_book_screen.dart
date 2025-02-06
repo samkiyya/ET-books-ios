@@ -50,127 +50,141 @@ class _AllBooksScreenState extends State<AllBooksScreen> {
           backgroundColor: AppColors.color1,
           foregroundColor: AppColors.color6,
         ),
-        body: Padding(
-          padding: EdgeInsets.all(width * 0.03),
-          child: Column(
-            children: [
-              // Search Box
-              Row(
-                children: [
-                  Expanded(
-                    child: AnimatedSearchTextField(
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value;
-                        });
-                      },
-                      customHint: _filterType == 'Book'
-                          ? "Search by Title ..."
-                          : "Search by author ...",
-                    ),
-                  ),
-                  // Filter Buttons (Book / Author)
-                ],
-              ),
-              SizedBox(height: height * 0.03),
-              Padding(
-                padding:
-                    EdgeInsets.only(left: width * 0.03, right: width * 0.03),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        body: filteredBooks.isEmpty
+            ? Center(
+                child: Text(
+                  "No Audio book available.",
+                  style: TextStyle(
+                      color: AppColors.color3,
+                      fontSize: width * 0.045,
+                      fontWeight: FontWeight.bold),
+                ),
+              )
+            : Padding(
+                padding: EdgeInsets.all(width * 0.03),
+                child: Column(
                   children: [
-                    _buildFilterButton(
-                        context, "Search By Title", 'Book', width, height),
-                    SizedBox(width: width * 0.03),
-                    _buildFilterButton(
-                        context, "Search By Author", 'Author', width, height),
+                    // Search Box
+                    Row(
+                      children: [
+                        Expanded(
+                          child: AnimatedSearchTextField(
+                            onChanged: (value) {
+                              setState(() {
+                                _searchQuery = value;
+                              });
+                            },
+                            customHint: _filterType == 'Book'
+                                ? "Search by Title ..."
+                                : "Search by author ...",
+                          ),
+                        ),
+                        // Filter Buttons (Book / Author)
+                      ],
+                    ),
+                    SizedBox(height: height * 0.03),
+                    Padding(
+                      padding: EdgeInsets.only(
+                          left: width * 0.03, right: width * 0.03),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildFilterButton(context, "Search By Title", 'Book',
+                              width, height),
+                          SizedBox(width: width * 0.03),
+                          _buildFilterButton(context, "Search By Author",
+                              'Author', width, height),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: height * 0.03),
+                    // Scrollable Book List
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredBooks.length,
+                        itemBuilder: (context, index) {
+                          final book = filteredBooks[index];
+                          return GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BookDetailScreen(book: book),
+                              ),
+                            ),
+                            child: Card(
+                              color: AppColors.color5,
+                              elevation: 8,
+                              margin: EdgeInsets.symmetric(
+                                  vertical: height * 0.009,
+                                  horizontal: width * 0.03),
+                              shadowColor: AppColors.color4,
+                              child: ListTile(
+                                contentPadding: EdgeInsets.symmetric(
+                                    horizontal: width * 0.03,
+                                    vertical: height * 0.007),
+                                leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(15),
+                                  child: Image.network(
+                                    '${Network.baseUrl}/${book['imageFilePath']}',
+                                    width: width * 0.2,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (BuildContext context,
+                                        Object error, StackTrace? stackTrace) {
+                                      return Icon(
+                                        Icons.broken_image, // Alternative icon
+                                        size: width * 0.2,
+                                        color: Colors.grey,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                title: Column(
+                                  children: [
+                                    Text(
+                                      book['title'],
+                                      style: AppTextStyles.heading2.copyWith(
+                                          color: AppColors.color3,
+                                          fontSize: width * 0.047),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      'By: ${book['author']}',
+                                      style: TextStyle(
+                                          color: AppColors.color3
+                                              .withOpacity(0.7)),
+                                    ),
+                                    Text(
+                                      "Price: ${book['price']} ETB",
+                                      style: const TextStyle(
+                                          color: AppColors.color2),
+                                    ),
+                                  ],
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.share,
+                                      color: AppColors.color3),
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (_) => BookSharingModal(
+                                        book: book,
+                                        appDownloadLink:
+                                            "${Network.appPlayStoreUrl}${Network.appPackageName}",
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
-              SizedBox(height: height * 0.03),
-              // Scrollable Book List
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredBooks.length,
-                  itemBuilder: (context, index) {
-                    final book = filteredBooks[index];
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BookDetailScreen(book: book),
-                        ),
-                      ),
-                      child: Card(
-                        color: AppColors.color5,
-                        elevation: 8,
-                        margin: EdgeInsets.symmetric(
-                            vertical: height * 0.009, horizontal: width * 0.03),
-                        shadowColor: AppColors.color4,
-                        child: ListTile(
-                          contentPadding: EdgeInsets.symmetric(
-                              horizontal: width * 0.03,
-                              vertical: height * 0.007),
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.network(
-                              '${Network.baseUrl}/${book['imageFilePath']}',
-                              width: width * 0.2,
-                              fit: BoxFit.cover,
-                              errorBuilder: (BuildContext context, Object error,
-                                  StackTrace? stackTrace) {
-                                return Icon(
-                                  Icons.broken_image, // Alternative icon
-                                  size: width * 0.2,
-                                  color: Colors.grey,
-                                );
-                              },
-                            ),
-                          ),
-                          title: Column(
-                            children: [
-                              Text(
-                                book['title'],
-                                style: AppTextStyles.heading2.copyWith(
-                                    color: AppColors.color3,
-                                    fontSize: width * 0.047),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                'By: ${book['author']}',
-                                style: TextStyle(
-                                    color: AppColors.color3.withOpacity(0.7)),
-                              ),
-                              Text(
-                                "Price: ${book['price']} ETB",
-                                style: const TextStyle(color: AppColors.color2),
-                              ),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.share,
-                                color: AppColors.color3),
-                            onPressed: () {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (_) => BookSharingModal(
-                                  book: book,
-                                  appDownloadLink:
-                                      "${Network.appPlayStoreUrl}${Network.appPackageName}",
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -66,7 +66,7 @@ class AnnouncementProvider with ChangeNotifier {
           'Authorization': 'Bearer $token',
         },
       );
-      print('response: ${response.body}');
+      // print('response: ${response.body}');
 
       if (response.statusCode == 200) {
         final List<dynamic> commentsData =
@@ -98,10 +98,10 @@ class AnnouncementProvider with ChangeNotifier {
     required String comment,
   }) async {
     final userId = await getUserId();
-    print('userId: $userId');
+    // print('userId: $userId');
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('userToken');
-    print('token: $token');
+    // print('token: $token');
     if (userId == null) {
       _error = 'You must be logged in to post a comment';
       notifyListeners();
@@ -109,7 +109,7 @@ class AnnouncementProvider with ChangeNotifier {
     }
     _isLoading = true;
     notifyListeners();
-    print('announcementId: $announcementId');
+    // print('announcementId: $announcementId');
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/announcement/comment'),
@@ -122,7 +122,7 @@ class AnnouncementProvider with ChangeNotifier {
           'comment': comment,
         }),
       );
-      print('response: ${response.body}');
+      // print('response: ${response.body}');
       if (response.statusCode == 201) {
         // Refresh comments and announcements to update counts
         await fetchComments(announcementId);
@@ -155,7 +155,7 @@ class AnnouncementProvider with ChangeNotifier {
   Future<void> likeAnnouncement(int announcementId) async {
   final url = Uri.parse('$baseUrl/announcement/like');
   final userId = await getUserId();
-  print('UserId for like: $userId');
+  // print('UserId for like: $userId');
 
   try {
     SharedPreferences? prefs = await SharedPreferences.getInstance();
@@ -193,7 +193,7 @@ class AnnouncementProvider with ChangeNotifier {
         }
 
         announcement.isLiked = wasLiked;
-        print('isLiked: ${announcement.isLiked}');
+        // print('isLiked: ${announcement.isLiked}');
         notifyListeners();
       
     } else if (response.statusCode == 400) {
@@ -207,7 +207,7 @@ class AnnouncementProvider with ChangeNotifier {
     }
   } catch (e) {
     _error = 'Error: ${e.toString()}';
-    print('Like error: $e');
+    // print('Like error: $e');
     notifyListeners();
   }
 }

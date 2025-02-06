@@ -77,12 +77,12 @@ class _MyAppState extends State<MyApp> {
   void disableScreenshots() async {
     bool result = await _noScreenshot.screenshotOff();
     if (!result) {
-      debugPrint('Failed to disable screenshots.');
+      // debugPrint('Failed to disable screenshots.');
     } else {
-      debugPrint('Screenshot blocking enabled.');
+      // debugPrint('Screenshot blocking enabled.');
     }
     await _noScreenshot.startScreenshotListening();
-    debugPrint('Screenshot listening started.');
+    // debugPrint('Screenshot listening started.');
     _noScreenshot.screenshotStream.listen((event) {
       _showScreenshotNotAllowedAlert();
     });
@@ -91,9 +91,9 @@ class _MyAppState extends State<MyApp> {
   void enableScreenshot() async {
     bool result = await _noScreenshot.screenshotOn();
     if (!result) {
-      debugPrint('Failed to enable screenshots.');
+      // debugPrint('Failed to enable screenshots.');
     } else {
-      debugPrint('Screenshot blocking disabled.');
+      // debugPrint('Screenshot blocking disabled.');
     }
   }
 

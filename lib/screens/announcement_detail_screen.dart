@@ -29,8 +29,7 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
   void _fetchComments() {
     Provider.of<AnnouncementProvider>(context, listen: false)
         .fetchComments(widget.announcement.id);
-    print(
-        'comments fetched are: ${Provider.of<AnnouncementProvider>(context, listen: false).getComments(widget.announcement.id)}');
+    
   }
 
   void _addComment() async {

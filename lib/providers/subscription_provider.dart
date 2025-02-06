@@ -163,8 +163,8 @@ class SubscriptionProvider with ChangeNotifier {
       notifyListeners();
       return;
     }
-    print('MIME type of the file: $mimeType');
-    print('File path: ${_receiptFile!.path}');
+    // print('MIME type of the file: $mimeType');
+    // print('File path: ${_receiptFile!.path}');
     final mimeSplit = mimeType.split('/');
     final url = Uri.parse('${Network.baseUrl}/api/subscription-order/purchase');
 
@@ -182,12 +182,12 @@ class SubscriptionProvider with ChangeNotifier {
       _receiptFile!.path,
       contentType: MediaType(mimeSplit[0], mimeSplit[1]),
     ));
-    print('Headers: ${request.headers}');
+    // print('Headers: ${request.headers}');
 
     try {
       final response = await request.send();
       final responseBody = await response.stream.bytesToString();
-      print('response: ${responseBody}');
+      // print('response: ${responseBody}');
 
       if (response.statusCode == 201) {
         final responseData = json.decode(responseBody);
@@ -199,7 +199,7 @@ class SubscriptionProvider with ChangeNotifier {
         _errorMessage = errorResponse['message'] ??
             errorResponse['error'] ??
             'Failed to create subscription';
-        print(errorResponse);
+        // print(errorResponse);
       }
     } catch (e) {
       _errorMessage = 'An error occurred: $e';

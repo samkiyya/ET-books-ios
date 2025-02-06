@@ -28,38 +28,38 @@ class HomeProvider with ChangeNotifier {
       final allBooksResponse =
           await http.get(Uri.parse("${Network.baseUrl}/api/book/get-all"));
       final audioResponse =
-          await http.get(Uri.parse("${Network.baseUrl}/api/book/audio"));
+          await http.get(Uri.parse("${Network.baseUrl}/api/book/user/audio"));
 
       // Parse responses and handle errors individually
       if (trendingResponse.statusCode == 200) {
         trendingBooks = jsonDecode(trendingResponse.body)['books'];
-        print('Trending Books: ${trendingResponse.body}');
+        // print('Trending Books: ${trendingResponse.body}');
       } else {
-        print(
-            "Trending books endpoint returned: ${trendingResponse.statusCode}");
+        // print(
+        //     "Trending books endpoint returned: ${trendingResponse.statusCode}");
         trendingBooks = []; // Default to empty list
       }
 
       if (allBooksResponse.statusCode == 200) {
         allBooks = jsonDecode(allBooksResponse.body);
-        print('All Books Fetched Successfully');
+        // print('All Books Fetched Successfully');
       } else {
-        print("All books endpoint returned: ${allBooksResponse.statusCode}");
+        // print("All books endpoint returned: ${allBooksResponse.statusCode}");
         allBooks = []; // Default to empty list
       }
 
       if (audioResponse.statusCode == 200) {
         audioBooks = jsonDecode(audioResponse.body);
-        print('Audio Books: Fetched Successfully');
+        // print('Audio Books: Fetched Successfully');
       } else {
-        print("Audio books endpoint returned: ${audioResponse.statusCode}");
+        // print("Audio books endpoint returned: ${audioResponse.statusCode}");
         audioBooks = []; // Default to empty list
       }
 
       // If everything succeeds, set loading to false
       isLoading = false;
     } catch (e) {
-      print('Error fetching data: $e');
+      // print('Error fetching data: $e');
       hasError = true; // Indicate an error occurred
     } finally {
       notifyListeners(); // Notify listeners to update UI
@@ -80,7 +80,7 @@ class HomeProvider with ChangeNotifier {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = prefs.getString('userToken') ?? '';
-      print('Query: $query');
+      // print('Query: $query');
       final url = Uri.parse(
           "${Network.baseUrl}/api/book/search-recommendations?query=$query");
       final response = await http.get(
@@ -89,14 +89,14 @@ class HomeProvider with ChangeNotifier {
           'Authorization': 'Bearer $_token',
         },
       );
-      print('Response: ${response.body}');
+      // print('Response: ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         searchResults = data['matchingBooks'] ?? [];
-        print('Search Results: $searchResults');
+        // print('Search Results: $searchResults');
         recommendedBooks = data['recommendedBooks'] ?? [];
-        print('recommended Results: $recommendedBooks');
+        // print('recommended Results: $recommendedBooks');
       } else {
         searchResults = [];
         recommendedBooks = [];

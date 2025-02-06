@@ -8,7 +8,7 @@ import 'package:syncfusion_flutter_core/theme.dart';
 
 class PdfReaderScreen extends StatefulWidget {
   final int bookId;
-  final String filePath; // Local or network URL of the PDF
+  final String filePath;
   final String bookTitle;
 
   const PdfReaderScreen({
@@ -114,7 +114,8 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userActivityProvider = Provider.of<UserActivityProvider>(context);
+    // final userActivityProvider =
+     Provider.of<UserActivityProvider>(context);
 
     double width = MediaQuery.of(context).size.width;
     return SafeArea(

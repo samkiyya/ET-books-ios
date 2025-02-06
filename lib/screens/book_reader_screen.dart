@@ -66,7 +66,7 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
             fileExtension = '.docx';
           }
         } else {
-          print(' 🤣🤣🤣🤣 Failed to get file content type');
+          // print(' 🤣🤣🤣🤣 Failed to get file content type');
         }
 
         // Now, use the correct file extension
@@ -82,7 +82,7 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
 
           setState(() {
             _localFilePath = filePath;
-            print('🤣🤣🤣 _localFilePath: $_localFilePath');
+            // print('🤣🤣🤣 _localFilePath: $_localFilePath');
             _isLoading = false;
           });
         } else {

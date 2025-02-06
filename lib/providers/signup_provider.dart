@@ -141,26 +141,26 @@ class SignupProvider with ChangeNotifier {
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
       final responseData = jsonDecode(responseBody);
-      print(responseBody);
+      // print(responseBody);
 
       // Handle the response
       if (response.statusCode == 201) {
         _successMessage = responseData['message'] ??
             'You have registered successfully. Please verify your email.';
-        print('Device Info: $deviceInfo');
+        // print('Device Info: $deviceInfo');
       } else if (response.statusCode == 400) {
         _errorMessage =
             responseData['error'] ?? 'Bad request. Please check your inputs.';
-        print('Server error $responseBody');
+        // print('Server error $responseBody');
       } else {
         _errorMessage = responseData['error'] ??
             'Unexpected error occurred. please try again.';
-        print(responseBody);
+        // print(responseBody);
       }
     } catch (error) {
       _errorMessage = _mapErrorToMessage(error);
 
-      print('Signup error: $_errorMessage');
+      // print('Signup error: $_errorMessage');
     } finally {
       _isLoading = false;
       _isUploading = false;

@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:book_mobile/constants/payment_methods.dart';
+import 'package:book_mobile/services/device_info.dart';
 
 class BuyAudioScreen extends StatefulWidget {
   final Map<String, dynamic> audioBook;
@@ -35,6 +36,28 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
       return 'Please enter your $key';
     }
     return null; // No errors
+  }
+
+  String? deviceName;
+  final DeviceInfoService _deviceInfoService = DeviceInfoService();
+  Map<String, dynamic> _deviceData = {};
+  String _getDeviceType(BuildContext context) {
+    return _deviceInfoService.detectDeviceType(context);
+  }
+
+  Future<void> _getDeviceInfo() async {
+    final deviceData = await _deviceInfoService.getDeviceData();
+    setState(() {
+      _deviceData = deviceData;
+    });
+    String brand = _deviceData['brand'] ?? 'Unknown';
+    String board = _deviceData['board'] ?? 'Unknown';
+    String model = _deviceData['model'] ?? 'Unknown';
+    String deviceId = _deviceData['id'] ?? 'Unknown';
+    String deviceType = _getDeviceType(context);
+    deviceName =
+        "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
+    // print('device information is: $deviceName');
   }
 
   @override
@@ -80,7 +103,7 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                             '${Network.baseUrl}/${widget.audioBook['imageFilePath']}',
                             height: height * 0.13,
                             width: width * 0.25,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
                                 Icons.broken_image,
@@ -235,39 +258,44 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
 
                                 // Dropdown for Book Type
                                 SizedBox(height: height * 0.03),
-                                const Text(
-                                  'Select Book Type',
-                                  style: AppTextStyles.bodyText,
-                                ),
-                                DropdownButtonFormField<String>(
-                                  value: _selectedType,
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'audio',
-                                      child: Text('AudioBook'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'PDF',
-                                      child: Text('PDF'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'Both',
-                                      child: Text('Both'),
-                                    ),
-                                  ],
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _selectedType = value!;
-                                    });
-                                  },
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    filled: true,
-                                    fillColor: AppColors.color2,
-                                  ),
-                                ),
+                                widget.audioBook['hasEbook']
+                                    ? Text(
+                                        'Select Book Type',
+                                        style: AppTextStyles.bodyText,
+                                      )
+                                    : SizedBox.shrink(),
+                                widget.audioBook['hasEbook']
+                                    ? DropdownButtonFormField<String>(
+                                        value: _selectedType,
+                                        items: const [
+                                          DropdownMenuItem(
+                                            value: 'audio',
+                                            child: Text('AudioBook'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'PDF',
+                                            child: Text('E-Book'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'Both',
+                                            child: Text('Both'),
+                                          ),
+                                        ],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _selectedType = value!;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          filled: true,
+                                          fillColor: AppColors.color2,
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
                               ],
                             ),
                           ),
@@ -292,12 +320,13 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                               _receiptImage == null) {
                             return;
                           }
-
+                          await _getDeviceInfo();
                           await orderProvider.purchaseBook(
                             id: widget.audioBook['id'].toString(),
                             transactionNumber: _transactionController.text,
                             bankName: selectedBank,
                             bookType: _selectedType, // Selected type
+                            deviceInfo: deviceName!,
                             context: context,
                           );
                           final actionDetails = {

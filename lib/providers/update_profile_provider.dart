@@ -101,14 +101,14 @@ Future<void> updateProfileImage(String filePath) async {
     );
 
     if (response.statusCode == 200) {
-      print('Image uploaded successfully');
-      print('Response data: ${response.data}');
+      // print('Image uploaded successfully');
+      // print('Response data: ${response.data}');
     } else {
       _errorMessage = 'Failed to upload image. Status code: ${response.statusCode}';
     }
   } catch (e) {
     _errorMessage = 'Error uploading image: $e';
-    print(_errorMessage);
+    // print(_errorMessage);
   } finally {
     _isLoading = false;
     _isUploading = false;
@@ -155,11 +155,11 @@ Future<void> updateProfileImage(String filePath) async {
         body: json.encode(requestBody),
       );
 
-      print('The token of profile update is: $_token');
-      print('response body is: ${response.body}');
-      print('response status code is: ${response.statusCode}');
-      final responseData = jsonDecode(response.body);
-      print('response data is: $responseData');
+      // print('The token of profile update is: $_token');
+      // print('response body is: ${response.body}');
+      // print('response status code is: ${response.statusCode}');
+      // final responseData = jsonDecode(response.body);
+      // print('response data is: $responseData');
 
       if (response.statusCode == 200) {
         // Handle success response, you can parse any success data here if needed.

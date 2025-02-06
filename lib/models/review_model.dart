@@ -39,16 +39,15 @@ class Review {
 class User {
   final int id;
   final String fname;
+  final String lname;
 
-  User({
-    required this.id,
-    required this.fname,
-  });
+  User({required this.id, required this.fname, required this.lname});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
       fname: json['fname'],
+      lname: json['lname'],
     );
   }
 }

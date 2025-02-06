@@ -47,7 +47,7 @@ class MyRoute {
             });
           } else {
             // Handle the case where the token or user data is missing
-            print('Token or user data not found in the redirect URL');
+            // print('Token or user data not found in the redirect URL');
           }
 
           // Return a placeholder screen (optional)
@@ -76,7 +76,7 @@ class MyRoute {
             });
           } else {
             // Handle the case where the token or user data is missing
-            print('Token or user data not found in the redirect URL');
+            // print('Token or user data not found in the redirect URL');
           }
 
           // Return a placeholder screen (optional)
@@ -150,10 +150,6 @@ class MyRoute {
         builder: (context, state) => const SubscriptionTierScreen(),
       ),
       GoRoute(
-        path: '/contact-us',
-        builder: (context, state) => const ContactUsScreen(),
-      ),
-      GoRoute(
         path: '/announcements',
         builder: (context, state) => const AnnouncementListScreen(),
       ),
@@ -193,6 +189,6 @@ class MyRoute {
     await prefs.setString('userData', json.encode(userData));
     await prefs.setBool('isLoggedIn', true);
     await prefs.setString('userId', userData['id'].toString());
-    print('Token and user data saved to local storage');
+    // print('Token and user data saved to local storage');
   }
 }

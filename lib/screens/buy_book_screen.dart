@@ -11,6 +11,7 @@ import 'package:book_mobile/widgets/searchable_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:book_mobile/services/device_info.dart';
 
 class BuyBookScreen extends StatefulWidget {
   final Map<String, dynamic> book;
@@ -26,6 +27,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
   final _transactionController = TextEditingController();
   File? _receiptImage;
   String selectedBank = '';
+  String _selectedType = 'PDF';
 
   late final List<String> bankLists = PaymentMethods.banks;
 
@@ -35,6 +37,28 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
     }
 
     return null; // No errors
+  }
+
+  String? deviceName;
+  final DeviceInfoService _deviceInfoService = DeviceInfoService();
+  Map<String, dynamic> _deviceData = {};
+  String _getDeviceType(BuildContext context) {
+    return _deviceInfoService.detectDeviceType(context);
+  }
+
+  Future<void> _getDeviceInfo() async {
+    final deviceData = await _deviceInfoService.getDeviceData();
+    setState(() {
+      _deviceData = deviceData;
+    });
+    String brand = _deviceData['brand'] ?? 'Unknown';
+    String board = _deviceData['board'] ?? 'Unknown';
+    String model = _deviceData['model'] ?? 'Unknown';
+    String deviceId = _deviceData['id'] ?? 'Unknown';
+    String deviceType = _getDeviceType(context);
+    deviceName =
+        "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
+    //print('device information is: $deviceName');
   }
 
   @override
@@ -78,7 +102,7 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                             '${Network.baseUrl}/${widget.book['imageFilePath']}',
                             height: height * 0.13,
                             width: width * 0.25,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                             errorBuilder: (BuildContext context, Object error,
                                 StackTrace? stackTrace) {
                               return Icon(
@@ -239,6 +263,45 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                                     style: TextStyle(color: Colors.red),
                                   ),
                                 // Dropdown for Book Type
+                                SizedBox(height: height * 0.03),
+                                widget.book['hasAudioBook']
+                                    ? Text(
+                                        'Select Book Type',
+                                        style: AppTextStyles.bodyText,
+                                      )
+                                    : SizedBox.shrink(),
+                                widget.book['hasAudioBook']
+                                    ? DropdownButtonFormField<String>(
+                                        value: _selectedType,
+                                        items: const [
+                                          DropdownMenuItem(
+                                            value: 'audio',
+                                            child: Text('AudioBook'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'PDF',
+                                            child: Text('E-Book'),
+                                          ),
+                                          DropdownMenuItem(
+                                            value: 'Both',
+                                            child: Text('Both'),
+                                          ),
+                                        ],
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _selectedType = value!;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                          ),
+                                          filled: true,
+                                          fillColor: AppColors.color2,
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
                               ],
                             ),
                           ),
@@ -265,13 +328,15 @@ class _BuyBookScreenState extends State<BuyBookScreen> {
                             // Show an error message under the image upload section
                             return;
                           }
+                          await _getDeviceInfo();
 
                           await orderProvider.purchaseBook(
                             id: widget.book['id'].toString(),
                             transactionNumber: _transactionController.text,
                             bankName: selectedBank,
                             // bookType: widget.book['type'].toString(),
-                            bookType: 'PDF',
+                            bookType: _selectedType,
+                            deviceInfo: deviceName!,
                             context: context,
                           );
 

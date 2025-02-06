@@ -237,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 children: [
                                                   Image.network(
                                                     '${Network.baseUrl}/${book['imageFilePath']}',
-                                                    fit: BoxFit.cover,
+                                                    fit: BoxFit.contain,
                                                     height: height * 0.08,
                                                     width: width * 0.2,
                                                     errorBuilder:
@@ -321,10 +321,18 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                               SizedBox(height: height * 0.0045),
                               Container(
-                                height: homeProvider.trendingBooks.isEmpty
+                                height: homeProvider.trendingBooks.isEmpty &&
+                                        homeProvider.audioBooks.isNotEmpty
                                     ? height *
                                         0.5 // Take the space of trending books
-                                    : height * 0.3, // Normal height
+                                    : homeProvider.trendingBooks.isEmpty &&
+                                            homeProvider.audioBooks.isEmpty
+                                        ? height * 0.85
+                                        : homeProvider
+                                                    .trendingBooks.isNotEmpty &&
+                                                homeProvider.audioBooks.isEmpty
+                                            ? height * 0.37
+                                            : height * 0.3, // Normal height
                                 color: AppColors.color1,
                                 child: SingleChildScrollView(
                                   child: ListView.builder(
@@ -362,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                 child: Image.network(
                                                   '${Network.baseUrl}/${book['imageFilePath']}',
                                                   width: width * 0.2,
-                                                  fit: BoxFit.cover,
+                                                  fit: BoxFit.contain,
                                                   errorBuilder: (BuildContext
                                                           context,
                                                       Object error,
@@ -428,228 +436,224 @@ class _HomeScreenState extends State<HomeScreen>
                                   ),
                                 ),
                               ),
-                              Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const AllBooksScreen(),
+                              homeProvider.allBooks.length > 2
+                                  ? Center(
+                                      child: TextButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const AllBooksScreen(),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text("More",
+                                            style: TextStyle(
+                                                color: AppColors.color3)),
                                       ),
-                                    );
-                                  },
-                                  child: const Text("More",
-                                      style:
-                                          TextStyle(color: AppColors.color3)),
-                                ),
-                              ),
+                                    )
+                                  : SizedBox.shrink(),
                               SizedBox(height: height * 0.01),
 
-                              SingleChildScrollView(
-                                child: SizedBox(
-                                  height: height * 0.3,
-                                  child: Card(
-                                    color: AppColors.color2,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(width * 0.02),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          // Section Header
-                                          Text(
-                                            "Audio Books",
-                                            style: TextStyle(
-                                              fontSize: width * 0.05,
-                                              fontWeight: FontWeight.bold,
-                                              color: AppColors.color3,
-                                            ),
-                                          ),
-                                          SizedBox(
-                                              height: height *
-                                                  0.01), // Space below header
-
-                                          // Horizontal List of Audio Books
-                                          Expanded(
-                                            child: ListView.builder(
-                                              scrollDirection: Axis.horizontal,
-                                              itemCount: homeProvider
-                                                  .audioBooks.length,
-                                              itemBuilder: (context, index) {
-                                                final audioBook = homeProvider
-                                                    .audioBooks[index];
-
-                                                return GestureDetector(
-                                                  onTap: () => Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          AudioDetailScreen(
-                                                        audioBook: audioBook,
-                                                      ),
-                                                    ),
+                              homeProvider.audioBooks.isNotEmpty
+                                  ? SingleChildScrollView(
+                                      child: SizedBox(
+                                        height: height * 0.3,
+                                        child: Card(
+                                          color: AppColors.color2,
+                                          child: Padding(
+                                            padding:
+                                                EdgeInsets.all(width * 0.02),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                // Section Header
+                                                Text(
+                                                  "Audio Books",
+                                                  style: TextStyle(
+                                                    fontSize: width * 0.05,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: AppColors.color3,
                                                   ),
-                                                  child: SingleChildScrollView(
-                                                    child: Column(
-                                                      children: [
-                                                        Card(
-                                                          color: AppColors
-                                                              .color3
-                                                              .withValues(
-                                                                  alpha: 0.65),
-                                                          margin: EdgeInsets
-                                                              .symmetric(
-                                                                  horizontal:
-                                                                      width *
-                                                                          0.02),
-                                                          child: Container(
-                                                            width: width * 0.3,
-                                                            padding:
-                                                                EdgeInsets.all(
-                                                                    width *
-                                                                        0.02),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                // Audio Book Image
-                                                                ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              8),
-                                                                  child: Image
-                                                                      .network(
-                                                                    '${Network.baseUrl}/${audioBook['imageFilePath']}',
-                                                                    height:
-                                                                        height *
-                                                                            0.07,
-                                                                    width: double
-                                                                        .infinity,
-                                                                    fit: BoxFit
-                                                                        .cover,
-                                                                    errorBuilder:
-                                                                        (context,
-                                                                            error,
-                                                                            stackTrace) {
-                                                                      return Icon(
-                                                                        Icons
-                                                                            .audiotrack,
-                                                                        size: height *
-                                                                            0.07,
-                                                                        color: Colors
-                                                                            .grey,
-                                                                      );
-                                                                    },
-                                                                  ),
-                                                                ),
-                                                                SizedBox(
-                                                                    height:
-                                                                        height *
-                                                                            0.01),
+                                                ),
+                                                SizedBox(
+                                                    height: height *
+                                                        0.01), // Space below header
 
-                                                                // Audio Book Title
-                                                                Text(
-                                                                  audioBook[
-                                                                          'title'] ??
-                                                                      "No Title",
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        width *
-                                                                            0.035,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                                SizedBox(
-                                                                    height:
-                                                                        height *
-                                                                            0.005),
+                                                // Horizontal List of Audio Books
+                                                Expanded(
+                                                  child: ListView.builder(
+                                                    scrollDirection:
+                                                        Axis.horizontal,
+                                                    itemCount: homeProvider
+                                                        .audioBooks.length,
+                                                    itemBuilder:
+                                                        (context, index) {
+                                                      final audioBook =
+                                                          homeProvider
+                                                                  .audioBooks[
+                                                              index];
 
-                                                                // Audio Book Author
-                                                                Text(
-                                                                  'By: ${audioBook['author'] ?? "Unknown Author"}',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        width *
-                                                                            0.03,
-                                                                    color: AppColors
-                                                                        .color4,
-                                                                  ),
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                                SizedBox(
-                                                                    height:
-                                                                        height *
-                                                                            0.005),
-
-                                                                // Audio Book Author
-                                                                Text(
-                                                                  '${audioBook['audio_price'] ?? "N/A"} ETB',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        width *
-                                                                            0.04,
-                                                                    color: AppColors
-                                                                        .color4,
-                                                                  ),
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                                SizedBox(
-                                                                    height:
-                                                                        height *
-                                                                            0.005),
-
-                                                                // Audio Book Author
-                                                                Text(
-                                                                  '${audioBook['audioCount'] ?? "N/A"} ${audioBook['audioCount'] > 1 ? "Episodes" : "Episode"}',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontSize:
-                                                                        width *
-                                                                            0.03,
-                                                                    color: AppColors
-                                                                        .color4,
-                                                                  ),
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                              ],
+                                                      return GestureDetector(
+                                                        onTap: () =>
+                                                            Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                AudioDetailScreen(
+                                                              audioBook:
+                                                                  audioBook,
                                                             ),
                                                           ),
                                                         ),
-                                                      ],
-                                                    ),
+                                                        child:
+                                                            SingleChildScrollView(
+                                                          child: Column(
+                                                            children: [
+                                                              Card(
+                                                                color: AppColors
+                                                                    .color3
+                                                                    .withValues(
+                                                                        alpha:
+                                                                            0.65),
+                                                                margin: EdgeInsets
+                                                                    .symmetric(
+                                                                        horizontal:
+                                                                            width *
+                                                                                0.02),
+                                                                child:
+                                                                    Container(
+                                                                  width: width *
+                                                                      0.3,
+                                                                  padding: EdgeInsets
+                                                                      .all(width *
+                                                                          0.02),
+                                                                  child: Column(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      // Audio Book Image
+                                                                      ClipRRect(
+                                                                        borderRadius:
+                                                                            BorderRadius.circular(8),
+                                                                        child: Image
+                                                                            .network(
+                                                                          '${Network.baseUrl}/${audioBook['imageFilePath']}',
+                                                                          height:
+                                                                              height * 0.07,
+                                                                          width:
+                                                                              double.infinity,
+                                                                          fit: BoxFit.contain,
+                                                                          errorBuilder: (context,
+                                                                              error,
+                                                                              stackTrace) {
+                                                                            return Icon(
+                                                                              Icons.audiotrack,
+                                                                              size: height * 0.07,
+                                                                              color: Colors.grey,
+                                                                            );
+                                                                          },
+                                                                        ),
+                                                                      ),
+                                                                      SizedBox(
+                                                                          height:
+                                                                              height * 0.01),
+
+                                                                      // Audio Book Title
+                                                                      Text(
+                                                                        audioBook['title'] ??
+                                                                            "No Title",
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              width * 0.035,
+                                                                          fontWeight:
+                                                                              FontWeight.bold,
+                                                                        ),
+                                                                        maxLines:
+                                                                            1,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                      ),
+                                                                      SizedBox(
+                                                                          height:
+                                                                              height * 0.005),
+
+                                                                      // Audio Book Author
+                                                                      Text(
+                                                                        'By: ${audioBook['author'] ?? "Unknown Author"}',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              width * 0.03,
+                                                                          color:
+                                                                              AppColors.color4,
+                                                                        ),
+                                                                        maxLines:
+                                                                            1,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                      ),
+                                                                      SizedBox(
+                                                                          height:
+                                                                              height * 0.005),
+
+                                                                      // Audio Book Author
+                                                                      Text(
+                                                                        '${audioBook['audio_price'] ?? "N/A"} ETB',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              width * 0.04,
+                                                                          color:
+                                                                              AppColors.color4,
+                                                                        ),
+                                                                        maxLines:
+                                                                            1,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                      ),
+                                                                      SizedBox(
+                                                                          height:
+                                                                              height * 0.005),
+
+                                                                      // Audio Book Author
+                                                                      Text(
+                                                                        '${audioBook['audioCount'] ?? "N/A"} ${audioBook['audioCount'] > 1 ? "Episodes" : "Episode"}',
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontSize:
+                                                                              width * 0.03,
+                                                                          color:
+                                                                              AppColors.color4,
+                                                                        ),
+                                                                        maxLines:
+                                                                            1,
+                                                                        overflow:
+                                                                            TextOverflow.ellipsis,
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
                                                   ),
-                                                );
-                                              },
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                                    )
+                                  : SizedBox.shrink(),
                             ],
                           ),
                         ),

@@ -14,6 +14,7 @@ import 'package:book_mobile/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:book_mobile/services/device_info.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final Map<String, dynamic> book;
@@ -25,12 +26,40 @@ class BookDetailScreen extends StatefulWidget {
 }
 
 class _BookDetailScreenState extends State<BookDetailScreen> {
+  String? deviceName;
+  final DeviceInfoService _deviceInfoService = DeviceInfoService();
+  Map<String, dynamic> _deviceData = {};
+  String _getDeviceType(BuildContext context) {
+    return _deviceInfoService.detectDeviceType(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getDeviceInfo();
+  }
+
+  Future<void> _getDeviceInfo() async {
+    final deviceData = await _deviceInfoService.getDeviceData();
+    setState(() {
+      _deviceData = deviceData;
+    });
+    String brand = _deviceData['brand'] ?? 'Unknown';
+    String board = _deviceData['board'] ?? 'Unknown';
+    String model = _deviceData['model'] ?? 'Unknown';
+    String deviceId = _deviceData['id'] ?? 'Unknown';
+    String deviceType = _getDeviceType(context);
+    deviceName =
+        "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
+    // print('device information is: $deviceName');
+  }
+
   Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
     final statusProvider =
         Provider.of<OrderStatusProvider>(context, listen: false);
 
     try {
-      await statusProvider.fetchOrders();
+      await statusProvider.fetchOrders(deviceName);
       final Order order = statusProvider.orders.firstWhere(
         (order) => order.orderBook['id'] == widget.book['id'],
         orElse: () => Order(
@@ -54,7 +83,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         };
       }
     } catch (e) {
-      debugPrint('Error fetching order: $e');
+      // debugPrint('Error fetching order: $e');
     }
 
     return null;
@@ -178,7 +207,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                           '${Network.baseUrl}/${widget.book['imageFilePath']}',
                           height: height * 0.22,
                           width: width * 0.7,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.contain,
                           errorBuilder: (BuildContext context, Object error,
                               StackTrace? stackTrace) {
                             return Icon(
@@ -220,8 +249,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    print(
-                                        'Author id: ${widget.book['author_id']}');
+                                    // print(
+                                    //     'Author id: ${widget.book['author_id']}');
 
                                     Navigator.push(
                                       context,
@@ -309,7 +338,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                                 ),
                               ],
                             ),
-                            _buildDetailRow("Status", widget.book['status']),
                             _buildDetailRow(
                                 "Description", widget.book['description']),
 
@@ -353,6 +381,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                       },
                     ),
                   ),
+                  SizedBox(height: height * 0.03),
                 ],
               ),
             ),

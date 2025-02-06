@@ -33,7 +33,7 @@ void callbackDispatcher() {
         }
       }
     } catch (e) {
-      print('Error during background task execution: $e');
+      // print('Error during background task execution: $e');
     }
     return Future.value(true);
   });
@@ -61,10 +61,10 @@ Future<List<dynamic>> _fetchUnreadNotifications(String token) async {
             .toList();
       }
     } else {
-      print('Failed to fetch notifications: ${response.body}');
+      // print('Failed to fetch notifications: ${response.body}');
     }
   } catch (e) {
-    print('Error fetching notifications: $e');
+    // print('Error fetching notifications: $e');
   }
   return [];
 }
@@ -137,10 +137,10 @@ Future<void> _initializeNotifications(LoginProvider loginProvider) async {
     initializationSettings,
     onDidReceiveNotificationResponse: (response) async {
       if (response.actionId == 'mark_as_read') {
-        print('mark as read: ${response.payload}');
+        // print('mark as read: ${response.payload}');
         await _handleMarkAsRead(response.payload);
       } else if (response.actionId == 'dismiss') {
-        print('mark as read with dismiss: ${response.payload}');
+        // print('mark as read with dismiss: ${response.payload}');
         await _handleDismiss(response.payload);
       }
       await _handleNotificationResponse(response, loginProvider);
@@ -151,10 +151,10 @@ Future<void> _initializeNotifications(LoginProvider loginProvider) async {
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
-  print('notificationTapBackground');
-  print('notification(${notificationResponse.id}) action tapped: '
-      '${notificationResponse.actionId} with'
-      ' payload: ${notificationResponse.payload}');
+  // print('notificationTapBackground');
+  // print('notification(${notificationResponse.id}) action tapped: '
+  //     '${notificationResponse.actionId} with'
+  //     ' payload: ${notificationResponse.payload}');
 }
 
 // mark notification as read method
@@ -165,13 +165,13 @@ Future<void> _handleMarkAsRead(String? payload) async {
   try {
     final data = jsonDecode(payload);
     final notificationId = data['id'];
-    print('Marking notification as read: $notificationId');
+    // print('Marking notification as read: $notificationId');
 
     // Access NotificationProvider singleton
     final notificationProvider = NotificationProvider();
     await notificationProvider.toggleReadStatus(notificationId);
   } catch (e) {
-    print('Error marking notification as read: $e');
+    // print('Error marking notification as read: $e');
   }
 }
 
@@ -183,13 +183,13 @@ Future<void> _handleDismiss(String? payload) async {
   try {
     final data = jsonDecode(payload);
     final notificationId = data['id'];
-    print('Dismissing notification: $notificationId');
+    // print('Dismissing notification: $notificationId');
 
     // Access NotificationProvider singleton
     final notificationProvider = NotificationProvider();
     await notificationProvider.deleteNotification(notificationId);
   } catch (e) {
-    print('Error dismissing notification: $e');
+    // print('Error dismissing notification: $e');
   }
 }
 

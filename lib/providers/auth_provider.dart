@@ -88,8 +88,8 @@ class AuthProvider with ChangeNotifier {
       await prefs.setString('userToken', _token ?? "");
       await prefs.setString('userData', jsonEncode(_userData?.toJson()));
 
-      print('User ID: ${_userData?.id}');
-      print('User Data 🤣🤣: ${_userData?.toJson()}');
+      // print('User ID: ${_userData?.id}');
+      // print('User Data 🤣🤣: ${_userData?.toJson()}');
 
       _updateAuthState(
         isAuthenticated: true,
@@ -97,7 +97,7 @@ class AuthProvider with ChangeNotifier {
         userData: _userData,
       );
     } catch (e) {
-      print("Error in _handleSuccessfulLogin: $e");
+      // print("Error in _handleSuccessfulLogin: $e");
       throw e;
     }
   }
@@ -149,8 +149,8 @@ class AuthProvider with ChangeNotifier {
         if (token != null && userDataString != null) {
           try {
             final userData = jsonDecode(userDataString);
-            print('Received token: $token');
-            print('Received user data: ${jsonEncode(userData)}');
+            // print('Received token: $token');
+            // print('Received user data: ${jsonEncode(userData)}');
 
             await _handleSuccessfulLogin({
               'userToken': token,
@@ -170,10 +170,11 @@ class AuthProvider with ChangeNotifier {
             // Important: After successful login, cancel the listener. You only need the one callback.
             _appLinkSubscription.cancel();
           } catch (e) {
-            print("Error decoding or handling user data: $e");
+            throw e;
+            // print("Error decoding or handling user data: $e");
           }
         } else {
-          print('Required parameters not found in callback URL');
+          // print('Required parameters not found in callback URL');
           // Handle missing parameters (e.g., show an error message)
         }
       }
@@ -262,7 +263,7 @@ class AuthProvider with ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    print("reset token from the deeplink: $resetToken");
+    // print("reset token from the deeplink: $resetToken");
     try {
       final response = await http.post(
         Uri.parse("$_baseUrl/api/user/reset-password/$resetToken"),
@@ -272,7 +273,7 @@ class AuthProvider with ChangeNotifier {
         body: jsonEncode({"password": newPassword}),
       );
 
-      print('Response of password reset: ${response.body}');
+      // print('Response of password reset: ${response.body}');
       if (response.statusCode != 200) {
         _error = json.decode(response.body)['message'] ??
             'Unknown error during reset password';

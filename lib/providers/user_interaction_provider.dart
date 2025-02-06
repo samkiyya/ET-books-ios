@@ -59,12 +59,12 @@ class UserActivityProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 201) {
-        print("User activity sent successfully.");
+        // print("User activity sent successfully.");
       } else {
-        print("Failed to send user activity: ${response.statusCode}");
+        // print("Failed to send user activity: ${response.statusCode}");
       }
     } catch (error) {
-      print("Error sending activity: $error");
+      // print("Error sending activity: $error");
     }
   }
 

@@ -99,6 +99,7 @@ class PurchaseOrderProvider with ChangeNotifier {
     required String transactionNumber,
     required String bankName,
     required String bookType,
+    required String deviceInfo,
     required BuildContext context,
   }) async {
     _errorMessage = '';
@@ -127,7 +128,7 @@ class PurchaseOrderProvider with ChangeNotifier {
         notifyListeners();
         return;
       }
-print( "base url${Network.baseUrl}");
+      // print("base url${Network.baseUrl}");
 
       final url = Uri.parse('${Network.baseUrl}/api/order/purchase');
       final headers = {
@@ -145,7 +146,7 @@ print( "base url${Network.baseUrl}");
       request.fields['transactionNumber'] = transactionNumber;
       request.fields['book_id'] = id;
       request.fields['type'] = bookType;
-
+      request.fields['deviceInfo'] = deviceInfo;
       final mimeType = lookupMimeType(_receiptImage!.path);
       if (mimeType == null) {
         _errorMessage = 'Invalid file type. Please upload a valid file';
@@ -158,12 +159,11 @@ print( "base url${Network.baseUrl}");
 
       request.files.add(await http.MultipartFile.fromPath(
         'receiptImage',
-
         _receiptImage!.path,
         contentType: MediaType(mimeSplit[0], mimeSplit[1]),
       ));
 
-      print('media type is: ${MediaType(mimeSplit[0], mimeSplit[1])}');
+      // print('media type is: ${MediaType(mimeSplit[0], mimeSplit[1])}');
       // request.files.add(http.MultipartFile(
       //   'receiptImage',
       //   _receiptImage!.readAsBytes().asStream(),
@@ -181,22 +181,22 @@ print( "base url${Network.baseUrl}");
       } else {
         final responseBody = await response.stream.bytesToString();
         final parsedResponse = json.decode(responseBody);
-        print(parsedResponse);
+        // print(parsedResponse);
 
         _errorMessage = parsedResponse['message'] ??
             'Failed to submit the order, please try again';
-        print(
-            'Failed to submit the order, please try again ${response.statusCode} - $responseBody');
+        // print(
+        //     'Failed to submit the order, please try again ${response.statusCode} - $responseBody');
       }
     } catch (error) {
       if (error is TimeoutException) {
         _errorMessage = 'Request timed out. Please try again later.';
       } else if (error is SocketException) {
         _errorMessage = 'No internet connection. Please check your network.';
-        print('Error: $error');
+        // print('Error: $error');
       } else {
         _errorMessage = 'An error occurred. Please try again.';
-        print('Error: $error');
+        // print('Error: $error');
       }
     } finally {
       _isLoading = false;

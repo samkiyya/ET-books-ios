@@ -13,12 +13,12 @@ class ReviewService {
       int bookId, String comment, int reviewRating) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    print('Token from review: $_token');
+    // print('Token from review: $_token');
     if (_token == null) {
-      print('user have no token');
+      // print('user have no token');
       return;
     }
-    print('comment from user: $comment');
+    // print('comment from user: $comment');
     final response = await http.post(
       Uri.parse("$_baseUrl/api/user-review"),
       headers: {
@@ -31,10 +31,13 @@ class ReviewService {
         "reviewRating": reviewRating,
       }),
     );
-    print('review response: ${response.body}');
+    final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+    // print('review response: $responseData');
 
     if (response.statusCode != 201) {
-      throw Exception("Failed to create review: ${response.statusCode}");
+      throw Exception(
+          "${responseData['message'] ?? 'Failed to create review'}");
     }
   }
 
@@ -43,9 +46,9 @@ class ReviewService {
       int reviewId, int bookId, String comment, int reviewRating) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    print('Token: $_token');
+    // print('Token: $_token');
     if (_token == null) {
-      print('user have no token');
+      // print('user have no token');
       return;
     }
     final response = await http.put(
@@ -60,9 +63,10 @@ class ReviewService {
         "reviewRating": reviewRating,
       }),
     );
-    print(
-        'book detail sending: book id: $bookId reviewId: $reviewId comment: $comment rating: $reviewRating');
-    print('review response: ${response.body}');
+
+    // print(
+    //     'book detail sending: book id: $bookId reviewId: $reviewId comment: $comment rating: $reviewRating');
+    // print('review response: ${response.body}');
 
     if (response.statusCode != 200) {
       throw Exception("Failed to update review");
@@ -73,9 +77,9 @@ class ReviewService {
   Future<List<Review>> fetchReviews(int bookId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    print('Token: $_token');
+    // print('Token: $_token');
     if (_token == null) {
-      print('user have no token');
+      // print('user have no token');
       return [];
     }
     final response = await http.get(
@@ -97,9 +101,9 @@ class ReviewService {
   Future<AverageRating> fetchAverageRating(int bookId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    print('Token: $_token');
+    // print('Token: $_token');
     if (_token == null) {
-      print('user have no token');
+      // print('user have no token');
       throw 'error to fetch rating';
     }
     final response = await http.get(
@@ -120,9 +124,9 @@ class ReviewService {
   Future<void> deleteReview(int reviewId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    print('Token: $_token');
+    // print('Token: $_token');
     if (_token == null) {
-      print('User has no token');
+      // print('User has no token');
       return;
     }
     final response = await http.delete(

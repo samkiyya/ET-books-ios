@@ -36,9 +36,8 @@ class _RatingDialogState extends State<RatingDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
+    return AlertDialog(
+      content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
@@ -65,51 +64,74 @@ class _RatingDialogState extends State<RatingDialog> {
               );
             }),
           ),
-          TextField(
-            controller: _commentController,
-            decoration: const InputDecoration(labelText: "Comment"),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
-                    setState(() {
-                            isSubmitting = true;
-                          });
-                    final reviewProvider =
-                        Provider.of<ReviewProvider>(context, listen: false);
-
-                    await reviewProvider.addReview(widget.bookId,
-                        _commentController.text, _rating.toInt());
-
-                    
-                          Navigator.pop(context);
-                          Provider.of<ReviewProvider>(context, listen: false)
-                              .fetchReviews(widget.bookId)
-                              .then((_) {
-                                setState(() {
-                            isSubmitting = false;
-                          });
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text('Successuflly reviewed')));
-                          });
-                  } catch (e) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text(e.toString())));
-                  }
-                },
-                child: const Text("Submit"),
-              ),
-            ],
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 100,
+            child: TextField(
+              controller: _commentController,
+              decoration: const InputDecoration(labelText: "Comment"),
+              maxLines: null,
+            ),
           ),
         ],
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Cancel"),
+        ),
+        ElevatedButton(
+          onPressed: isSubmitting
+              ? null
+              : () async {
+                  if (isSubmitting) return;
+                  setState(() {
+                    isSubmitting = true;
+                  });
+
+                  try {
+                    final reviewProvider =
+                        Provider.of<ReviewProvider>(context, listen: false);
+                    await reviewProvider.addReview(
+                      widget.bookId,
+                      _commentController.text,
+                      _rating.toInt(),
+                    );
+
+                    await reviewProvider.fetchReviews(widget.bookId);
+
+                    if (mounted) {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'Successfully reviewed, your review will display after moderation')),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      Navigator.pop(context);
+                      final errorMessage =
+                          e.toString().replaceFirst('Exception: ', '');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                          errorMessage,
+                          style: TextStyle(color: Colors.red),
+                        )),
+                      );
+                    }
+                  } finally {
+                    if (mounted) {
+                      setState(() {
+                        isSubmitting = false;
+                      });
+                    }
+                  }
+                },
+          child: const Text("Submit"),
+        ),
+      ],
     );
   }
 }

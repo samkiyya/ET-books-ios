@@ -27,10 +27,10 @@ class SubscriptionTiersProvider with ChangeNotifier {
         // Ensure the structure is valid and contains "data"
         if (responseBody.containsKey('data')) {
           tiers = responseBody['data'];
-          print('tiers are: $tiers'); // Extract the list from the "data" key
+          // print('tiers are: $tiers'); // Extract the list from the "data" key
         } else {
           errorMessage = "Unexpected response format: 'data' key missing.";
-          print(errorMessage);
+          // print(errorMessage);
           tiers = [];
           hasError = true;
         }
@@ -46,7 +46,7 @@ class SubscriptionTiersProvider with ChangeNotifier {
       } else {
         errorMessage = 'Error fetching data: ';
       }
-      print('Error fetching data: $e');
+      // print('Error fetching data: $e');
       hasError = true;
     } finally {
       isLoading = false;

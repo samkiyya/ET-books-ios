@@ -4,6 +4,7 @@ import 'package:book_mobile/providers/order_status_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:book_mobile/services/device_info.dart';
 
 class OrderStatusScreen extends StatefulWidget {
   const OrderStatusScreen({super.key});
@@ -16,14 +17,47 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
   @override
   void initState() {
     super.initState();
+    getUserDeviceInfo();
+    
+  }
 
+  Future<void> getUserDeviceInfo() async {
+    await _getDeviceInfo();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         final orderProvider =
             Provider.of<OrderStatusProvider>(context, listen: false);
-        orderProvider.fetchOrders();
+         orderProvider.fetchOrders(deviceName);
       }
     });
+
+//     final orderProvider =Provider.of<OrderStatusProvider>(context, listen: false);
+//     await orderProvider.fetchOrders(deviceName);
+//     // setState(() {
+//     //   _isLoading = false;
+//     // });
+  }
+
+  String? deviceName;
+  final DeviceInfoService _deviceInfoService = DeviceInfoService();
+  Map<String, dynamic> _deviceData = {};
+  String _getDeviceType(BuildContext context) {
+    return _deviceInfoService.detectDeviceType(context);
+  }
+
+  Future<void> _getDeviceInfo() async {
+    final deviceData = await _deviceInfoService.getDeviceData();
+    setState(() {
+      _deviceData = deviceData;
+    });
+    String brand = _deviceData['brand'] ?? 'Unknown';
+    String board = _deviceData['board'] ?? 'Unknown';
+    String model = _deviceData['model'] ?? 'Unknown';
+    String deviceId = _deviceData['id'] ?? 'Unknown';
+    String deviceType = _getDeviceType(context);
+    deviceName =
+        "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
+    // print('device information is: $deviceName');
   }
 
   @override
@@ -82,7 +116,8 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                                   Text(
                                     'Order Date: ${DateFormat('yyyy-MM-dd HH:mm').format(order.createdAt)}',
                                   ),
-                                  Text('Ordered Book Price: ${order.price} ETB'),
+                                  Text(
+                                      'Ordered Book Price: ${order.price} ETB'),
                                   if (order.orderBook.isNotEmpty)
                                     Column(
                                       crossAxisAlignment:
@@ -105,7 +140,9 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
                         },
                       ),
         floatingActionButton: FloatingActionButton(
-          onPressed: orderProvider.isLoading ? null : orderProvider.fetchOrders,
+          onPressed: orderProvider.isLoading
+              ? null
+              : () => orderProvider.fetchOrders(deviceName),
           child: orderProvider.isLoading
               ? const CircularProgressIndicator(
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),

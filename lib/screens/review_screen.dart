@@ -139,6 +139,18 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
                     if (reviewProvider.loading) {
                       return const Center(child: CircularProgressIndicator());
                     }
+                    if (reviewProvider.reviews.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "No reviews for this book yet",
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.color3),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }
                     return ListView.builder(
                       itemCount: reviewProvider.reviews.length,
                       itemBuilder: (context, index) {
@@ -168,47 +180,52 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    review.user.fname,
+                                    '${review.user.fname} ${review.user.lname}',
                                     style: AppTextStyles.bodyText.copyWith(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Row(
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(Icons.edit,
-                                            color: AppColors.color3, size: 30),
-                                        onPressed: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            isScrollControlled: true,
-                                            builder: (context) => Padding(
-                                              padding: EdgeInsets.only(
-                                                bottom: MediaQuery.of(context)
-                                                    .viewInsets
-                                                    .bottom,
-                                              ),
-                                              child: UpdateRatingDialog(
-                                                bookId: widget.bookId,
-                                                initialRating: review
-                                                    .reviewRating
-                                                    .toDouble(),
-                                                initialComment: review.comment,
-                                                reviewId: review.id,
-                                                isEditing: true,
-                                              ),
+                                  reviewProvider.userId == review.user.id
+                                      ? Row(
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit,
+                                                  color: AppColors.color3,
+                                                  size: 30),
+                                              onPressed: () {
+                                                showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  builder: (context) => Padding(
+                                                    padding: EdgeInsets.only(
+                                                      bottom:
+                                                          MediaQuery.of(context)
+                                                              .viewInsets
+                                                              .bottom,
+                                                    ),
+                                                    child: UpdateRatingDialog(
+                                                      bookId: widget.bookId,
+                                                      initialRating: review
+                                                          .reviewRating
+                                                          .toDouble(),
+                                                      initialComment:
+                                                          review.comment,
+                                                      reviewId: review.id,
+                                                      isEditing: true,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
                                             ),
-                                          );
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete,
-                                            color: Colors.red, size: 30),
-                                        onPressed: () =>
-                                            _confirmDelete(context, review.id),
-                                      ),
-                                    ],
-                                  ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete,
+                                                  color: Colors.red, size: 30),
+                                              onPressed: () => _confirmDelete(
+                                                  context, review.id),
+                                            ),
+                                          ],
+                                        )
+                                      : SizedBox.shrink(),
                                 ],
                               ),
                               const SizedBox(height: 8.0),

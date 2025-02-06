@@ -18,7 +18,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
- 
   @override
   void initState() {
     super.initState();
@@ -56,7 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (context.mounted) {
                     context.go(
                       '/login',
-                      
                     );
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Logged out successfully')),
@@ -139,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: GestureDetector(
                               onTap: () {
                                 // Navigate to Edit Profile Screen
-                                context.push( '/edit-profile');
+                                context.push('/edit-profile');
                               },
                               child: Container(
                                 width: width * 0.1,
@@ -192,61 +190,67 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         'City: ${userProfile['city'] ?? 'Unknown'}',
                         style: AppTextStyles.bodyText,
                       ),
+                      SizedBox(height: height * 0.01),
+                      Text(
+                        'your point: ${userProfile['point'] ?? '0'} ${userProfile['point'] != 0 ? 'points' : 'point'}',
+                        style: AppTextStyles.bodyText,
+                      ),
                       SizedBox(height: height * 0.03),
                       // Card for Level, Subscription, Followers and Following
                       Card(
-  color: AppColors.color2, // Custom card color
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
-  ),
-  elevation: 5,
-  child: Padding(
-    padding: EdgeInsets.symmetric(
-      horizontal: width * 0.02,
-      vertical: height * 0.01,
-    ),
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        return Wrap(
-          alignment: WrapAlignment.center,
-          spacing: width * 0.02, // Horizontal spacing between elements
-          runSpacing: height * 0.01, // Vertical spacing between rows
-          children: [
-            // Level Column
-            _buildColumn(
-              title: 'Level',
-              value: '${userProfile['level']?['level_name'] ?? 'Unknown'}',
-              showDivider: true,
-              width:width
-            ),
-            // Subscription Column
-            _buildColumn(
-              title: 'Subscription',
-              value: '${userProfile['subscription']?['name'] ?? 'Free'}',
-              showDivider: true,
-              width:width
-            ),
-            // Followers or Following Column
-            userProfile['role'] == "AUTHOR"
-                ? _buildColumn(
-                    title: 'Followers',
-                    value: '${userProfile['followerCount']?.toInt() ?? 0}',
-                    showDivider: false,
-                    width:width
-                  )
-                : _buildColumn(
-                    title: 'Following',
-                    value: '${userProfile['followingCount']?.toInt() ?? 0}',
-                    showDivider: false,
-                    width:width
-                  ),
-          ],
-        );
-      },
-    ),
-  ),
-),
-
+                        color: AppColors.color2, // Custom card color
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 5,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.02,
+                            vertical: height * 0.01,
+                          ),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: width *
+                                    0.02, // Horizontal spacing between elements
+                                runSpacing: height *
+                                    0.01, // Vertical spacing between rows
+                                children: [
+                                  // Level Column
+                                  _buildColumn(
+                                      title: 'Level',
+                                      value:
+                                          '${userProfile['level']?['level_name'] ?? 'Unknown'}',
+                                      showDivider: true,
+                                      width: width),
+                                  // Subscription Column
+                                  _buildColumn(
+                                      title: 'Subscription',
+                                      value:
+                                          '${userProfile['subscription']?['name'] ?? 'Free'}',
+                                      showDivider: true,
+                                      width: width),
+                                  // Followers or Following Column
+                                  userProfile['role'] == "AUTHOR"
+                                      ? _buildColumn(
+                                          title: 'Followers',
+                                          value:
+                                              '${userProfile['followerCount']?.toInt() ?? 0}',
+                                          showDivider: false,
+                                          width: width)
+                                      : _buildColumn(
+                                          title: 'Following',
+                                          value:
+                                              '${userProfile['followingCount']?.toInt() ?? 0}',
+                                          showDivider: false,
+                                          width: width),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
 
                       SizedBox(height: height * 0.03),
                       CustomButton(
@@ -268,34 +272,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  // Helper function to build the individual column with optional divider
-Widget _buildColumn({
-  required String title,
-  required String value,
-  required bool showDivider,
-  required double width,
-}) {
-  return Column(
-    children: [
-      Text(
-        title,
-        style: TextStyle(
-          fontSize: width * 0.045,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      Text(
-        value,
-        style: TextStyle(fontSize: width * 0.045),
-      ),
-      if (showDivider)
-        VerticalDivider(
-          color: Colors.black26,
-          thickness: 1,
-          width: width * 0.03,
-        ),
-    ],
-  );
-}
 
+  // Helper function to build the individual column with optional divider
+  Widget _buildColumn({
+    required String title,
+    required String value,
+    required bool showDivider,
+    required double width,
+  }) {
+    return Column(
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: width * 0.045,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(fontSize: width * 0.045),
+        ),
+        if (showDivider)
+          VerticalDivider(
+            color: Colors.black26,
+            thickness: 1,
+            width: width * 0.03,
+          ),
+      ],
+    );
+  }
 }

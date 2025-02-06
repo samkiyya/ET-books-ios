@@ -11,6 +11,7 @@ import 'package:book_mobile/screens/audio_player_screen.dart';
 import 'package:book_mobile/screens/view_order_status_screen.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:book_mobile/services/device_info.dart';
 
 class AudioDetailScreen extends StatefulWidget {
   final Map<String, dynamic> audioBook;
@@ -22,37 +23,69 @@ class AudioDetailScreen extends StatefulWidget {
 }
 
 class _AudioDetailScreenState extends State<AudioDetailScreen> {
+  String? deviceName;
+  final DeviceInfoService _deviceInfoService = DeviceInfoService();
+  Map<String, dynamic> _deviceData = {};
+  String _getDeviceType(BuildContext context) {
+    return _deviceInfoService.detectDeviceType(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getDeviceInfo();
+  }
+
+  Future<void> _getDeviceInfo() async {
+    final deviceData = await _deviceInfoService.getDeviceData();
+    setState(() {
+      _deviceData = deviceData;
+    });
+    String brand = _deviceData['brand'] ?? 'Unknown';
+    String board = _deviceData['board'] ?? 'Unknown';
+    String model = _deviceData['model'] ?? 'Unknown';
+    String deviceId = _deviceData['id'] ?? 'Unknown';
+    String deviceType = _getDeviceType(context);
+    deviceName =
+        "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
+    // print('device information is: $deviceName');
+  }
+
   Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
     final statusProvider =
         Provider.of<OrderStatusProvider>(context, listen: false);
 
     try {
-      await statusProvider.fetchOrders();
-      final order = statusProvider.orders.firstWhere(
-        (order) => order.orderBook['id'] == widget.audioBook['id'],
-        orElse: () => Order(
-          id: -1, // Default ID for a non-existent order
-          price: '0',
-          bankName: '',
-          type: '',
-          transactionNumber: '',
-          status: '',
-          createdAt: DateTime.now(),
-          orderBook: {},
-          orderUser: {},
-        ),
-      );
+      await statusProvider.fetchOrders(deviceName);
 
-      if (order.id != -1) {
-        return {
-          "orderId": order.id,
-          "audioBookId": order.orderBook['id'],
-          "status": order.status,
-          "type": order.type, // "audio", "pdf", or "both"
-        };
+      // Ensure orders list is not empty before calling firstWhere
+      if (statusProvider.orders.isNotEmpty) {
+        final order = statusProvider.orders.firstWhere(
+          (order) => order.orderBook['id'] == widget.audioBook['id'],
+          orElse: () => Order(
+            id: -1, // Default ID for a non-existent order
+            price: '0',
+            bankName: '',
+            type: '',
+            transactionNumber: '',
+            status: '',
+            createdAt: DateTime.now(),
+            orderBook: {}, // Ensure this is an empty Map
+            orderUser: {}, // Ensure this is an empty Map
+          ),
+        );
+
+        if (order.id != -1 && order.orderBook.isNotEmpty) {
+          return {
+            "orderId": order.id,
+            "audioBookId": order.orderBook['id'],
+            "status": order.status,
+            "type": order.type, // "audio", "pdf", or "both"
+          };
+        }
       }
     } catch (e) {
-      debugPrint('Error fetching order: $e');
+      // debugPrint('Error fetching order: $e');
     }
 
     return null;
@@ -251,7 +284,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                             '${Network.baseUrl}/${widget.audioBook['imageFilePath']}',
                             width: width * 0.8,
                             height: width * 0.4,
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                             errorBuilder: (BuildContext context, Object error,
                                 StackTrace? stackTrace) {
                               return Icon(
@@ -334,13 +367,15 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                         },
                       ),
                     ),
+                    SizedBox(
+                      height: height * 0.03,
+                    )
                   ],
                 ),
               ),
             ),
           ],
         ),
-      
       ),
     );
   }

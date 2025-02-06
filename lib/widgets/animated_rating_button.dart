@@ -34,20 +34,14 @@ class _AnimatedRatingButtonState extends State<AnimatedRatingButton> {
           iconSize: 40,
           onPressed: () {
             setState(() {
-              _rating = index + 1.0; // Update rating based on clicked star
+              _rating = index + 1.0;
             });
             // Show the rating dialog with the updated rating
-            showModalBottomSheet(
+            showDialog(
               context: context,
-              isScrollControlled: true,
-              builder: (context) => Padding(
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                child: RatingDialog(
-                  bookId: widget.bookId,
-                  initialRating: _rating,
-                ),
+              builder: (context) => RatingDialog(
+                bookId: widget.bookId,
+                initialRating: _rating,
               ),
             );
           },

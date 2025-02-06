@@ -28,7 +28,7 @@ class DownloadService {
             fileExtension = '.docx';
           }
         } else {
-          print('Failed to determine file type, using default extension.');
+          // print('Failed to determine file type, using default extension.');
         }
       } else {
         throw HttpException(
@@ -37,8 +37,8 @@ class DownloadService {
       }
 
       // Get the appropriate file path based on file type
-      final path =
-          await FileService.getBookPath(bookTitle, bookId, fileExtension: fileExtension);
+      final path = await FileService.getBookPath(bookTitle, bookId,
+          fileExtension: fileExtension);
 
       // Download the file
       await _dio.download(
@@ -51,18 +51,19 @@ class DownloadService {
           }
         },
       );
-      print('File downloaded successfully to $path');
+      // print('File downloaded successfully to $path');
     } on DioError catch (dioError) {
       if (dioError.response?.statusCode == 404) {
-        print(
-            'Error: The requested URL is not found (404). Please check the URL: $url');
+        // print(
+        //     'Error: The requested URL is not found (404). Please check the URL: $url');
       } else {
-        print('Dio error occurred: ${dioError.message}');
+        // print('Dio error occurred: ${dioError.message}');
       }
-    } on HttpException catch (httpError) {
-      print('HTTP error: ${httpError.message}');
+    } on HttpException {
+      rethrow;
+      // print('HTTP error: ${httpError.message}');
     } catch (e) {
-      print('An unexpected error occurred: $e');
+      // print('An unexpected error occurred: $e');
     }
   }
 }

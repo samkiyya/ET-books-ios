@@ -28,12 +28,12 @@ class UserActivityTracker {
       );
 
       if (response.statusCode == 200) {
-        print("User activity sent successfully.");
+        // print("User activity sent successfully.");
       } else {
-        print("Failed to send user activity: ${response.statusCode}");
+        // print("Failed to send user activity: ${response.statusCode}");
       }
     } catch (e) {
-      print("Error sending user activity: $e");
+      // print("Error sending user activity: $e");
     }
   }
 }

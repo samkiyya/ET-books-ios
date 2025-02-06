@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 class BookSharing {
@@ -20,7 +19,7 @@ Download our app to explore more: $appDownloadLink
     try {
       await Share.share(bookInfo);
     } catch (e) {
-      debugPrint("Error sharing book info: $e");
+      // debugPrint("Error sharing book info: $e");
     }
   }
 }

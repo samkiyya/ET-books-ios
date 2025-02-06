@@ -24,7 +24,6 @@ export 'package:book_mobile/screens/notification_detail_screen.dart';
 export 'package:book_mobile/screens/all_audio_screen.dart';
 export 'package:book_mobile/screens/all_book_screen.dart';
 export 'package:book_mobile/screens/announcement_screen.dart';
-export 'package:book_mobile/screens/contact_us_screen.dart';
 export 'package:book_mobile/screens/downloaded_book_screen.dart';
 export 'package:book_mobile/screens/home_screen.dart';
 export 'package:book_mobile/screens/login_screen.dart';

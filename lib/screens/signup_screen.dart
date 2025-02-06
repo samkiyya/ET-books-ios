@@ -43,7 +43,7 @@ class _SignupScreenState extends State<SignupScreen> {
     String deviceType = _getDeviceType(context);
     deviceName =
         "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
-    print('device information is: $deviceName');
+    // print('device information is: $deviceName');
   }
 
   // Form field controllers
@@ -230,7 +230,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         });
                                       },
                                       data: countries,
-                                      hintText: 'Select Bank Name',
+                                      hintText: 'Select Your Coutry',
                                     );
                                   } else {
                                     return CustomTextField(
@@ -389,8 +389,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                             context: context,
                                           );
                                         } else {
-                                          print(
-                                              "Error: Form validation failed.");
+                                          // print(
+                                          //     "Error: Form validation failed.");
                                         }
                                       },
                                       backgroundColor: AppColors.color2,

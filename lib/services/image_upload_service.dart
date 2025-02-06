@@ -12,8 +12,6 @@ class ImageUploadHelper {
     if (image.lengthSync() > maxSize) {
       return false;
     }
-    
-
     // Validate image type (extension)
     List<String> validExtensions = ['.jpeg', '.jpg', '.png', '.gif'];
     String extension = path.extension(image.path).toLowerCase();

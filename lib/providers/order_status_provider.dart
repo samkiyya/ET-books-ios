@@ -42,7 +42,7 @@ class OrderStatusProvider with ChangeNotifier {
   }
 
   // Fetch orders for the logged-in user with an online-first approach
-  Future<void> fetchOrders() async {
+  Future<void> fetchOrders(String? deviceInfo) async {
     _isLoading = true;
     _errorMessage = '';
     _successMessage = '';
@@ -55,7 +55,7 @@ class OrderStatusProvider with ChangeNotifier {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = prefs.getString('userToken');
-      print('Token: $_token');
+      // print('Token: $_token');
       if (_token == null || _token!.isEmpty) {
         _errorMessage = 'Authentication required. Please log in First.';
         _isLoading = false;
@@ -65,29 +65,31 @@ class OrderStatusProvider with ChangeNotifier {
         return;
       }
 
-      final url = Uri.parse('${Network.baseUrl}/api/order/logged-user');
+      final url = Uri.parse(
+          '${Network.baseUrl}/api/order/logged-user?deviceInfo=$deviceInfo');
       final response = await http.get(
         url,
         headers: {
           'Authorization': 'Bearer $_token',
         },
       );
+      // print('order status response: ${response.body}');
+        final Map<String, dynamic> responseBody = json.decode(response.body);
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = json.decode(response.body);
         // print('Response Body: $responseBody');
 
         final List<dynamic> ordersData = responseBody['orders'];
         // print('Orders status Data: $ordersData');
         _orders = ordersData.map((json) => Order.fromJson(json)).toList();
-        print('Orders: $_orders');
+        // print('Orders: $_orders');
         _successMessage =
             responseBody['message'] ?? 'Orders fetched successfully.';
 
         // Cache orders locally
         await prefs.setString('cachedOrders', json.encode(ordersData));
       } else {
-        _errorMessage = 'Failed to fetch your order status.';
+        _errorMessage = responseBody['messsage']??'Failed to fetch your order status.';
         // print(
         //     'Failed to fetch orders status: ${response.body} Status code: ${response.statusCode}');
       }
@@ -111,11 +113,10 @@ class OrderStatusProvider with ChangeNotifier {
         }
       } else {
         _errorMessage = 'Failed to fetch orders. Please try again later.';
-        print('Failed to fetch orders: $error');
+        // print('Failed to fetch orders: $error');
       }
     } finally {
       _isLoading = false;
-
       notifyListeners();
     }
   }

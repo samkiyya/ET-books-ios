@@ -77,9 +77,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         final DateTime joinedOn = DateTime.parse(profile['createdAt']);
 
         formattedDate = DateFormat('MMM d, yyyy').format(joinedOn);
-        print('User joined on: $joinedOn');
+        // print('User joined on: $joinedOn');
       } else {
-        print('createdAt is null');
+        // print('createdAt is null');
       }
     }
     setState(() {

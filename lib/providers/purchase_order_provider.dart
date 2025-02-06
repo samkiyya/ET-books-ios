@@ -128,7 +128,7 @@ class PurchaseOrderProvider with ChangeNotifier {
         notifyListeners();
         return;
       }
-      print("base url${Network.baseUrl}");
+      // print("base url${Network.baseUrl}");
 
       final url = Uri.parse('${Network.baseUrl}/api/order/purchase');
       final headers = {
@@ -163,7 +163,7 @@ class PurchaseOrderProvider with ChangeNotifier {
         contentType: MediaType(mimeSplit[0], mimeSplit[1]),
       ));
 
-      print('media type is: ${MediaType(mimeSplit[0], mimeSplit[1])}');
+      // print('media type is: ${MediaType(mimeSplit[0], mimeSplit[1])}');
       // request.files.add(http.MultipartFile(
       //   'receiptImage',
       //   _receiptImage!.readAsBytes().asStream(),
@@ -181,22 +181,22 @@ class PurchaseOrderProvider with ChangeNotifier {
       } else {
         final responseBody = await response.stream.bytesToString();
         final parsedResponse = json.decode(responseBody);
-        print(parsedResponse);
+        // print(parsedResponse);
 
         _errorMessage = parsedResponse['message'] ??
             'Failed to submit the order, please try again';
-        print(
-            'Failed to submit the order, please try again ${response.statusCode} - $responseBody');
+        // print(
+        //     'Failed to submit the order, please try again ${response.statusCode} - $responseBody');
       }
     } catch (error) {
       if (error is TimeoutException) {
         _errorMessage = 'Request timed out. Please try again later.';
       } else if (error is SocketException) {
         _errorMessage = 'No internet connection. Please check your network.';
-        print('Error: $error');
+        // print('Error: $error');
       } else {
         _errorMessage = 'An error occurred. Please try again.';
-        print('Error: $error');
+        // print('Error: $error');
       }
     } finally {
       _isLoading = false;

@@ -193,14 +193,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.10"
-  device_frame:
-    dependency: transitive
-    description:
-      name: device_frame
-      sha256: d031a06f5d6f4750009672db98a5aa1536aa4a231713852469ce394779a23d75
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -217,14 +209,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.2"
-  device_preview_plus:
-    dependency: "direct main"
-    description:
-      name: device_preview_plus
-      sha256: e9486ec4f85940a25cd04f12c2d835ebc11e29ba02e362caf8b9633d1d936ad0
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.2"
   diff_match_patch:
     dependency: transitive
     description:
@@ -257,14 +241,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
-  dropdown_search:
-    dependency: "direct main"
-    description:
-      name: dropdown_search
-      sha256: "8c96aaf8d0c0d4307804b28da73866e5a0fc94fd8e6942eceab896450aaa4999"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.0.1"
   encrypt:
     dependency: "direct main"
     description:
@@ -289,14 +265,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.7"
-  facebook_auth_desktop:
-    dependency: transitive
-    description:
-      name: facebook_auth_desktop
-      sha256: "219d559a33891e937c1913430505eae01fb946cb35729167bbdc747e3ebbd9ff"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.1"
   fake_async:
     dependency: transitive
     description:
@@ -390,30 +358,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
-  flutter_facebook_auth:
-    dependency: "direct main"
-    description:
-      name: flutter_facebook_auth
-      sha256: d542743aee9571fad59aa4cfb645640dbb49f23b039d07c34b5e21bc3d5857e9
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.1.1"
-  flutter_facebook_auth_platform_interface:
-    dependency: transitive
-    description:
-      name: flutter_facebook_auth_platform_interface
-      sha256: e04b8dbfa77702bea45a79993163ad5d20b2c0084109bec591fdc2b9ee505779
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.2"
-  flutter_facebook_auth_web:
-    dependency: transitive
-    description:
-      name: flutter_facebook_auth_web
-      sha256: f682400d61cf8d52dd8b6458b5ee106ed57e95309a117dc32875d3da129ce47c
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.2"
   flutter_inappwebview:
     dependency: transitive
     description:
@@ -653,22 +597,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  font_awesome_flutter:
-    dependency: "direct main"
-    description:
-      name: font_awesome_flutter
-      sha256: d3a89184101baec7f4600d58840a764d2ef760fe1c5a20ef9e6b0e9b24a07a3a
-      url: "https://pub.dev"
-    source: hosted
-    version: "10.8.0"
-  freezed_annotation:
-    dependency: transitive
-    description:
-      name: freezed_annotation
-      sha256: c2e2d632dd9b8a2b7751117abcfc2b4888ecfe181bd9fca7170d9ef02e595fe2
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.4"
   go_router:
     dependency: "direct main"
     description:
@@ -677,54 +605,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.6.3"
-  google_identity_services_web:
-    dependency: transitive
-    description:
-      name: google_identity_services_web
-      sha256: "55580f436822d64c8ff9a77e37d61f5fb1e6c7ec9d632a43ee324e2a05c3c6c9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.3"
-  google_sign_in:
-    dependency: "direct main"
-    description:
-      name: google_sign_in
-      sha256: fad6ddc80c427b0bba705f2116204ce1173e09cf299f85e053d57a55e5b2dd56
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.2.2"
-  google_sign_in_android:
-    dependency: transitive
-    description:
-      name: google_sign_in_android
-      sha256: "3b96f9b6cf61915f73cbe1218a192623e296a9b8b31965702503649477761e36"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.1.34"
-  google_sign_in_ios:
-    dependency: transitive
-    description:
-      name: google_sign_in_ios
-      sha256: "83f015169102df1ab2905cf8abd8934e28f87db9ace7a5fa676998842fed228a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.7.8"
-  google_sign_in_platform_interface:
-    dependency: transitive
-    description:
-      name: google_sign_in_platform_interface
-      sha256: "1f6e5787d7a120cc0359ddf315c92309069171306242e181c09472d1b00a2971"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.4.5"
-  google_sign_in_web:
-    dependency: transitive
-    description:
-      name: google_sign_in_web
-      sha256: ada595df6c30cead48e66b1f3a050edf0c5cf2ba60c185d69690e08adcc6281b
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.12.4+3"
   gtk:
     dependency: transitive
     description:
@@ -849,26 +729,26 @@ packages:
     dependency: "direct main"
     description:
       name: just_audio
-      sha256: a49e7120b95600bd357f37a2bb04cd1e88252f7cdea8f3368803779b925b1049
+      sha256: "1a1eb86e7d81e69a1d36943f2b3efd62dece3dad2cafd9ec2e62e6db7c04d9b7"
       url: "https://pub.dev"
     source: hosted
-    version: "0.9.42"
+    version: "0.9.43"
   just_audio_platform_interface:
     dependency: transitive
     description:
       name: just_audio_platform_interface
-      sha256: "0243828cce503c8366cc2090cefb2b3c871aa8ed2f520670d76fd47aa1ab2790"
+      sha256: "271b93b484c6f494ecd72a107fffbdb26b425f170c665b9777a0a24a726f2f24"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.0"
+    version: "4.4.0"
   just_audio_web:
     dependency: transitive
     description:
       name: just_audio_web
-      sha256: "9a98035b8b24b40749507687520ec5ab404e291d2b0937823ff45d92cb18d448"
+      sha256: "58915be64509a7683c44bf11cd1a23c15a48de104927bee116e3c63c8eeea0d4"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.13"
+    version: "0.4.14"
   leak_tracker:
     dependency: transitive
     description:
@@ -1190,7 +1070,7 @@ packages:
     source: hosted
     version: "3.2.2"
   rxdart:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: rxdart
       sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
@@ -1570,14 +1450,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.5"
-  wolt_modal_sheet:
-    dependency: "direct main"
-    description:
-      name: wolt_modal_sheet
-      sha256: dc220672cde0c1169bfbbd4de4b0070332aeb4108b9da10e0d3be6e3d79b8082
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.10.0"
   workmanager:
     dependency: "direct main"
     description:
@@ -1604,4 +1476,4 @@ packages:
     version: "6.5.0"
 sdks:
   dart: ">=3.6.0 <4.0.0"
-  flutter: ">=3.27.1"
+  flutter: ">=3.24.0"

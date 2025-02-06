@@ -117,12 +117,12 @@ class LoginProvider with ChangeNotifier {
           _userId = data['user_id'];
           _email = data['email'];
           _errorMessage = 'email is not verified';
-          print('user verfication status: $_isEmailVerificationRequired');
+          // print('user verfication status: $_isEmailVerificationRequired');
         } else if (data['isActive'] == false) {
           _isAccountDeactivated = true;
           _userId = data['user_id'];
           _errorMessage = 'account is deactivated';
-          print('user activation status: $_isAccountDeactivated');
+          // print('user activation status: $_isAccountDeactivated');
         } else if (data.containsKey('userToken')) {
           final loginResponse = LoginResponse.fromJson(data);
           _token = loginResponse.userToken;
@@ -132,15 +132,15 @@ class LoginProvider with ChangeNotifier {
           await _saveUserIdToLocalStorage(loginResponse.userData.id.toString());
 
           _successMessage = 'You have logged in successfully!';
-          print('user logged in successfully!');
+          // print('user logged in successfully!');
         }
       } else {
         _handleError(response, data);
-        print('error ${response.statusCode}, data: $data ');
+        // print('error ${response.statusCode}, data: $data ');
       }
     } catch (error) {
       _handleError(null, null, error);
-      print('error: $error');
+      // print('error: $error');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -215,16 +215,16 @@ class LoginProvider with ChangeNotifier {
         final loginResponse = LoginResponse.fromJson(data);
         _token = loginResponse.userToken;
         _isAuthenticated = true;
-        print('Token: $_token');
+        // print('Token: $_token');
 
         await _saveTokenToLocalStorage(_token!);
         await _saveUserIdToLocalStorage(loginResponse.userData.id.toString());
 
         _successMessage = 'You have logged in successfully!';
-        print('user logged in successfully!');
+        // print('user logged in successfully!');
       }
     } catch (e) {
-      print('Error: $e');
+      // print('Error: $e');
       _errorMessage = 'An error occurred while verifying 2FA code: $e';
       _isAuthenticated = false;
     } finally {
@@ -253,7 +253,7 @@ class LoginProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        print(response.body);
+        // print(response.body);
         return jsonDecode(response.body);
       } else {
         return {

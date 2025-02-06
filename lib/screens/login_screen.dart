@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
     String deviceType = _getDeviceType(context);
     deviceName =
         "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
-    print('device information is: $deviceName');
+    // print('device information is: $deviceName');
   }
 
   @override

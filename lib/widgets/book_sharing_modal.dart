@@ -39,7 +39,7 @@ Download our app to explore more: ${widget.appDownloadLink}
     try {
       await Share.share(bookInfo);
     } catch (e) {
-      debugPrint("Error sharing book info: $e");
+      // debugPrint("Error sharing book info: $e");
     }
   }
 

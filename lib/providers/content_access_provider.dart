@@ -18,11 +18,11 @@ class AccessProvider with ChangeNotifier {
     final url = Uri.parse("$apiUrl/$userId");
     try {
       final response = await http.get(url);
-      print("content access Response: ${response.body}");
+      // print("content access Response: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        print("AccessProvider data: $data");
+        // print("AccessProvider data: $data");
 
         if (data["success"] == true) {
           // Process the subscriptions
@@ -30,8 +30,8 @@ class AccessProvider with ChangeNotifier {
           _hasReachedLimitAndApproved = subscriptions.any((sub) =>
               sub["hasReachedLimit"] == false &&
               sub["approvalStatus"].toString().toUpperCase() == "APPROVED");
-          print(
-              "AccessProvider hasReachedLimitAndApproved: $_hasReachedLimitAndApproved");
+          // print(
+          //     "AccessProvider hasReachedLimitAndApproved: $_hasReachedLimitAndApproved");
         } else {
           _errorMessage = "API responded with success = false";
           _hasReachedLimitAndApproved = false;

@@ -19,7 +19,7 @@ class BookService {
     String fileExtension = await getFileExtension(url);
 
     // Get the file path based on the determined file extension
-    final path = await FileService.getBookPath(
+   await FileService.getBookPath(
       bookTitle,
       bookId,
     );
@@ -48,7 +48,7 @@ class BookService {
   ) async {
     final path = await FileService.getBookPath(bookTitle, bookId,
         fileExtension: fileExtension);
-    print('file extension to open: $fileExtension');
+    // print('file extension to open: $fileExtension');
 
     if (context.mounted) {
       Navigator.push(
@@ -69,7 +69,7 @@ class BookService {
   }
 
   static Future<List<Map<String, dynamic>>> getDownloadedBooks() async {
-    print('full name  from downloaded: ${FileService.getDownloadedBooks()}');
+    // print('full name  from downloaded: ${FileService.getDownloadedBooks()}');
     return FileService.getDownloadedBooks();
   }
 
@@ -101,7 +101,7 @@ class BookService {
       }
     }
   } catch (e) {
-    print('Error determining file type: $e');
+    // print('Error determining file type: $e');
   }
   return fileExtension; 
 }

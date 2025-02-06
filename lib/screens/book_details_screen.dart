@@ -51,7 +51,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     String deviceType = _getDeviceType(context);
     deviceName =
         "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
-    print('device information is: $deviceName');
+    // print('device information is: $deviceName');
   }
 
   Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
@@ -83,7 +83,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         };
       }
     } catch (e) {
-      debugPrint('Error fetching order: $e');
+      // debugPrint('Error fetching order: $e');
     }
 
     return null;
@@ -249,8 +249,8 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    print(
-                                        'Author id: ${widget.book['author_id']}');
+                                    // print(
+                                    //     'Author id: ${widget.book['author_id']}');
 
                                     Navigator.push(
                                       context,

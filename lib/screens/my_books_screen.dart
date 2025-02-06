@@ -43,7 +43,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
     String deviceType = _getDeviceType(context);
     deviceName =
         "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
-    print('device information is: $deviceName');
+    // print('device information is: $deviceName');
   }
 
   @override
@@ -85,7 +85,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
       }
       return false;
     }).toList();
-    print('filteredOrders: $filteredOrders');
+    // print('filteredOrders: $filteredOrders');
 
     return SafeArea(
       child: Scaffold(
@@ -336,7 +336,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                                                   );
                                                   return;
                                                 }
-                                                print('Audio Book: $audioBook');
+                                                // print('Audio Book: $audioBook');
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(

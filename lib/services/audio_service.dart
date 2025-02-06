@@ -11,7 +11,7 @@ class AudioService {
       final session = await AudioSession.instance;
       await session.configure(const AudioSessionConfiguration.music());
     } catch (e) {
-      print('Error initializing audio session: $e');
+      // print('Error initializing audio session: $e');
     }
   }
 
@@ -36,7 +36,7 @@ class AudioService {
         await _player.play();
       }
     } catch (e) {
-      print('Error toggling playback: $e');
+      // print('Error toggling playback: $e');
     }
   }
 

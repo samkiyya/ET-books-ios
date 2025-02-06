@@ -48,7 +48,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
     String deviceType = _getDeviceType(context);
     deviceName =
         "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
-    print('device information is: $deviceName');
+    // print('device information is: $deviceName');
   }
 
   Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
@@ -85,7 +85,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
         }
       }
     } catch (e) {
-      debugPrint('Error fetching order: $e');
+      // debugPrint('Error fetching order: $e');
     }
 
     return null;

@@ -178,7 +178,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                         TextButton(
                           onPressed: () {
                             if (announcement.role == 'AUTHOR') {
-                              print('Author id: ${announcement.creatorId}');
+                              // print('Author id: ${announcement.creatorId}');
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

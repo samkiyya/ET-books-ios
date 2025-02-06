@@ -59,9 +59,9 @@ class NotificationProvider with ChangeNotifier {
 
     try {
       final token = await _getToken();
-      print('Notification Token: $token');
+      // print('Notification Token: $token');
       if (token == null) {
-        print('No token found. Cannot fetch notifications.');
+        // print('No token found. Cannot fetch notifications.');
         return;
       }
 
@@ -84,14 +84,15 @@ class NotificationProvider with ChangeNotifier {
               List<Map<String, dynamic>>.from(data['data']['items']);
           notifyListeners();
         } else {
-          print('Unexpected API response format: ${response.body}');
+          // print('Unexpected API response format: ${response.body}');
         }
       } else {
-        print(
-            'Failed to load notifications: ${response.body}, ${response.statusCode}');
+        // print(
+        //     'Failed to load notifications: ${response.body}, ${response.statusCode}');
       }
     } catch (e) {
-      print('Error loading notifications: $e');
+      throw e;
+      // print('Error loading notifications: $e');
     }
   }
 
@@ -100,11 +101,11 @@ class NotificationProvider with ChangeNotifier {
     try {
       final token = await _getToken();
       if (token == null) {
-        print('No token found. Cannot delete notification.');
+        // print('No token found. Cannot delete notification.');
         return;
       }
 
-      print('token to delete notification is: $token');
+      // print('token to delete notification is: $token');
       final response = await http.delete(
         Uri.parse('$deleteUrl/$id'),
         headers: {
@@ -117,10 +118,10 @@ class NotificationProvider with ChangeNotifier {
         _notifications.removeWhere((notification) => notification['id'] == id);
         notifyListeners();
       } else {
-        print('Failed to delete notification response: ${response.body} ${response.statusCode}');
+        // print('Failed to delete notification response: ${response.body} ${response.statusCode}');
       }
     } catch (e) {
-      print('Error deleting notification: $e');
+      // print('Error deleting notification: $e');
     }
   }
 
@@ -129,7 +130,7 @@ class NotificationProvider with ChangeNotifier {
     try {
       final token = await _getToken();
       if (token == null) {
-        print('No token found. Cannot toggle read status.');
+        // print('No token found. Cannot toggle read status.');
         return;
       }
 

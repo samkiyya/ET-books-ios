@@ -17,10 +17,10 @@ class ProfileProvider with ChangeNotifier {
   Future<void> fetchUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    print('Fetching user profile...');
-    print('Token to fetch profile: $_token');
+    // print('Fetching user profile...');
+    // print('Token to fetch profile: $_token');
     if (_token == null) {
-      print('No token available.');
+      // print('No token available.');
       return;
     }
 
@@ -31,27 +31,27 @@ class ProfileProvider with ChangeNotifier {
         url,
         headers: {'Authorization': 'Bearer $_token'},
       );
-      print('Response status: ${response.statusCode}');
+      // print('Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data['success']) {
           _userProfile = data['user'];
-          print('User profile: $_userProfile');
+          // print('User profile: $_userProfile');
 
           // Cache the profile locally
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('cachedUserProfile', json.encode(_userProfile));
 
-          print('User profile fetched from server.');
+          // print('User profile fetched from server.');
           notifyListeners();
         }
       } else {
-        print('Error fetching profile from server: ${response.statusCode}');
+        // print('Error fetching profile from server: ${response.statusCode}');
       }
     } catch (error) {
       if (error is SocketException) {
-        print('No internet connection. Attempting to load cached profile.');
+        // print('No internet connection. Attempting to load cached profile.');
         // Attempt to load cached profile
         final prefs = await SharedPreferences.getInstance();
         final cachedProfile = prefs.getString('cachedUserProfile');
@@ -59,12 +59,12 @@ class ProfileProvider with ChangeNotifier {
         if (cachedProfile != null) {
           _userProfile = json.decode(cachedProfile);
           notifyListeners();
-          print('User profile loaded from cache.');
+          // print('User profile loaded from cache.');
         } else {
-          print('No cached profile available.');
+          // print('No cached profile available.');
         }
       } else {
-        print('Error fetching profile: $error');
+        // print('Error fetching profile: $error');
       }
     }
   }

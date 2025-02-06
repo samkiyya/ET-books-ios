@@ -23,7 +23,7 @@ class AuthorProvider extends ChangeNotifier {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = prefs.getString('userToken');
-      print('Token: $_token');
+      // print('Token: $_token');
       if (_token == null || _token!.isEmpty) {
         errorMessage = 'Authentication required. Please log in First.';
         isLoading = false;
@@ -41,7 +41,7 @@ class AuthorProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('author data: $data');
+        // print('author data: $data');
 
         author = data['author'];
         isFollowing = data['author']['isFollowing'] ?? false;
@@ -58,15 +58,15 @@ class AuthorProvider extends ChangeNotifier {
           try {
             final error = json.decode(errorString.split('Exception:')[1]);
             errorMessage = error['message'];
-            print("error from json author $errorMessage");
+            // print("error from json author $errorMessage");
           } catch (e) {
             errorMessage = 'Error fetching author';
-            print("Error: $errorMessage");
+            // print("Error: $errorMessage");
           }
         }
       } else {
         errorMessage = 'Error fetching author';
-        print("Error: $errorMessage");
+        // print("Error: $errorMessage");
       }
     } finally {
       isLoading = false;
@@ -91,9 +91,9 @@ class AuthorProvider extends ChangeNotifier {
         headers: {'Authorization': 'Bearer $_token'},
       );
 
-      print('Toggle follow response: ${response.body}');
+      // print('Toggle follow response: ${response.body}');
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('Toggle follow request for user: $userId');
+        // print('Toggle follow request for user: $userId');
 
         await fetchAuthorById(userId); // Refresh the author data
       } else {
@@ -129,7 +129,7 @@ class AuthorProvider extends ChangeNotifier {
           _authors = (data['users'] as List)
               .map((author) => Author.fromJson(author))
               .toList();
-          print('Authors fetched: $_authors');
+          // print('Authors fetched: $_authors');
         } else {
           _setError('No authors found in the response.');
         }
@@ -153,7 +153,7 @@ class AuthorProvider extends ChangeNotifier {
     errorMessage = message;
     isLoading = false;
     notifyListeners();
-    print('Error: $message');
+    // print('Error: $message');
   }
 
   void _handleError(dynamic error, String defaultMessage) {
@@ -177,7 +177,7 @@ class AuthorProvider extends ChangeNotifier {
   Future<void> _loadToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('userToken');
-    print('Loaded token: $_token');
+    // print('Loaded token: $_token');
   }
   Future<void> toggleFollowAuthors(String userId) async { 
   try {

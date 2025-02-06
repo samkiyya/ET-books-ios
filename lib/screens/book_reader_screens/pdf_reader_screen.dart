@@ -114,7 +114,8 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userActivityProvider = Provider.of<UserActivityProvider>(context);
+    // final userActivityProvider =
+     Provider.of<UserActivityProvider>(context);
 
     double width = MediaQuery.of(context).size.width;
     return SafeArea(

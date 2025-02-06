@@ -55,7 +55,7 @@ class OrderStatusProvider with ChangeNotifier {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _token = prefs.getString('userToken');
-      print('Token: $_token');
+      // print('Token: $_token');
       if (_token == null || _token!.isEmpty) {
         _errorMessage = 'Authentication required. Please log in First.';
         _isLoading = false;
@@ -73,7 +73,7 @@ class OrderStatusProvider with ChangeNotifier {
           'Authorization': 'Bearer $_token',
         },
       );
-      print('order status response: ${response.body}');
+      // print('order status response: ${response.body}');
         final Map<String, dynamic> responseBody = json.decode(response.body);
 
       if (response.statusCode == 200) {
@@ -82,7 +82,7 @@ class OrderStatusProvider with ChangeNotifier {
         final List<dynamic> ordersData = responseBody['orders'];
         // print('Orders status Data: $ordersData');
         _orders = ordersData.map((json) => Order.fromJson(json)).toList();
-        print('Orders: $_orders');
+        // print('Orders: $_orders');
         _successMessage =
             responseBody['message'] ?? 'Orders fetched successfully.';
 
@@ -113,7 +113,7 @@ class OrderStatusProvider with ChangeNotifier {
         }
       } else {
         _errorMessage = 'Failed to fetch orders. Please try again later.';
-        print('Failed to fetch orders: $error');
+        // print('Failed to fetch orders: $error');
       }
     } finally {
       _isLoading = false;

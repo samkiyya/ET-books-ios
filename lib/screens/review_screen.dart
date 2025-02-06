@@ -139,6 +139,18 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
                     if (reviewProvider.loading) {
                       return const Center(child: CircularProgressIndicator());
                     }
+                    if (reviewProvider.reviews.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          "No reviews for this book yet",
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.color3),
+                          textAlign: TextAlign.center,
+                        ),
+                      );
+                    }
                     return ListView.builder(
                       itemCount: reviewProvider.reviews.length,
                       itemBuilder: (context, index) {

@@ -18,7 +18,6 @@ class AnnouncementListScreen extends StatefulWidget {
 }
 
 class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
- 
   @override
   void initState() {
     super.initState();
@@ -118,7 +117,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                                 image: DecorationImage(
                                   image: NetworkImage(
                                       '${Network.baseUrl}/${announcement.imageUrl!}'),
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
@@ -154,7 +153,7 @@ class _AnnouncementListScreenState extends State<AnnouncementListScreen> {
                                       image: DecorationImage(
                                         image: NetworkImage(
                                             '${Network.baseUrl}/${announcement.imageUrl!}'),
-                                        fit: BoxFit.cover,
+                                        fit: BoxFit.contain,
                                       ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),

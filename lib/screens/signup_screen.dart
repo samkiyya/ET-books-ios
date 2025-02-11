@@ -347,7 +347,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                             )
                                           : Image.file(
                                               signupProvider.profileImage!,
-                                              fit: BoxFit.cover,
+                                              fit: BoxFit.contain,
                                               height: height * 0.09))
                                 ],
                               ),

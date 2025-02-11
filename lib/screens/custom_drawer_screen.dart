@@ -79,7 +79,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
 
           Divider(
               height: height * 0.00045,
-              color: AppColors.color5.withOpacity(0.6)),
+              color: AppColors.color5.withOpacity(0.6),),
           Padding(
             padding:
                 EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
@@ -177,24 +177,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     }
   }
 
-  // Enable 2FA logic
-  // void _enable2FA(BuildContext context) async {
-  //   final authProvider = Provider.of<AuthProvider>(context);
-  //   try {
-  //     await authProvider.toggle2FA();
-  //     // Toggling 2FA
-  //     if (context.mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //           const SnackBar(content: Text('2FA Enabled Successfully!')));
-  //     }
-  //   } catch (e) {
-  //     if (context.mounted) {
-  //       ScaffoldMessenger.of(context)
-  //           .showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-  //     }
-  //   }
-  // }
-
   void shareApp(BuildContext context) {
     const shareText = '''
 Check out this amazing app! Download it here:
@@ -281,8 +263,4 @@ ${Network.appPlayStoreUrl}${Network.appPackageName}
   void _settings(BuildContext context) {
     context.push('/settings');
   }
-
-  // void _contactUs(BuildContext context) {
-  //   context.push('/contact-us');
-  // }
 }

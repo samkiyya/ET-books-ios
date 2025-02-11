@@ -33,7 +33,7 @@ class AuthorCard extends StatelessWidget {
                       ? '${Network.baseUrl}/${author.imageFilePath}'
                       : 'https://xsgames.co/randomusers/avatar.php?g=pixel',
                   width: width * 0.4,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                   errorBuilder: (BuildContext context, Object error,
                       StackTrace? stackTrace) {
                     return Icon(
@@ -166,7 +166,7 @@ class AuthorCard extends StatelessWidget {
                                           //   '${Network.baseUrl}/${book.imageFilePath}',
                                           //   height: 120, // Adjust based on your design
                                           //   width: 100,
-                                          //   fit: BoxFit.cover,
+                                          //   fit: BoxFit.contain,
                                           // ),
                                           const Icon(
                                             Icons.book,
@@ -229,7 +229,6 @@ class AuthorCard extends StatelessWidget {
           SizedBox(height: 15),
 
           // Follow Button
-          
         ],
       ),
     );

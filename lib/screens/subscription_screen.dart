@@ -355,7 +355,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                                         ? Image.file(
                                                             provider
                                                                 .receiptFile!,
-                                                            fit: BoxFit.cover,
+                                                            fit: BoxFit.contain,
                                                             height:
                                                                 height * 0.09,
                                                           )
@@ -458,7 +458,6 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                             int? userId = int.tryParse(pref
                                                 .getString('userId')
                                                 .toString());
-                                                
 
                                             final isSuccess =
                                                 provider.errorMessage.isEmpty;

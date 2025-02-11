@@ -23,7 +23,7 @@ class SquareTile extends StatelessWidget {
         child: Image.asset(
           imagePath,
           height: height * 0.08,
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
         ),
       ),
     );

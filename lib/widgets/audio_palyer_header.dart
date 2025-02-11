@@ -40,7 +40,7 @@ class AudioPlayerHeader extends StatelessWidget {
                 "${Network.baseUrl}/$imagePath",
                 width: width * 0.8,
                 height: height * 0.3,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(
                     Icons.broken_image,

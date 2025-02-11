@@ -50,6 +50,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _navigateToNextScreen() async {
+    await Future.delayed(const Duration(seconds: 3));
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
     if (!mounted) return;
@@ -97,10 +98,41 @@ class _SplashScreenState extends State<SplashScreen>
                 opacity: _animation,
                 child: ScaleTransition(
                   scale: _animation,
-                  child: Icon(
-                    Icons.book,
-                    size: width * 0.4,
-                    color: AppColors.color3,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Background gradient
+                      Container(
+                        width: width * 0.5, // Adjust size as needed
+                        height: width * 0.5,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.white.withOpacity(0.7), // Light white
+                              Colors.grey.withOpacity(0.3), // Slight dark tint
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          shape: BoxShape.circle, // Make it rounded if needed
+                        ),
+                      ),
+
+                      // Image with fallback icon
+                      Image.asset(
+                        'assets/icon/splash_icon.png',
+                        width: width * 0.4,
+                        height: width * 0.4,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.book,
+                            size: width * 0.4,
+                            color: AppColors.color3,
+                          );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),

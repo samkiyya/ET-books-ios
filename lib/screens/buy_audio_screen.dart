@@ -221,7 +221,7 @@ class _BuyAudioScreenState extends State<BuyAudioScreen> {
                                           : orderProvider.isImage
                                               ? Image.file(
                                                   orderProvider.receiptImage!,
-                                                  fit: BoxFit.cover,
+                                                  fit: BoxFit.contain,
                                                   height: height * 0.09,
                                                 )
                                               : Row(

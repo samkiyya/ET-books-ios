@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     _setupDeepLinks();
-    disableScreenshots();
+    // disableScreenshots();
     Future.delayed(Duration.zero, () {
       if (mounted) {
         appPermission.initializePermissions(context);

@@ -547,7 +547,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                                               height * 0.07,
                                                                           width:
                                                                               double.infinity,
-                                                                          fit: BoxFit.contain,
+                                                                          fit: BoxFit
+                                                                              .contain,
                                                                           errorBuilder: (context,
                                                                               error,
                                                                               stackTrace) {

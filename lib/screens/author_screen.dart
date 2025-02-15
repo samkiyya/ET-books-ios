@@ -54,7 +54,8 @@ class _AuthorScreenState extends State<AuthorScreen> {
         ),
         body: !isDataFetched
             ? const Center(
-                child: LoadingWidget(),) // Only show when data is not fetched
+                child: LoadingWidget(),
+              ) // Only show when data is not fetched
             : errorMessage.isNotEmpty
                 ? Center(
                     child: Text(errorMessage,
@@ -80,7 +81,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                             ? '${Network.baseUrl}/${author['image']}'
                                             : 'https://xsgames.co/randomusers/avatar.php?g=pixel',
                                         width: width * 0.4,
-                                        fit: BoxFit.cover,
+                                        fit: BoxFit.contain,
                                         errorBuilder: (BuildContext context,
                                             Object error,
                                             StackTrace? stackTrace) {
@@ -143,7 +144,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                       ),
                                       const SizedBox(height: 16),
                                       SizedBox(
-                                        height: height*0.25,
+                                        height: height * 0.25,
                                         child: ListView.builder(
                                           scrollDirection: Axis.horizontal,
                                           itemCount: author['books'].length,
@@ -167,7 +168,7 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                                   margin: const EdgeInsets.only(
                                                       right: 16),
                                                   child: SizedBox(
-                                                    width: width*0.35,
+                                                    width: width * 0.35,
                                                     child: Padding(
                                                       padding:
                                                           const EdgeInsets.only(
@@ -183,11 +184,12 @@ class _AuthorScreenState extends State<AuthorScreen> {
                                                                   height: 100,
                                                                   width: 120,
                                                                   fit: BoxFit
-                                                                      .cover,
+                                                                      .fill,
                                                                 )
-                                                              :  Icon(
+                                                              : Icon(
                                                                   Icons.book,
-                                                                  size: width*0.27,
+                                                                  size: width *
+                                                                      0.27,
                                                                   color: AppColors
                                                                       .color1,
                                                                 ),

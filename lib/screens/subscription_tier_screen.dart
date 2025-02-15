@@ -111,19 +111,22 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                             ),
                             SizedBox(height: height * 0.0045),
                             ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        SubscriptionOrderScreen(tier: tier),
-                                  ),
-                                );
-                              },
+                              onPressed:
+                                  tier['subscription_status'] == 'current'
+                                      ? null
+                                      : () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SubscriptionOrderScreen(
+                                                      tier: tier),
+                                            ),
+                                          );
+                                        },
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: AppColors.color3,
-                                backgroundColor:
-                                    AppColors.color2, // Text color
+                                backgroundColor: AppColors.color2, // Text color
                                 elevation: 10, // Shadow effect
                                 padding: EdgeInsets.symmetric(
                                     vertical: height * 0.00585585,
@@ -136,7 +139,12 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                                     0.6), // Custom shadow color for realism
                               ),
                               child: Text(
-                                'Subscribe',
+                                // tier['subscription_status'].toString().toUpperCase(),
+                                tier['subscription_status'] == 'upgrade'
+                                    ? 'Upgrade'
+                                    : tier['subscription_status'] == 'current'
+                                        ? 'Current Plan'
+                                        : 'Subscribe',
                                 style: AppTextStyles.buttonText.copyWith(
                                   color: AppColors.color3,
                                 ),

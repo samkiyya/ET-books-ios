@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:book_mobile/constants/constants.dart';
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
@@ -82,6 +84,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     double height = AppSizes.screenHeight(context);
     final profileProvider = Provider.of<ProfileProvider>(context);
     final userProfile = profileProvider.userProfile;
+    final followerCount = profileProvider.followerCount;
+    final followingCount = profileProvider.followingCount;
+Map<String, dynamic> subLimitsLeft = {};
+try {
+  // print('userProfile: $userProfile');
+  subLimitsLeft = userProfile?['subLimitsLeft'] != null
+      ? jsonDecode(userProfile?['subLimitsLeft'])
+      : {};
+      // print('subLimitsLeft: $subLimitsLeft');
+} catch (e) {
+  // print('Error decoding subLimitsLeft: $e');
+}
 
     return SafeArea(
       child: Scaffold(
@@ -228,26 +242,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   _buildColumn(
                                       title: 'Subscription',
                                       value:
-                                          '${userProfile['subscription']?['name'] ?? 'Free'}',
+                                          '${userProfile['subscription']?['tier_name'] ?? 'Free'}',
                                       showDivider: true,
                                       width: width),
                                   // Followers or Following Column
                                   userProfile['role'] == "AUTHOR"
                                       ? _buildColumn(
                                           title: 'Followers',
-                                          value:
-                                              '${userProfile['followerCount']?.toInt() ?? 0}',
+                                          value: '${followerCount ?? 0}',
                                           showDivider: false,
                                           width: width)
                                       : _buildColumn(
                                           title: 'Following',
-                                          value:
-                                              '${userProfile['followingCount']?.toInt() ?? 0}',
+                                          value: '${followingCount ?? 0}',
                                           showDivider: false,
                                           width: width),
                                 ],
                               );
                             },
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: height * 0.02),
+                      Card(
+                        color: AppColors.color2,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                        elevation: 5,
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: width * 0.04,
+                            vertical: height * 0.02,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Subscription Limits',
+                                style: AppTextStyles.heading2
+                                    .copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: height * 0.01),
+                              Text(
+                                'Books: ${subLimitsLeft['books'] ?? 0}',
+                                style: AppTextStyles.bodyText,
+                              ),
+                              Text(
+                                'Audio Books: ${subLimitsLeft['audio_books'] ?? 0}',
+                                style: AppTextStyles.bodyText,
+                              ),
+                              Text(
+                                'Periodicals: ${subLimitsLeft['periodicals'] ?? 0}',
+                                style: AppTextStyles.bodyText,
+                              ),
+                            ],
                           ),
                         ),
                       ),

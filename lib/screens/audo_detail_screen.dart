@@ -1,6 +1,7 @@
 import 'package:book_mobile/constants/size.dart';
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/models/order_model.dart';
+import 'package:book_mobile/providers/content_access_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:book_mobile/constants/constants.dart';
@@ -12,6 +13,7 @@ import 'package:book_mobile/screens/view_order_status_screen.dart';
 import 'package:book_mobile/providers/order_status_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:book_mobile/services/device_info.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AudioDetailScreen extends StatefulWidget {
   final Map<String, dynamic> audioBook;
@@ -92,10 +94,38 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
   }
 
   void _handleButtonPress(BuildContext context) async {
+    final currentBookId = widget.audioBook['id'];
     final order = await fetchOrderForCurrentUser();
+ SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? userId = prefs.getString('userId');
+
+
+    final accessProvider = Provider.of<AccessProvider>(context, listen: false);
+    if (userId == null) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Log in to continue'),
+          content: Text('Please log in to continue to buy this book.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    await accessProvider.fetchSubscriptionStatus(userId,'audio_books');
+        final bool? isSubscribed = accessProvider.hasReachedLimitAndApproved;
 
     if (order != null) {
-      if (order['status'] == 'PENDING') {
+      final orderedBookId = order['bookId'];
+      if (order['status'] == 'PENDING' && orderedBookId == currentBookId) {
         // Redirect to Order Status Screen
         if (context.mounted) {
           Navigator.push(
@@ -103,7 +133,8 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
             MaterialPageRoute(builder: (context) => const OrderStatusScreen()),
           );
         }
-      } else if (order['status'] == 'APPROVED') {
+      } else if ((order['status'] == 'APPROVED' &&
+              orderedBookId == currentBookId)||isSubscribed==true) {
         final type = order['type'];
 
         if (type == 'audio') {
@@ -119,21 +150,6 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
             );
           }
         }
-        // else if (type == 'pdf') {
-        //   // Redirect to Book Reader Screen
-        //   if (context.mounted) {
-        //     Navigator.push(
-        //       context,
-        //       MaterialPageRoute(
-        //         builder: (context) => BookReaderScreen(
-        //           pdfPath:
-        //               '${Network.baseUrl}/${widget.audioBook['pdfFilePath']}',
-        //           bookTitle: widget.audioBook['title'],
-        //         ),
-        //       ),
-        //     );
-        //   }
-        // }
         else if (type == 'both') {
           // Show both "Play" and "Read" buttons
           _showBothButtons(context);
@@ -240,6 +256,14 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
+    final accessProvider = Provider.of<AccessProvider>(
+      context,
+    );
+    // final reviewProvider = Provider.of<ReviewProvider>(context);
+
+    final isSubscribed = accessProvider.hasReachedLimitAndApproved;
+    print('isSubscribed: $isSubscribed');
+
 
     return SafeArea(
       child: Scaffold(
@@ -355,7 +379,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                             return const Text('Error loading data');
                           } else {
                             final order = snapshot.data;
-                            final buttonText = _determineButtonText(order);
+                            final buttonText = _determineButtonText(order, isSubscribed: isSubscribed );
                             return CustomButton(
                               text: buttonText,
                               onPressed: () => _handleButtonPress(context),
@@ -380,11 +404,11 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
     );
   }
 
-  String _determineButtonText(Map<String, dynamic>? order) {
+  String _determineButtonText(Map<String, dynamic>? order,{required bool isSubscribed}) {
     if (order != null) {
       if (order['status'] == 'PENDING') {
         return 'Check Order Status';
-      } else if (order['status'] == 'APPROVED') {
+      } else if (order['status'] == 'APPROVED'|| isSubscribed == true) {
         final type = order['type'];
         if (type == 'audio') {
           return 'Play Audio';

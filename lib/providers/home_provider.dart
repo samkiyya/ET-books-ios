@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:book_mobile/services/book_service.dart';
+import 'package:book_mobile/services/file_services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:book_mobile/constants/constants.dart';
@@ -43,6 +45,7 @@ class HomeProvider with ChangeNotifier {
       if (allBooksResponse.statusCode == 200) {
         allBooks = jsonDecode(allBooksResponse.body);
         // print('All Books Fetched Successfully');
+        await syncDownloadedBooksWithBackend(allBooks);
       } else {
         // print("All books endpoint returned: ${allBooksResponse.statusCode}");
         allBooks = []; // Default to empty list
@@ -115,4 +118,23 @@ class HomeProvider with ChangeNotifier {
     recommendedBooks = [];
     notifyListeners();
   }
+
+  static Future<void> syncDownloadedBooksWithBackend(
+    List<dynamic> allBooks) async {
+  // Get downloaded books from local storage
+  final downloadedBooks = await BookService.getDownloadedBooks();
+
+  for (var book in downloadedBooks) {
+    // Check if the book exists in the backend's allBooks list
+    bool bookExists = allBooks.any((backendBook) => 
+      backendBook['id'] == book['id']
+    );
+
+    // If the book doesn't exist in backend, delete it
+    if (!bookExists) {
+      await FileService.deleteBook(book['id'], book['title']);
+    }
+  }
+}
+
 }

@@ -10,8 +10,12 @@ class ProfileProvider with ChangeNotifier {
   String? _token;
   Map<String, dynamic>? _userProfile;
   final baseUrl = Network.baseUrl;
+  int?_followerCount;
+  int?_followingCount;
 
   Map<String, dynamic>? get userProfile => _userProfile;
+  int? get followerCount => _followerCount;
+  int? get followingCount => _followingCount;
 
   // Fetch user profile with an online-first approach
   Future<void> fetchUserProfile() async {
@@ -38,6 +42,8 @@ class ProfileProvider with ChangeNotifier {
         if (data['success']) {
           _userProfile = data['user'];
           // print('User profile: $_userProfile');
+          _followerCount = data!['followerCount'];
+          _followingCount = data!['followingCount'];
 
           // Cache the profile locally
           final prefs = await SharedPreferences.getInstance();

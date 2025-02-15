@@ -9,9 +9,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 import 'package:go_router/go_router.dart';
 import 'package:book_mobile/exports.dart';
+import 'package:cosmos_epub/cosmos_epub.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+bool initialized = await CosmosEpub.initialize();
+  if (!initialized) {
+    print('Failed to initialize CosmosEpub');
+  }
 
   final prefs = await SharedPreferences.getInstance();
   final storageService = StorageService(prefs);

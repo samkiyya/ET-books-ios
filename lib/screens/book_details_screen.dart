@@ -37,6 +37,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
   void initState() {
     super.initState();
     _getDeviceInfo();
+    _fetchSubscriptionStatus();
   }
 
   Future<void> _getDeviceInfo() async {
@@ -89,11 +90,23 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     return null;
   }
 
+Future<void> _fetchSubscriptionStatus() async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  final String? userId = prefs.getString('userId');
+  if (userId != null) {
+    final accessProvider = Provider.of<AccessProvider>(context, listen: false);
+    await accessProvider.fetchSubscriptionStatus(userId, "books");
+    if (context.mounted) {
+      setState(() {}); // Trigger a rebuild after fetching the subscription status
+    }
+  }
+}
   void _handleButtonPress(BuildContext context) async {
     final currentBookId = widget.book['id'];
     final order = await fetchOrderForCurrentUser();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? userId = prefs.getString('userId');
+
 
     final accessProvider = Provider.of<AccessProvider>(context, listen: false);
     if (userId == null) {
@@ -115,8 +128,11 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
       return;
     }
 
-    await accessProvider.fetchSubscriptionStatus(userId);
-    final bool? isSubscribed = accessProvider.hasReachedLimitAndApproved;
+    await accessProvider.fetchSubscriptionStatus(userId,"books");
+    if (context.mounted) {
+    setState(() {});  // This ensures the UI rebuilds after fetching the subscription status
+  }
+    final bool isSubscribed = accessProvider.hasReachedLimitAndApproved;
 
     if (order != null) {
       final orderedBookId = order['bookId'];
@@ -130,7 +146,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
         }
       } else if ((order['status'] == 'APPROVED' &&
               orderedBookId == currentBookId) ||
-          isSubscribed == true) {
+          isSubscribed ) {
         if (context.mounted) {
           Navigator.push(
             context,
@@ -160,7 +176,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
     final accessProvider = Provider.of<AccessProvider>(
-      context,
+      context
     );
     // final reviewProvider = Provider.of<ReviewProvider>(context);
 
@@ -369,7 +385,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
                         } else {
                           final order = snapshot.data;
                           final buttonText = _determineButtonText(order,
-                              isSubscribed: isSubscribed ?? false);
+                              isSubscribed: isSubscribed );
                           return CustomButton(
                             text: buttonText,
                             onPressed: () => _handleButtonPress(context),

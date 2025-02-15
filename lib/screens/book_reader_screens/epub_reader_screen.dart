@@ -1,240 +1,99 @@
-import 'dart:io';
-import 'package:book_mobile/screens/book_reader_screens/epub_chapter_drawer.dart';
-import 'package:book_mobile/screens/book_reader_screens/epub_fontsize_controller.dart';
 import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:cosmos_epub/Model/book_progress_model.dart';
+import 'package:cosmos_epub/cosmos_epub.dart';
+import 'package:cosmos_epub/Helpers/custom_toast.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_epub_viewer/flutter_epub_viewer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EpubReaderScreen extends StatefulWidget {
   final String filePath;
   final String bookTitle;
 
-  const EpubReaderScreen({
-    super.key,
-    required this.filePath,
-    required this.bookTitle,
-  });
+  const EpubReaderScreen(
+      {super.key, required this.filePath, required this.bookTitle});
 
   @override
   State<EpubReaderScreen> createState() => _EpubReaderScreenState();
 }
 
 class _EpubReaderScreenState extends State<EpubReaderScreen> {
-  final epubController = EpubController();
-  bool isLoading = true;
-  double _progress = 0.0;
-  var textSelectionCfi = '';
-  double _fontSize = 16;
-  String _currentTheme = 'day';
-  UniqueKey _epubViewerKey = UniqueKey();
-  double _savedPosition = 0.0;
-  bool _showControls = true;
-
-  // Define theme colors
-  final Map<String, EpubTheme> _themes = {
-    'day': EpubTheme.light(),
-    'night': EpubTheme.dark(),
-    'sepia': EpubTheme.custom(
-      backgroundColor: const Color(0xFFF4ECD8),
-      foregroundColor: Colors.black,
-    ),
-  };
+  late Future<void> _readerFuture;
+  int startChapterIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
+    _readerFuture = _openEpubReader();
   }
 
-  Future<void> _loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
+  Future<void> _openEpubReader() async {
+    print('Initializing CosmosEpub...');
 
-    // Load font size preference
-    double? savedFontSize = prefs.getDouble('fontSize');
+    // Initialize CosmosEpub if not already initialized
+    // bool initialized = await CosmosEpub.initialize();
+    // if (!initialized) {
+    //   throw Exception('Failed to initialize CosmosEpub');
+    // }
+    print('Fetching book progress...');
 
-    if (savedFontSize != null) {
-      setState(() {
-        _fontSize = savedFontSize;
-      });
-    }
+    // Load the book progress
+    BookProgressModel? bookProgress =
+        CosmosEpub.getBookProgress(widget.bookTitle.toString());
+    int starterChapter = bookProgress.currentChapterIndex ?? 0;
+    bookProgress.currentPageIndex ?? 0;
+    print('Opening asset book...');
 
-    // Load theme preference
-    String? savedTheme = prefs.getString('theme');
-    if (savedTheme != null && _themes.containsKey(savedTheme)) {
-      setState(() {
-        _currentTheme = savedTheme;
-      });
-    }
+    // Open the EPUB file
+    await CosmosEpub.openLocalBook(
+      localPath: widget.filePath,
+      context: context,
+      bookId: widget.bookTitle.toString(),
+      starterChapter: starterChapter >= 0
+          ? starterChapter
+          : bookProgress.currentChapterIndex ?? 0,
+      onPageFlip: (int currentPage, int totalPages) {
+        CosmosEpub.setCurrentPageIndex(
+            widget.bookTitle.toString(), currentPage);
+        CosmosEpub.setCurrentChapterIndex(
+            widget.bookTitle.toString(), bookProgress.currentChapterIndex ?? 0);
+
+        print(currentPage);
+      },
+      onLastPage: (int lastPageIndex) {
+        CustomToast.showToast(
+            'You have reached the end of the book. Thank you for reading!');
+        Snack('You have reached the end of the book. Thank you for reading!',
+            context, Colors.black);
+        print('We arrived to the last widget');
+      },
+    );
+
+    //  lateFuture() {
+    // setState(() {
+    //   _readerFuture = _openEpubReader(context);
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: ChapterDrawer(controller: epubController),
-      appBar: _showControls
-          ? AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Text(widget.bookTitle),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.palette),
-                  onPressed: _showThemePicker,
-                ),
-              ],
-            )
-          : null,
-      body: SafeArea(
-        child: Column(
-          children: [
-            
-            Expanded(
-              child: Stack(
-                children: [
-                  EpubViewer(
-                    key: _epubViewerKey,
-                    epubSource: EpubSource.fromFile(File(widget.filePath)),
-                    epubController: epubController,
-                    displaySettings: EpubDisplaySettings(
-                      flow: EpubFlow.paginated,
-                      useSnapAnimationAndroid: false,
-                      snap: true,
-                      allowScriptedContent: true,
-                      theme: _themes[_currentTheme],
-                      fontSize: _fontSize.toInt(),
-                      spread: EpubSpread.always,
-                    ),
-                    selectionContextMenu: ContextMenu(
-                      menuItems: [
-                        ContextMenuItem(
-                          title: "Highlight",
-                          id: 1,
-                          action: () async {
-                            epubController.addHighlight(cfi: textSelectionCfi);
-                          },
-                        ),
-                      ],
-                      settings: ContextMenuSettings(
-                          hideDefaultSystemContextMenuItems: true),
-                    ),
-                    onChaptersLoaded: (chapters) {
-                      setState(() {
-                        isLoading = false;
-                      });
-                    },
-                    onEpubLoaded: () async {
-                      print('Epub loaded');
-                      _themes[_currentTheme] = _themes[_currentTheme]!;
-                      _progress = _savedPosition;
-                    },
-                    onRelocated: (value) {
-                      setState(() {
-                        _progress = value.progress;
-                        _savedPosition = value.progress;
-                      });
-                    },
-                    onAnnotationClicked: (cfi) {
-                      print("Annotation clicked: $cfi");
-                    },
-                    onTextSelected: (epubTextSelection) {
-                      print("Text selected: ${epubTextSelection.selectionCfi}");
-                    },
-                  ),
-                  Visibility(
-                    visible: isLoading,
-                    child: const Center(
-                      child: LoadingWidget(),
-                    ),
-                  ),
-                  if (!isLoading)
-                    Positioned.fill(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior
-                            .translucent, // Allow taps to pass through
-                        onTap: () {
-                          setState(() {
-                            _showControls = !_showControls;
-                          });
-                        },
-                      ),
-                    ),
-                ],
-              ),
-            ),
-           LinearProgressIndicator(
-              value: _progress,
-              backgroundColor: Colors.transparent,
-            ),
-          ],
-        ),
+      body: FutureBuilder<void>(
+        future: _readerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CupertinoActivityIndicator(
+              radius: 15,
+              color: Colors.black, // Adjust the radius as needed
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text('Error loading the EPUB file: ${snapshot.error}'),
+            );
+          } else {
+            return const Center(child: LoadingWidget());
+          }
+        },
       ),
     );
-  }
-
-  void _handleFontSizeChange(double newSize) {
-    setState(() {
-      _fontSize = newSize;
-    });
-    epubController.setFontSize(fontSize: newSize).then((_) {
-      _saveFontSizePreference(newSize);
-    });
-  }
-
-  Future<void> _saveFontSizePreference(double fontSize) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('fontSize', fontSize.toDouble());
-  }
-
-  final EpubManager _epubManager = EpubManager.continuous;
-
-  void _showThemePicker() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Choose Theme',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              ..._themes.keys.map((themeKey) {
-                return ListTile(
-                  title: Text(
-                    themeKey.replaceAll('_', ' ').toUpperCase(),
-                    style: TextStyle(
-                      color: _currentTheme == themeKey
-                          ? Theme.of(context).primaryColor
-                          : Colors.black,
-                    ),
-                  ),
-                  onTap: () {
-                    setState(() {
-                      _currentTheme = themeKey;
-                      _epubViewerKey = UniqueKey();
-                      _saveThemePreference(themeKey);
-                      epubController.setManager(manager: _epubManager);
-                    });
-                    Navigator.pop(context);
-                  },
-                );
-              }),
-              ControlsSection(
-                fontSize: _fontSize,
-                onFontSizeChange: _handleFontSizeChange,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future<void> _saveThemePreference(String theme) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('theme', theme);
   }
 }

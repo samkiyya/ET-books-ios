@@ -1,6 +1,6 @@
 import 'package:book_mobile/constants/styles.dart';
 import 'package:book_mobile/providers/review_provider.dart';
-import 'package:book_mobile/screens/update_rating_dialog_screen.dart';
+// import 'package:book_mobile/screens/update_rating_dialog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -30,7 +30,7 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text("Confirm Deletion"),
-        content: const Text("Are you sure you want to delete this review?"),
+        content: const Text("Are you sure you want to delete your review?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
@@ -188,35 +188,35 @@ class _BookReviewsScreenState extends State<BookReviewsScreen> {
                                   reviewProvider.userId == review.user.id
                                       ? Row(
                                           children: [
-                                            IconButton(
-                                              icon: const Icon(Icons.edit,
-                                                  color: AppColors.color3,
-                                                  size: 30),
-                                              onPressed: () {
-                                                showModalBottomSheet(
-                                                  context: context,
-                                                  isScrollControlled: true,
-                                                  builder: (context) => Padding(
-                                                    padding: EdgeInsets.only(
-                                                      bottom:
-                                                          MediaQuery.of(context)
-                                                              .viewInsets
-                                                              .bottom,
-                                                    ),
-                                                    child: UpdateRatingDialog(
-                                                      bookId: widget.bookId,
-                                                      initialRating: review
-                                                          .reviewRating
-                                                          .toDouble(),
-                                                      initialComment:
-                                                          review.comment,
-                                                      reviewId: review.id,
-                                                      isEditing: true,
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
+                                            // IconButton(
+                                            //   icon: const Icon(Icons.edit,
+                                            //       color: AppColors.color3,
+                                            //       size: 30),
+                                            //   onPressed: () {
+                                            //     showModalBottomSheet(
+                                            //       context: context,
+                                            //       isScrollControlled: true,
+                                            //       builder: (context) => Padding(
+                                            //         padding: EdgeInsets.only(
+                                            //           bottom:
+                                            //               MediaQuery.of(context)
+                                            //                   .viewInsets
+                                            //                   .bottom,
+                                            //         ),
+                                            //         child: UpdateRatingDialog(
+                                            //           bookId: widget.bookId,
+                                            //           initialRating: review
+                                            //               .reviewRating
+                                            //               .toDouble(),
+                                            //           initialComment:
+                                            //               review.comment,
+                                            //           reviewId: review.id,
+                                            //           isEditing: true,
+                                            //         ),
+                                            //       ),
+                                            //     );
+                                            //   },
+                                            // ),
                                             IconButton(
                                               icon: const Icon(Icons.delete,
                                                   color: Colors.red, size: 30),

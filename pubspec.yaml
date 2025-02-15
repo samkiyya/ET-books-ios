@@ -48,6 +48,12 @@ dependencies:
   go_router: ^14.6.3
   animated_dropdown_search_codespark: ^2.0.2
   file_picker: ^8.1.7
+  vocsy_epub_viewer:
+  cosmos_epub: ^0.0.2
+  # ethiobook_epub_viewer:
+  #   git:
+  #     url: https://github.com/samkiyya/custom_epub_viewer.git
+  #     ref: main
 
 dev_dependencies:
   flutter_test:

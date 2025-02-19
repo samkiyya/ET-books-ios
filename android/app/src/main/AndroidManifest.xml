@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools"
-package="com.example.book_mobile">
+package="com.etbooks.et.bookreader">
     <queries>
         <provider android:authorities="com.facebook.katana.provider.PlatformProvider" />
         <intent>
@@ -9,7 +9,7 @@ package="com.example.book_mobile">
         </intent>
     </queries>
     <application
-        android:label="Dr. MenoreRead"
+        android:label="ET-Books"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         android:usesCleartextTraffic="true"
@@ -51,7 +51,7 @@ package="com.example.book_mobile">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="samideeplink.smartbingogames.com"/>
+                <data android:scheme="http" android:host="samdeeplink.etbooks.et"/>
                 <data android:scheme="https"/>
                 <!-- <data android:scheme="samuel" android:host="open.my.firstapp.app" android:pathPrefix="/gcallback" /> -->
             </intent-filter>
@@ -60,7 +60,7 @@ package="com.example.book_mobile">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="samideeplink.smartbingogames.com" pathprefix="/*" />
+                <data android:scheme="http" android:host="samdeeplink.etbooks.et" pathprefix="/*" />
                 <data android:scheme="https"/>
             </intent-filter>
 

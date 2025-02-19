@@ -1,8 +1,8 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/author_provider.dart';
-import 'package:book_mobile/widgets/authors_card.dart';
-import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/author_provider.dart';
+import 'package:bookreader/widgets/authors_card.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,7 @@ class AuthorsScreen extends StatefulWidget {
 
 class _AuthorsScreenState extends State<AuthorsScreen> {
   bool isDataFetched = false;
-final Map<String, bool> _loadingStates = {};
+  final Map<String, bool> _loadingStates = {};
   // Fetch authors inside initState
   @override
   void initState() {
@@ -63,7 +63,8 @@ final Map<String, bool> _loadingStates = {};
                       itemCount: authorProvider.authors.length,
                       itemBuilder: (context, index) {
                         final author = authorProvider.authors[index];
-                                        final isAuthorLoading = _loadingStates[author.id.toString()] ?? false;
+                        final isAuthorLoading =
+                            _loadingStates[author.id.toString()] ?? false;
 
                         return Column(
                           children: [
@@ -77,7 +78,8 @@ final Map<String, bool> _loadingStates = {};
                                     : () {
                                         // Disable button while updating follow status
                                         setState(() {
-                                          _loadingStates[author.id.toString()] = true;
+                                          _loadingStates[author.id.toString()] =
+                                              true;
                                         });
                                         authorProvider
                                             .toggleFollowAuthors(
@@ -85,7 +87,8 @@ final Map<String, bool> _loadingStates = {};
                                             .then((_) {
                                           setState(() {
                                             // Enable the button once the action is completed
-                                            _loadingStates[author.id.toString()] = false;
+                                            _loadingStates[
+                                                author.id.toString()] = false;
                                           });
                                         });
                                       },
@@ -99,7 +102,7 @@ final Map<String, bool> _loadingStates = {};
                                             : 'Follow',
                                         style: TextStyle(
                                           color: Colors.black,
-                                          fontSize: width*0.04,
+                                          fontSize: width * 0.04,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),

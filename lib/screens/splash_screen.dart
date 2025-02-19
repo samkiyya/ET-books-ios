@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-// import 'package:book_mobile/screens/verification_screen.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+// import 'package:bookreader/screens/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/providers/login_provider.dart';
-// import 'package:book_mobile/screens/home_screen.dart';
+import 'package:bookreader/providers/login_provider.dart';
+// import 'package:bookreader/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

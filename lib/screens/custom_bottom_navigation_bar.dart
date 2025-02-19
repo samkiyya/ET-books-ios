@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/models/bottom_bar_item_model.dart';
-import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
-import 'package:book_mobile/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/models/bottom_bar_item_model.dart';
+import 'package:bookreader/widgets/animated_notch_bottom_bar/notch_bottom_bar.dart';
+import 'package:bookreader/widgets/animated_notch_bottom_bar/notch_bottom_bar_controller.dart';
 import 'package:go_router/go_router.dart';
 
 class CustomNavigationBar extends StatelessWidget {

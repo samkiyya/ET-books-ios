@@ -1,13 +1,13 @@
 import 'dart:convert';
 
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
-import 'package:book_mobile/providers/auth_provider.dart';
-import 'package:book_mobile/providers/profile_provider.dart';
-import 'package:book_mobile/screens/password_change_screen.dart';
-import 'package:book_mobile/widgets/custom_button.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/screens/custom_bottom_navigation_bar.dart';
+import 'package:bookreader/providers/auth_provider.dart';
+import 'package:bookreader/providers/profile_provider.dart';
+import 'package:bookreader/screens/password_change_screen.dart';
+import 'package:bookreader/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -28,9 +28,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _initializeProfile() async {
-    final profileProvider =
-        Provider.of<ProfileProvider>(context, listen: false);
-    await profileProvider.fetchUserProfile();
+    try {
+      final profileProvider =
+          Provider.of<ProfileProvider>(context, listen: false);
+      await profileProvider.fetchUserProfile();
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Error fetching profile: ${error.toString()}')),
+        );
+      }
+    }
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -86,16 +95,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final userProfile = profileProvider.userProfile;
     final followerCount = profileProvider.followerCount;
     final followingCount = profileProvider.followingCount;
-Map<String, dynamic> subLimitsLeft = {};
-try {
-  // print('userProfile: $userProfile');
-  subLimitsLeft = userProfile?['subLimitsLeft'] != null
-      ? jsonDecode(userProfile?['subLimitsLeft'])
-      : {};
-      // print('subLimitsLeft: $subLimitsLeft');
-} catch (e) {
-  // print('Error decoding subLimitsLeft: $e');
-}
+    Map<String, dynamic> subLimitsLeft = {};
+    try {
+      if (userProfile?['subLimitsLeft'] != null &&
+          userProfile?['subLimitsLeft'] is String) {
+        subLimitsLeft = jsonDecode(userProfile?['subLimitsLeft']);
+      } else if (userProfile?['subLimitsLeft'] is Map<String, dynamic>) {
+        subLimitsLeft = userProfile?['subLimitsLeft'];
+      } else {
+        subLimitsLeft = {};
+      }
+    } catch (e) {
+      print('Error decoding subLimitsLeft: $e');
+    }
 
     return SafeArea(
       child: Scaffold(

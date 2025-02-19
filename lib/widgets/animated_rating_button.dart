@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:book_mobile/screens/rating_dialog_screen.dart';
+import 'package:bookreader/screens/rating_dialog_screen.dart';
 
 class AnimatedRatingButton extends StatefulWidget {
   final int bookId;

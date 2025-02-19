@@ -1,15 +1,15 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/home_provider.dart';
-import 'package:book_mobile/providers/order_status_provider.dart';
-import 'package:book_mobile/screens/audio_episodes_screen.dart';
-import 'package:book_mobile/widgets/custom_button.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/home_provider.dart';
+import 'package:bookreader/providers/order_status_provider.dart';
+import 'package:bookreader/screens/audio_episodes_screen.dart';
+import 'package:bookreader/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
-import 'package:book_mobile/services/book_service.dart';
+import 'package:bookreader/services/book_service.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:book_mobile/services/device_info.dart';
+import 'package:bookreader/services/device_info.dart';
 
 class DownloadScreen extends StatefulWidget {
   const DownloadScreen({super.key});

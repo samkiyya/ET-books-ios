@@ -1,4 +1,4 @@
-import 'package:book_mobile/constants/constants.dart';
+import 'package:bookreader/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

@@ -1,4 +1,4 @@
-import 'package:book_mobile/constants/logger.dart';
+import 'package:bookreader/constants/logger.dart';
 import 'package:flutter/material.dart';
 import '../constants/styles.dart';
 

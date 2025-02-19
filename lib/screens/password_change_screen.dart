@@ -1,8 +1,8 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/auth_provider.dart';
-import 'package:book_mobile/widgets/custom_button.dart';
-import 'package:book_mobile/widgets/custom_text_field.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/auth_provider.dart';
+import 'package:bookreader/widgets/custom_button.dart';
+import 'package:bookreader/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

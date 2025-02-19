@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:book_mobile/constants/bottom_bar_style.dart';
+import 'package:bookreader/constants/bottom_bar_style.dart';
 
 class BottomBarPainter extends CustomPainter {
   BottomBarPainter({

@@ -1,8 +1,8 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/subscription_tiers_provider.dart';
-import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
-import 'package:book_mobile/screens/subscription_screen.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/subscription_tiers_provider.dart';
+import 'package:bookreader/screens/custom_bottom_navigation_bar.dart';
+import 'package:bookreader/screens/subscription_screen.dart';
 import 'package:flutter/material.dart';
 // import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';

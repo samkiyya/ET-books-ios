@@ -1,11 +1,11 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/screens/book_details_screen.dart';
-import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/screens/book_details_screen.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/providers/author_provider.dart';
+import 'package:bookreader/providers/author_provider.dart';
 
 class AuthorScreen extends StatefulWidget {
   final String authorId;

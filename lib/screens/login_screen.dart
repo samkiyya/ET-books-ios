@@ -1,14 +1,14 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/exports.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/exports.dart';
 // Add your Forgot Password Screen import
-import 'package:book_mobile/widgets/custom_button.dart';
-import 'package:book_mobile/widgets/custom_text_field.dart';
-import 'package:book_mobile/widgets/modal.dart';
-import 'package:book_mobile/widgets/square_tile.dart';
+import 'package:bookreader/widgets/custom_button.dart';
+import 'package:bookreader/widgets/custom_text_field.dart';
+import 'package:bookreader/widgets/modal.dart';
+import 'package:bookreader/widgets/square_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/services/device_info.dart';
+import 'package:bookreader/services/device_info.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -67,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
           onClose: () {
             Navigator.of(context).pop();
             if (isSuccess) {
-             context.go('/home');
+              context.go('/home');
             }
           },
         );
@@ -338,8 +338,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Signup prompt
                               TextButton(
                                 onPressed: () {
-                                  
-                                    context.push('/signup');
+                                  context.push('/signup');
                                 },
                                 child: Text.rich(
                                   TextSpan(

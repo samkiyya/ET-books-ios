@@ -1,12 +1,11 @@
-import 'package:book_mobile/widgets/custom_button.dart';
-import 'package:book_mobile/widgets/custom_text_field.dart';
+import 'package:bookreader/widgets/custom_button.dart';
+import 'package:bookreader/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/providers/auth_provider.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-
+import 'package:bookreader/providers/auth_provider.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
 
 class PasswordResetScreen extends StatefulWidget {
   final String token;
@@ -40,58 +39,59 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
   }
 
   void _resetPassword() async {
-  final newPassword = _newPasswordController.text.trim();
-  final confirmPassword = _confirmPasswordController.text.trim();
+    final newPassword = _newPasswordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
 
-  if (newPassword.isEmpty || confirmPassword.isEmpty) {
-    setState(() {
-      _message = 'Failed: Please enter both new password and confirmation.';
-    });
-    return;
-  }
-
-  if (newPassword != confirmPassword) {
-    setState(() {
-      _message = 'Failed: Passwords do not match!';
-    });
-    return;
-  }
-
-  setState(() {
-    _message = null; // Clear message
-  });
-
-  try {
-    await Provider.of<AuthProvider>(context, listen: false).resetPassword(
-      resetToken: widget.token,
-      newPassword: newPassword,
-    );
-
-    // Display success Snackbar
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Password reset successfully! Redirecting to Login...'),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      // Navigate to the home screen
-      Future.delayed(const Duration(seconds: 2), () {
-        context.go('/login');
+    if (newPassword.isEmpty || confirmPassword.isEmpty) {
+      setState(() {
+        _message = 'Failed: Please enter both new password and confirmation.';
       });
+      return;
     }
-  } catch (error) {
-    if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to reset password: $error'),
-          backgroundColor: Colors.red,
-        ),
+
+    if (newPassword != confirmPassword) {
+      setState(() {
+        _message = 'Failed: Passwords do not match!';
+      });
+      return;
+    }
+
+    setState(() {
+      _message = null; // Clear message
+    });
+
+    try {
+      await Provider.of<AuthProvider>(context, listen: false).resetPassword(
+        resetToken: widget.token,
+        newPassword: newPassword,
       );
+
+      // Display success Snackbar
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Password reset successfully! Redirecting to Login...'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate to the home screen
+        Future.delayed(const Duration(seconds: 2), () {
+          context.go('/login');
+        });
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to reset password: $error'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {

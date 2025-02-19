@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:book_mobile/constants/constants.dart';
+import 'package:bookreader/constants/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SubscriptionTiersProvider with ChangeNotifier {
@@ -18,19 +18,20 @@ class SubscriptionTiersProvider with ChangeNotifier {
 
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('userToken');
-    if (token == null || token.isEmpty) {
-      errorMessage = 'Authentication error. Please log in.';
-      return;
-    }
+      String? token = prefs.getString('userToken');
+      if (token == null || token.isEmpty) {
+        errorMessage = 'Authentication error. Please log in.';
+        return;
+      }
       // Fetch data from the endpoint
-      final response = await http
-          .get(Uri.parse("${Network.baseUrl}/api/subscriptions/tiers/user/tier-list"),
-              headers: {
-                'Content-Type': 'application/json', 
-              'Accept': 'application/json',
-              'Authorization':'Bearer $token'
-              });
+      final response = await http.get(
+          Uri.parse(
+              "${Network.baseUrl}/api/subscriptions/tiers/user/tier-list"),
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Bearer $token'
+          });
 
       if (response.statusCode == 200) {
         // Parse the JSON response

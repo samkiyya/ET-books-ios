@@ -1,4 +1,4 @@
-import 'package:book_mobile/constants/logger.dart';
+import 'package:bookreader/constants/logger.dart';
 import 'package:audio_session/audio_session.dart';
 import 'platform_checker.dart';
 

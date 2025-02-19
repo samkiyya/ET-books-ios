@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:book_mobile/constants/constants.dart';
+import 'package:bookreader/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -10,8 +10,8 @@ class ProfileProvider with ChangeNotifier {
   String? _token;
   Map<String, dynamic>? _userProfile;
   final baseUrl = Network.baseUrl;
-  int?_followerCount;
-  int?_followingCount;
+  int? _followerCount;
+  int? _followingCount;
 
   Map<String, dynamic>? get userProfile => _userProfile;
   int? get followerCount => _followerCount;

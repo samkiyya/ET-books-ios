@@ -1,7 +1,7 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-// import 'package:book_mobile/screens/signup_screen.dart';
-import 'package:book_mobile/widgets/custom_button.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+// import 'package:bookreader/screens/signup_screen.dart';
+import 'package:bookreader/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 // import 'login_screen.dart';

@@ -1,16 +1,23 @@
-import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
 import 'package:cosmos_epub/Model/book_progress_model.dart';
 import 'package:cosmos_epub/cosmos_epub.dart';
 import 'package:cosmos_epub/Helpers/custom_toast.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:bookreader/providers/user_interaction_provider.dart';
 
 class EpubReaderScreen extends StatefulWidget {
   final String filePath;
   final String bookTitle;
+  final int bookId;
 
-  const EpubReaderScreen(
-      {super.key, required this.filePath, required this.bookTitle});
+  const EpubReaderScreen({
+    super.key,
+    required this.filePath,
+    required this.bookTitle,
+    required this.bookId,
+  });
 
   @override
   State<EpubReaderScreen> createState() => _EpubReaderScreenState();
@@ -24,6 +31,29 @@ class _EpubReaderScreenState extends State<EpubReaderScreen> {
   void initState() {
     super.initState();
     _readerFuture = _openEpubReader();
+    final userActivityProvider =
+        Provider.of<UserActivityProvider>(context, listen: false);
+    userActivityProvider.startTracking(widget.bookId);
+  }
+
+  @override
+  void dispose() {
+    // Stop tracking when the user leaves the screen
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final userActivityProvider =
+            Provider.of<UserActivityProvider>(context, listen: false);
+        userActivityProvider.stopTracking(widget.bookId);
+      }
+    });
+    super.dispose();
+  }
+
+  // Increment pages read when user progresses in the book
+  void _incrementPagesRead() {
+    final userActivityProvider =
+        Provider.of<UserActivityProvider>(context, listen: false);
+    userActivityProvider.incrementPagesRead();
   }
 
   Future<void> _openEpubReader() async {
@@ -58,6 +88,7 @@ class _EpubReaderScreenState extends State<EpubReaderScreen> {
             widget.bookTitle.toString(), bookProgress.currentChapterIndex ?? 0);
 
         print(currentPage);
+        _incrementPagesRead();
       },
       onLastPage: (int lastPageIndex) {
         CustomToast.showToast(

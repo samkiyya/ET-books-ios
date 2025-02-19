@@ -1,5 +1,5 @@
-import 'package:book_mobile/models/review_model.dart';
-import 'package:book_mobile/services/review_service.dart';
+import 'package:bookreader/models/review_model.dart';
+import 'package:bookreader/services/review_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

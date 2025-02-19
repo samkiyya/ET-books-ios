@@ -1,10 +1,10 @@
-import 'package:book_mobile/constants/bottom_bar_style.dart';
+import 'package:bookreader/constants/bottom_bar_style.dart';
 import 'package:flutter/material.dart';
-
 
 class BottomBarActiveItem extends StatelessWidget {
   const BottomBarActiveItem(
-    this.index, {super.key, 
+    this.index, {
+    super.key,
     required this.itemWidget,
     required this.onTap,
     required this.scrollPosition,

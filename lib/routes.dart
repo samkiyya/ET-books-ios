@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:book_mobile/exports.dart';
+import 'package:bookreader/exports.dart';
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';

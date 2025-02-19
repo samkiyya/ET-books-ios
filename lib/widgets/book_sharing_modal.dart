@@ -1,7 +1,7 @@
-// import 'package:book_mobile/constants/size.dart';
+// import 'package:bookreader/constants/size.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-// import 'package:book_mobile/constants/styles.dart';
+// import 'package:bookreader/constants/styles.dart';
 
 class BookSharingModal extends StatefulWidget {
   final Map<String, dynamic> book;

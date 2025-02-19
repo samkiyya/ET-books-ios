@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:book_mobile/providers/user_interaction_provider.dart';
+import 'package:bookreader/providers/user_interaction_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
@@ -115,7 +115,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
   @override
   Widget build(BuildContext context) {
     // final userActivityProvider =
-     Provider.of<UserActivityProvider>(context);
+    Provider.of<UserActivityProvider>(context);
 
     double width = MediaQuery.of(context).size.width;
     return SafeArea(
@@ -223,6 +223,7 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                               setState(() {
                                 currentPage = details.newPageNumber;
                               });
+                              _incrementPagesRead();
                             },
                             onTap: (details) async {
                               _toggleAppBarVisibility();
@@ -245,16 +246,13 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back,
-                              color: _getTextColor()),
+                          icon: Icon(Icons.arrow_back, color: _getTextColor()),
                           onPressed: () async {
                             _pdfViewerController.previousPage();
                           },
                         ),
-                        
                         Padding(
-                          padding:
-                              const EdgeInsets.symmetric(vertical: 8.0),
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
                           child: Text(
                             'Page $currentPage of $totalPages',
                             style: const TextStyle(
@@ -264,8 +262,8 @@ class _PdfReaderScreenState extends State<PdfReaderScreen> {
                           ),
                         ),
                         IconButton(
-                          icon: Icon(Icons.arrow_forward,
-                              color: _getTextColor()),
+                          icon:
+                              Icon(Icons.arrow_forward, color: _getTextColor()),
                           onPressed: () async {
                             _pdfViewerController.nextPage();
                             _incrementPagesRead();

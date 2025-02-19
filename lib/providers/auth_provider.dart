@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:app_links/app_links.dart';
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/models/login_model.dart';
-import 'package:book_mobile/services/storage_service.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/models/login_model.dart';
+import 'package:bookreader/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -42,11 +42,12 @@ class AuthProvider with ChangeNotifier {
     load2FAPreferences();
   }
 
- Future<void> load2FAPreferences() async {
+  Future<void> load2FAPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     _is2FAEnabled = prefs.getBool('2faEnabled') ?? false;
     notifyListeners();
   }
+
   /// Helper to update authentication state
   void _updateAuthState({
     bool? isAuthenticated,
@@ -203,7 +204,6 @@ class AuthProvider with ChangeNotifier {
       _updateAuthState(isLoading: false);
     }
   }
-
 
   /// Login with Facebook
   Future<void> loginWithFacebook() async {
@@ -396,7 +396,6 @@ class AuthProvider with ChangeNotifier {
       }
       _is2FAEnabled = !_is2FAEnabled;
       prefs.setBool('2faEnabled', _is2FAEnabled);
-
     } catch (e) {
       throw Exception("Failed to toggle 2FA: $e");
     } finally {

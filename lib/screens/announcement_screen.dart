@@ -1,13 +1,13 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/screens/author_screen.dart';
-import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
-import 'package:book_mobile/screens/video_player_screen.dart';
-import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/screens/author_screen.dart';
+import 'package:bookreader/screens/custom_bottom_navigation_bar.dart';
+import 'package:bookreader/screens/video_player_screen.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/announcement_provider.dart';
-import 'package:book_mobile/screens/announcement_detail_screen.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/announcement_provider.dart';
+import 'package:bookreader/screens/announcement_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 class AnnouncementListScreen extends StatefulWidget {

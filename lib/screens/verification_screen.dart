@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/auth_provider.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class VerificationScreen extends StatefulWidget {
@@ -46,7 +46,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
             ),
             backgroundColor: Colors.green,
           ),
-          
         ); // Navigate to home on success
       }
     } catch (e) {

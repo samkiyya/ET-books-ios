@@ -1,6 +1,6 @@
-import 'package:book_mobile/screens/book_reader_screen.dart';
-import 'package:book_mobile/services/download_service.dart';
-import 'package:book_mobile/services/file_services.dart';
+import 'package:bookreader/screens/book_reader_screen.dart';
+import 'package:bookreader/services/download_service.dart';
+import 'package:bookreader/services/file_services.dart';
 import 'package:flutter/material.dart';
 // import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +19,7 @@ class BookService {
     String fileExtension = await getFileExtension(url);
 
     // Get the file path based on the determined file extension
-   await FileService.getBookPath(
+    await FileService.getBookPath(
       bookTitle,
       bookId,
     );
@@ -75,35 +75,34 @@ class BookService {
 
   // Helper method to determine file extension
   static Future<String> getFileExtension(String url) async {
-  String fileExtension = '.docx'; // Default fallback
-  try {
-    final uri = Uri.parse(url);
-    if (uri.pathSegments.isNotEmpty) {
-      final guessedExtension = uri.pathSegments.last.split('.').last;
-      if (['pdf', 'epub', 'docx'].contains(guessedExtension)) {
-        return '.$guessedExtension';
-      }
-    }
-
-    // Fallback to HTTP HEAD check
-    final response = await http.head(uri);
-    if (response.statusCode == 200) {
-      final contentType = response.headers['content-type'];
-      if (contentType != null) {
-        if (contentType.contains('pdf')) {
-          return '.pdf';
-        } else if (contentType.contains('epub')) {
-          return '.epub';
-        } else if (contentType.contains('msword') ||
-                   contentType.contains('docx')) {
-          return '.docx';
+    String fileExtension = '.docx'; // Default fallback
+    try {
+      final uri = Uri.parse(url);
+      if (uri.pathSegments.isNotEmpty) {
+        final guessedExtension = uri.pathSegments.last.split('.').last;
+        if (['pdf', 'epub', 'docx'].contains(guessedExtension)) {
+          return '.$guessedExtension';
         }
       }
-    }
-  } catch (e) {
-    // print('Error determining file type: $e');
-  }
-  return fileExtension; 
-}
 
+      // Fallback to HTTP HEAD check
+      final response = await http.head(uri);
+      if (response.statusCode == 200) {
+        final contentType = response.headers['content-type'];
+        if (contentType != null) {
+          if (contentType.contains('pdf')) {
+            return '.pdf';
+          } else if (contentType.contains('epub')) {
+            return '.epub';
+          } else if (contentType.contains('msword') ||
+              contentType.contains('docx')) {
+            return '.docx';
+          }
+        }
+      }
+    } catch (e) {
+      // print('Error determining file type: $e');
+    }
+    return fileExtension;
+  }
 }

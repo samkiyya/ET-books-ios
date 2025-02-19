@@ -1,7 +1,7 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/styles.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:book_mobile/services/episode_service.dart';
+import 'package:bookreader/services/episode_service.dart';
 
 class AudioEpisodeScreen extends StatefulWidget {
   final Map<String, dynamic> audioBook;

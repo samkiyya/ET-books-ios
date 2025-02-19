@@ -1,10 +1,10 @@
-import 'package:book_mobile/constants/logger.dart';
-import 'package:book_mobile/widgets/audio_controlls.dart';
-import 'package:book_mobile/widgets/audio_palyer_header.dart';
-import 'package:book_mobile/widgets/episode_list.dart';
-import 'package:book_mobile/widgets/error_boundary.dart';
-import 'package:book_mobile/widgets/loading_widget.dart';
-import 'package:book_mobile/widgets/volume_controll.dart';
+import 'package:bookreader/constants/logger.dart';
+import 'package:bookreader/widgets/audio_controlls.dart';
+import 'package:bookreader/widgets/audio_palyer_header.dart';
+import 'package:bookreader/widgets/episode_list.dart';
+import 'package:bookreader/widgets/error_boundary.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
+import 'package:bookreader/widgets/volume_controll.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import '../services/audio_player_service.dart';

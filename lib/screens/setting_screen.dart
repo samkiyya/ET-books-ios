@@ -1,7 +1,7 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/notification_provider.dart';
-import 'package:book_mobile/providers/auth_provider.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/notification_provider.dart';
+import 'package:bookreader/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -100,7 +100,8 @@ class SettingsScreen extends StatelessWidget {
                       );
                     }
                   },
-                  secondary: authProvider.isLoading&&authProvider.is2FAEnabled==false
+                  secondary: authProvider.isLoading &&
+                          authProvider.is2FAEnabled == false
                       ? const SizedBox(
                           width: 24,
                           height: 24,
@@ -110,10 +111,10 @@ class SettingsScreen extends StatelessWidget {
                 );
               },
             ),
-             Text(
+            Text(
               context.watch<AuthProvider>().is2FAEnabled
-                  ?'Two-Factor Authentication (2FA) is currently enabled.'
-                      : 'Two-Factor Authentication (2FA) is currently disabled.',
+                  ? 'Two-Factor Authentication (2FA) is currently enabled.'
+                  : 'Two-Factor Authentication (2FA) is currently disabled.',
               style: TextStyle(
                 fontSize: width * 0.042,
                 fontWeight: FontWeight.w500,

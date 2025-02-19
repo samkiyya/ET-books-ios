@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/services/image_upload_service.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/services/image_upload_service.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -9,10 +9,8 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-  import 'package:dio/dio.dart';
-  import 'package:path/path.dart' as path;
-
-
+import 'package:dio/dio.dart';
+import 'package:path/path.dart' as path;
 
 class UpdateProfileProvider with ChangeNotifier {
   bool _isLoading = false;
@@ -29,7 +27,6 @@ class UpdateProfileProvider with ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
   File? get profileImage => _profileImage;
 
-
   Future<void> pickProfileImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -41,81 +38,81 @@ class UpdateProfileProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateProfileImage(String filePath) async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      _errorMessage = 'No internet connection. Please check your network.';
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
 
-Future<void> updateProfileImage(String filePath) async {
-  final connectivityResult = await Connectivity().checkConnectivity();
-  if (connectivityResult == ConnectivityResult.none) {
-    _errorMessage = 'No internet connection. Please check your network.';
-    _isLoading = false;
+    _isLoading = true;
+    _isUploading = true;
+    uploadProgress = 0.0;
+    _errorMessage = '';
     notifyListeners();
-    return;
-  }
 
-  _isLoading = true;
-  _isUploading = true;
-  uploadProgress = 0.0;
-  _errorMessage = '';
-  notifyListeners();
-
-  try {
-    // Validate image before proceeding
-    final imageFile = File(filePath);
-    if (!ImageUploadHelper.isValidImage(imageFile)) {
-      _errorMessage =
-          'Invalid image. Ensure the file is jpeg, jpg, png, or gif and is less than 10MB.';
-      _isLoading = false;
-      _isUploading = false;
-      notifyListeners();
-      return;
-    }
-
-    final token = await SharedPreferences.getInstance()
-        .then((prefs) => prefs.getString('userToken'));
-    if (token == null) {
-      _errorMessage = 'Authentication token is missing.';
-      _isLoading = false;
-      _isUploading = false;
-      notifyListeners();
-      return;
-    }
-
-    final dio = Dio();
-    final formData = FormData.fromMap({
-      'image': await MultipartFile.fromFile(
-        imageFile.path,
-        filename: path.basename(imageFile.path),
-        contentType: MediaType.parse(lookupMimeType(imageFile.path) ?? 'image/jpeg'),
-      ),
-    });
-
-    final response = await dio.put(
-      '${Network.baseUrl}/api/user/update-image',
-      data: formData,
-      options: Options(
-        headers: {'Authorization': 'Bearer $token'},
-      ),
-      onSendProgress: (int sent, int total) {
-        uploadProgress = sent / total;
+    try {
+      // Validate image before proceeding
+      final imageFile = File(filePath);
+      if (!ImageUploadHelper.isValidImage(imageFile)) {
+        _errorMessage =
+            'Invalid image. Ensure the file is jpeg, jpg, png, or gif and is less than 10MB.';
+        _isLoading = false;
+        _isUploading = false;
         notifyListeners();
-      },
-    );
+        return;
+      }
 
-    if (response.statusCode == 200) {
-      // print('Image uploaded successfully');
-      // print('Response data: ${response.data}');
-    } else {
-      _errorMessage = 'Failed to upload image. Status code: ${response.statusCode}';
+      final token = await SharedPreferences.getInstance()
+          .then((prefs) => prefs.getString('userToken'));
+      if (token == null) {
+        _errorMessage = 'Authentication token is missing.';
+        _isLoading = false;
+        _isUploading = false;
+        notifyListeners();
+        return;
+      }
+
+      final dio = Dio();
+      final formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          imageFile.path,
+          filename: path.basename(imageFile.path),
+          contentType:
+              MediaType.parse(lookupMimeType(imageFile.path) ?? 'image/jpeg'),
+        ),
+      });
+
+      final response = await dio.put(
+        '${Network.baseUrl}/api/user/update-image',
+        data: formData,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+        onSendProgress: (int sent, int total) {
+          uploadProgress = sent / total;
+          notifyListeners();
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // print('Image uploaded successfully');
+        // print('Response data: ${response.data}');
+      } else {
+        _errorMessage =
+            'Failed to upload image. Status code: ${response.statusCode}';
+      }
+    } catch (e) {
+      _errorMessage = 'Error uploading image: $e';
+      // print(_errorMessage);
+    } finally {
+      _isLoading = false;
+      _isUploading = false;
+      notifyListeners();
     }
-  } catch (e) {
-    _errorMessage = 'Error uploading image: $e';
-    // print(_errorMessage);
-  } finally {
-    _isLoading = false;
-    _isUploading = false;
-    notifyListeners();
   }
-}
-
 
   // Update User Profile
   Future<void> updateProfile({

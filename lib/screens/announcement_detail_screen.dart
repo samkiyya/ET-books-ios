@@ -1,11 +1,11 @@
-import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/models/announcement_model.dart';
-import 'package:book_mobile/providers/announcement_provider.dart';
-import 'package:book_mobile/widgets/custom_text_field.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/models/announcement_model.dart';
+import 'package:bookreader/providers/announcement_provider.dart';
+import 'package:bookreader/widgets/custom_text_field.dart';
 
 class AnnouncementDetailScreen extends StatefulWidget {
   final Announcement announcement;
@@ -29,7 +29,6 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
   void _fetchComments() {
     Provider.of<AnnouncementProvider>(context, listen: false)
         .fetchComments(widget.announcement.id);
-    
   }
 
   void _addComment() async {
@@ -157,9 +156,7 @@ class _AnnouncementDetailScreenState extends State<AnnouncementDetailScreen> {
                 final comments = provider.getComments(widget.announcement.id);
                 if (provider.isLoading) {
                   return const Center(
-                    child: LoadingWidget(
-                      
-                    ),
+                    child: LoadingWidget(),
                   );
                 } else if (comments.isEmpty) {
                   return const Center(

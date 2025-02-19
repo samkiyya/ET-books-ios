@@ -1,20 +1,19 @@
 import 'dart:async';
 import 'package:app_links/app_links.dart';
-import 'package:book_mobile/routes.dart';
-import 'package:book_mobile/services/permission_service.dart';
+import 'package:bookreader/routes.dart';
+import 'package:bookreader/services/permission_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:no_screenshot/no_screenshot.dart';
 import 'package:go_router/go_router.dart';
-import 'package:book_mobile/exports.dart';
+import 'package:bookreader/exports.dart';
 import 'package:cosmos_epub/cosmos_epub.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-bool initialized = await CosmosEpub.initialize();
+  bool initialized = await CosmosEpub.initialize();
   if (!initialized) {
     print('Failed to initialize CosmosEpub');
   }

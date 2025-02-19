@@ -1,6 +1,6 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/notification_provider.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

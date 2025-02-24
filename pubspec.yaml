@@ -32,7 +32,7 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^28.1.33
   syncfusion_flutter_core: ^28.1.33
   encrypt: ^5.0.3
-  flutter_launcher_icons:
+  flutter_launcher_icons: ^0.11.0
   device_info_plus: ^11.3.0
   permission_handler: ^11.3.1
   audio_session: ^0.1.21
@@ -58,10 +58,9 @@ dev_dependencies:
 
   flutter_lints: ^5.0.0
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: 'launcher_icon'
   ios: true
   image_path: "assets/icon/icon.png"
-  adaptive_icon_background: "#FFFFFF"
 
 # The following section is specific to Flutter packages.
 flutter:

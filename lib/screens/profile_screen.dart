@@ -290,9 +290,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Subscription Limits',
+                                'Subscription benefits Left',
                                 style: AppTextStyles.heading2
-                                    .copyWith(fontWeight: FontWeight.bold),
+                                    .copyWith(fontWeight: FontWeight.bold,fontSize: width*0.05),
                               ),
                               SizedBox(height: height * 0.01),
                               Text(

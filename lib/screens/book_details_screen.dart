@@ -95,7 +95,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     if (userId != null) {
       final accessProvider =
           Provider.of<AccessProvider>(context, listen: false);
-      await accessProvider.fetchSubscriptionStatus(userId, "books");
+      await accessProvider.fetchSubscriptionStatus(userId, "books",widget.book['id']);
       print(
           "isSubscribed value in fetch substat: ${accessProvider.hasReachedLimitAndApproved}");
       return accessProvider.hasReachedLimitAndApproved;
@@ -139,7 +139,7 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     if (order != null) {
       final orderedBookId = order['bookId'];
 
-      if (order['status'] == 'PENDING' && orderedBookId == currentBookId) {
+      if ((order['status'] == 'PENDING' && orderedBookId == currentBookId)&& !isSubscribed) {
         if (context.mounted) {
           Navigator.push(
             context,

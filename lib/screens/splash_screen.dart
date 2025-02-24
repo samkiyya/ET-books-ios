@@ -108,8 +108,10 @@ class _SplashScreenState extends State<SplashScreen>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.white.withOpacity(0.7), // Light white
-                              Colors.grey.withOpacity(0.3), // Slight dark tint
+                              Color(0xFFBA661D).withOpacity(0.7), // Light white
+                              Color(0xFFBA661D).withOpacity(0.3),
+                              Color(0xFFBA661D).withOpacity(0.5),
+                              Color(0xFFBA661D).withOpacity(0.7),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -138,7 +140,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               SizedBox(height: height * 0.009),
               Text(
-                'Book App',
+                'ET-BOOKS',
                 style: TextStyle(
                   fontSize: width * 0.05,
                   color: AppColors.color3,

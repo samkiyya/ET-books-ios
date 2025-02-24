@@ -14,10 +14,10 @@ class AccessProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchSubscriptionStatus(
-      String userId, String contentType) async {
+      String userId, String contentType,int bookId) async {
     print(
         'fetchSubscriptionStatus called with userId: $userId and contentType: $contentType');
-    final url = Uri.parse("$apiUrl/$userId?contentType=$contentType");
+    final url = Uri.parse("$apiUrl/$userId?contentType=$contentType&bookId=$bookId");
     try {
       final response = await http.get(url);
       // print("content access Response: ${response.body}");

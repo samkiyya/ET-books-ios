@@ -119,7 +119,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
       return;
     }
 
-    await accessProvider.fetchSubscriptionStatus(userId, 'audio_books');
+    await accessProvider.fetchSubscriptionStatus(userId, 'audio_books',widget.audioBook['id']);
     final bool isSubscribed = accessProvider.hasReachedLimitAndApproved;
 
     if (order != null) {

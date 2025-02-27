@@ -112,7 +112,7 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                             SizedBox(height: height * 0.0045),
                             ElevatedButton(
                               onPressed:
-                                  tier['subscription_status'] == 'current'
+                                  (tier['subscription_status'] == 'current')||tier['subscription_status'] == 'downgrade'
                                       ? null
                                       : () {
                                           Navigator.push(
@@ -140,11 +140,9 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                               ),
                               child: Text(
                                 // tier['subscription_status'].toString().toUpperCase(),
-                                tier['subscription_status'] == 'upgrade'
-                                    ? 'Upgrade'
-                                    : tier['subscription_status'] == 'current'
-                                        ? 'Current Plan'
-                                        : 'Subscribe',
+                                tier['subscription_status'] == 'current'
+                                    ? 'Current Plan'
+                                    : tier['subscription_status'].toString(),
                                 style: AppTextStyles.buttonText.copyWith(
                                   color: AppColors.color3,
                                 ),

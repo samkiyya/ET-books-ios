@@ -36,6 +36,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
   void initState() {
     super.initState();
     _getDeviceInfo();
+    _fetchSubscriptionStatus();
   }
 
   Future<void> _getDeviceInfo() async {
@@ -93,14 +94,29 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
     return null;
   }
 
+   Future<bool> _fetchSubscriptionStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? userId = prefs.getString('userId');
+    if (userId != null) {
+      final accessProvider =
+          Provider.of<AccessProvider>(context, listen: false);
+      await accessProvider.fetchSubscriptionStatus(userId, 'audio_books',widget.audioBook['id']);
+      print(
+          "isSubscribed value in fetch substat: ${accessProvider.hasReachedLimitAndApproved}");
+      return accessProvider.hasReachedLimitAndApproved;
+    }
+    return false;
+  }
+
+
   void _handleButtonPress(BuildContext context) async {
     final currentBookId = widget.audioBook['id'];
     final order = await fetchOrderForCurrentUser();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final isSubscribed = await _fetchSubscriptionStatus();
+    print("isSubscribed value in handle button press: ${isSubscribed}");
+SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? userId = prefs.getString('userId');
-
-    final accessProvider = Provider.of<AccessProvider>(context, listen: false);
-    if (userId == null) {
+     if (userId == null) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -119,12 +135,13 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
       return;
     }
 
-    await accessProvider.fetchSubscriptionStatus(userId, 'audio_books',widget.audioBook['id']);
-    final bool isSubscribed = accessProvider.hasReachedLimitAndApproved;
-
+ if (context.mounted) {
+      setState(
+          () {}); // This ensures the UI rebuilds after fetching the subscription status
+    }
     if (order != null) {
       final orderedBookId = order['bookId'];
-      if (order['status'] == 'PENDING' && orderedBookId == currentBookId) {
+      if ((order['status'] == 'PENDING' && orderedBookId == currentBookId)&&!isSubscribed) {
         // Redirect to Order Status Screen
         if (context.mounted) {
           Navigator.push(
@@ -135,7 +152,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
       } else if ((order['status'] == 'APPROVED' &&
               orderedBookId == currentBookId) ||
           isSubscribed ) {
-        final type = order['type'];
+        final type = isSubscribed?'audio':order['type'];
 
         if (type == 'audio') {
           // Redirect to Audio Player Screen
@@ -268,9 +285,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
-    final accessProvider = Provider.of<AccessProvider>(
-      context,
-    );
+    final accessProvider = Provider.of<AccessProvider>(context);
     // final reviewProvider = Provider.of<ReviewProvider>(context);
 
     final isSubscribed = accessProvider.hasReachedLimitAndApproved;
@@ -376,7 +391,13 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                     SizedBox(height: height * 0.05),
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                      child: FutureBuilder<Map<String, dynamic>?>(
+                      child: Consumer<AccessProvider>(
+                      builder: (context, accessProvider, child){
+final isSubscribed =
+                            accessProvider.hasReachedLimitAndApproved;
+                        print("isSubscribed value in Consumer: $isSubscribed");
+
+                        return FutureBuilder<Map<String, dynamic>?>(
                         future: fetchOrderForCurrentUser(),
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
@@ -401,7 +422,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
                             );
                           }
                         },
-                      ),
+                      );}),
                     ),
                     SizedBox(
                       height: height * 0.03,
@@ -424,7 +445,7 @@ class _AudioDetailScreenState extends State<AudioDetailScreen> {
     if (order != null) {
       if (order['status'] == 'PENDING') {
         return 'Check Order Status';
-      } else if (order['status'] == 'APPROVED' || isSubscribed == true) {
+      } else if (order['status'] == 'APPROVED') {
         final type = order['type'];
         if (type == 'audio') {
           return 'Play Audio';

@@ -7,7 +7,7 @@ class AccessProvider with ChangeNotifier {
   final String apiUrl = "${Network.baseUrl}/api/asset-usage/user-usage";
 
   // State variables
-  bool _hasReachedLimitAndApproved = true;
+  bool _hasReachedLimitAndApproved = false;
   String? _errorMessage;
 
   bool get hasReachedLimitAndApproved => _hasReachedLimitAndApproved;

@@ -1,7 +1,7 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/models/author_model.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/models/author_model.dart';
 import 'package:flutter/material.dart';
 
 class AuthorCard extends StatelessWidget {

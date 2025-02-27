@@ -1,4 +1,4 @@
-import 'package:book_mobile/constants/styles.dart';
+import 'package:bookreader/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 

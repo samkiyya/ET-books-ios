@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:book_mobile/constants/constants.dart';
+import 'package:bookreader/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,17 +17,20 @@ class UserActivityProvider extends ChangeNotifier {
       totalTimeSpent += 1; // Increment by 1 minute
       notifyListeners();
 
-      if (totalTimeSpent % 5 == 0) { // Send every 5 minutes
+      if (totalTimeSpent % 5 == 0) {
+        // Send every 5 minutes
         _sendReadingActivity(bookId);
       }
     });
 
     _idleTimer = Timer.periodic(Duration(seconds: 30), (timer) async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      int lastInteractionTime = prefs.getInt('last_interaction') ?? DateTime.now().millisecondsSinceEpoch;
+      int lastInteractionTime = prefs.getInt('last_interaction') ??
+          DateTime.now().millisecondsSinceEpoch;
       int currentTime = DateTime.now().millisecondsSinceEpoch;
 
-      if (currentTime - lastInteractionTime > 300000) { // 5 minutes
+      if (currentTime - lastInteractionTime > 300000) {
+        // 5 minutes
         isIdle = true;
       } else {
         isIdle = false;

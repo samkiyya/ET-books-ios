@@ -1,4 +1,4 @@
-import 'package:book_mobile/providers/review_provider.dart';
+import 'package:bookreader/providers/review_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

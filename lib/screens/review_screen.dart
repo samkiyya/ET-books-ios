@@ -1,6 +1,6 @@
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/review_provider.dart';
-// import 'package:book_mobile/screens/update_rating_dialog_screen.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/review_provider.dart';
+// import 'package:bookreader/screens/update_rating_dialog_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

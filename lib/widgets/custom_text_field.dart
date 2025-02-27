@@ -1,6 +1,6 @@
-import 'package:book_mobile/constants/size.dart';
+import 'package:bookreader/constants/size.dart';
 import 'package:flutter/material.dart';
-import 'package:book_mobile/constants/styles.dart';
+import 'package:bookreader/constants/styles.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;

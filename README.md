@@ -1,4 +1,4 @@
-# book_mobile
+# bookreader
 
 A new Flutter project.
 

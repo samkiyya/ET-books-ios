@@ -1,10 +1,10 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/order_status_provider.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/order_status_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/services/device_info.dart';
+import 'package:bookreader/services/device_info.dart';
 
 class OrderStatusScreen extends StatefulWidget {
   const OrderStatusScreen({super.key});
@@ -18,7 +18,6 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
   void initState() {
     super.initState();
     getUserDeviceInfo();
-    
   }
 
   Future<void> getUserDeviceInfo() async {
@@ -27,7 +26,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen> {
       if (mounted) {
         final orderProvider =
             Provider.of<OrderStatusProvider>(context, listen: false);
-         orderProvider.fetchOrders(deviceName);
+        orderProvider.fetchOrders(deviceName);
       }
     });
 

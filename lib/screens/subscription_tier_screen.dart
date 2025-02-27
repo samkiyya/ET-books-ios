@@ -1,8 +1,8 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/subscription_tiers_provider.dart';
-import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
-import 'package:book_mobile/screens/subscription_screen.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/subscription_tiers_provider.dart';
+import 'package:bookreader/screens/custom_bottom_navigation_bar.dart';
+import 'package:bookreader/screens/subscription_screen.dart';
 import 'package:flutter/material.dart';
 // import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -112,7 +112,7 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                             SizedBox(height: height * 0.0045),
                             ElevatedButton(
                               onPressed:
-                                  tier['subscription_status'] == 'current'
+                                  (tier['subscription_status'] == 'current')||tier['subscription_status'] == 'downgrade'
                                       ? null
                                       : () {
                                           Navigator.push(
@@ -140,11 +140,9 @@ class _SubscriptionTierScreenState extends State<SubscriptionTierScreen> {
                               ),
                               child: Text(
                                 // tier['subscription_status'].toString().toUpperCase(),
-                                tier['subscription_status'] == 'upgrade'
-                                    ? 'Upgrade'
-                                    : tier['subscription_status'] == 'current'
-                                        ? 'Current Plan'
-                                        : 'Subscribe',
+                                tier['subscription_status'] == 'current'
+                                    ? 'Current Plan'
+                                    : tier['subscription_status'].toString(),
                                 style: AppTextStyles.buttonText.copyWith(
                                   color: AppColors.color3,
                                 ),

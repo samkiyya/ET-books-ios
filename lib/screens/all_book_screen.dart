@@ -1,10 +1,10 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/home_provider.dart';
-import 'package:book_mobile/screens/book_details_screen.dart';
-import 'package:book_mobile/widgets/animated_search_field.dart';
-import 'package:book_mobile/widgets/book_sharing_modal.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/home_provider.dart';
+import 'package:bookreader/screens/book_details_screen.dart';
+import 'package:bookreader/widgets/animated_search_field.dart';
+import 'package:bookreader/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,7 +1,7 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/providers/auth_provider.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,6 @@ class _CustomDrawerState extends State<CustomDrawer> {
     // {'label': 'Enable 2FA', 'icon': Icons.security},
     {'label': 'Logout', 'icon': Icons.logout},
     // {'label': 'About', 'icon': Icons.info},
-
   ];
 
   @override
@@ -78,8 +77,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ),
 
           Divider(
-              height: height * 0.00045,
-              color: AppColors.color5.withOpacity(0.6),),
+            height: height * 0.00045,
+            color: AppColors.color5.withOpacity(0.6),
+          ),
           Padding(
             padding:
                 EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),

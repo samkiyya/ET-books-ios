@@ -5,11 +5,11 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:book_mobile/services/storage_service.dart';
+import 'package:bookreader/services/storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:book_mobile/main.dart';
+import 'package:bookreader/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

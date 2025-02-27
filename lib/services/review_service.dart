@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/models/review_model.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/models/review_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 

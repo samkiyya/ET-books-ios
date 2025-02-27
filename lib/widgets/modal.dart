@@ -1,4 +1,4 @@
-import 'package:book_mobile/constants/size.dart';
+import 'package:bookreader/constants/size.dart';
 import 'package:flutter/material.dart';
 
 class CustomMessageModal extends StatelessWidget {

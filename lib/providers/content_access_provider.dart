@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:book_mobile/constants/constants.dart';
+import 'package:bookreader/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -7,16 +7,17 @@ class AccessProvider with ChangeNotifier {
   final String apiUrl = "${Network.baseUrl}/api/asset-usage/user-usage";
 
   // State variables
-  bool _hasReachedLimitAndApproved=true;
+  bool _hasReachedLimitAndApproved = false;
   String? _errorMessage;
 
   bool get hasReachedLimitAndApproved => _hasReachedLimitAndApproved;
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchSubscriptionStatus(
-      String userId, String contentType) async {
-    print('fetchSubscriptionStatus called with userId: $userId and contentType: $contentType');
-    final url = Uri.parse("$apiUrl/$userId?contentType=$contentType");
+      String userId, String contentType,int bookId) async {
+    print(
+        'fetchSubscriptionStatus called with userId: $userId and contentType: $contentType');
+    final url = Uri.parse("$apiUrl/$userId?contentType=$contentType&bookId=$bookId");
     try {
       final response = await http.get(url);
       // print("content access Response: ${response.body}");
@@ -28,7 +29,8 @@ class AccessProvider with ChangeNotifier {
         if (data["success"] == true) {
           print("AccessProvider data: $data");
           // Directly access hasReachedLimit from the API response
-_hasReachedLimitAndApproved = data["hasReachedLimit"] == false ? true : false;
+          _hasReachedLimitAndApproved =
+              data["hasReachedLimit"] == false;
           print('hasReachedLimitAndApproved: $_hasReachedLimitAndApproved');
           // print("AccessProvider hasReachedLimitAndApproved: $_hasReachedLimitAndApproved");
         } else {
@@ -43,16 +45,17 @@ _hasReachedLimitAndApproved = data["hasReachedLimit"] == false ? true : false;
       _errorMessage = "An error occurred: $error";
       _hasReachedLimitAndApproved = false;
     }
-
-    // Notify listeners
-    notifyListeners();
+    finally {
+      // Notify listeners
+      notifyListeners();
+    }
   }
 }
 
 
 
 // import 'dart:convert';
-// import 'package:book_mobile/constants/constants.dart';
+// import 'package:bookreader/constants/constants.dart';
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 

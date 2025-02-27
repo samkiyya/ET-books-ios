@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
-import 'package:book_mobile/providers/auth_provider.dart';
+import 'package:bookreader/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:book_mobile/models/login_model.dart';
-import 'package:book_mobile/constants/constants.dart';
+import 'package:bookreader/models/login_model.dart';
+import 'package:bookreader/constants/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -151,15 +151,17 @@ class LoginProvider with ChangeNotifier {
   void _handleError(http.Response? response, Map<String, dynamic>? data,
       [dynamic error]) {
     if (response != null && response.statusCode == 401) {
-      _errorMessage = data?['message']??'Authorization failed. Please try again.';
+      _errorMessage =
+          data?['message'] ?? 'Authorization failed. Please try again.';
     } else if (response != null && response.statusCode == 403) {
       if (data?['message']?.contains('isVerified') == true) {
         _errorMessage = 'Please verify your email before logging in';
       } else {
-        _errorMessage = data?['message']??'Invalid credentials. Please try again.';
+        _errorMessage =
+            data?['message'] ?? 'Invalid credentials. Please try again.';
       }
     } else {
-      _errorMessage = _mapErrorToMessage(error??data?['message']);
+      _errorMessage = _mapErrorToMessage(error ?? data?['message']);
     }
     _isAuthenticated = false;
     notifyListeners();

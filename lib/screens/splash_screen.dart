@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-// import 'package:book_mobile/screens/verification_screen.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+// import 'package:bookreader/screens/verification_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/providers/login_provider.dart';
-// import 'package:book_mobile/screens/home_screen.dart';
+import 'package:bookreader/providers/login_provider.dart';
+// import 'package:bookreader/screens/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -108,8 +108,10 @@ class _SplashScreenState extends State<SplashScreen>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.white.withOpacity(0.7), // Light white
-                              Colors.grey.withOpacity(0.3), // Slight dark tint
+                              Color(0xFFBA661D).withOpacity(0.7), // Light white
+                              Color(0xFFBA661D).withOpacity(0.3),
+                              Color(0xFFBA661D).withOpacity(0.5),
+                              Color(0xFFBA661D).withOpacity(0.7),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -138,7 +140,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               SizedBox(height: height * 0.009),
               Text(
-                'Book App',
+                'ET-BOOKS',
                 style: TextStyle(
                   fontSize: width * 0.05,
                   color: AppColors.color3,

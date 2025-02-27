@@ -1,17 +1,17 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/screens/all_book_screen.dart';
-import 'package:book_mobile/screens/audo_detail_screen.dart';
-import 'package:book_mobile/screens/book_details_screen.dart';
-import 'package:book_mobile/screens/custom_bottom_navigation_bar.dart';
-import 'package:book_mobile/widgets/book_sharing_modal.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/screens/all_book_screen.dart';
+import 'package:bookreader/screens/audo_detail_screen.dart';
+import 'package:bookreader/screens/book_details_screen.dart';
+import 'package:bookreader/screens/custom_bottom_navigation_bar.dart';
+import 'package:bookreader/widgets/book_sharing_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/screens/custom_drawer_screen.dart';
-import 'package:book_mobile/providers/home_provider.dart';
-import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/screens/custom_drawer_screen.dart';
+import 'package:bookreader/providers/home_provider.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -1,5 +1,5 @@
-import 'package:book_mobile/constants/logger.dart';
-import 'package:book_mobile/services/audio_handler_service.dart';
+import 'package:bookreader/constants/logger.dart';
+import 'package:bookreader/services/audio_handler_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'platform_checker.dart';
 

@@ -1,6 +1,6 @@
 {
-    "name": "book_mobile",
-    "short_name": "book_mobile",
+    "name": "bookreader",
+    "short_name": "bookreader",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

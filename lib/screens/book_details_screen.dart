@@ -1,20 +1,20 @@
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
-import 'package:book_mobile/models/order_model.dart';
-import 'package:book_mobile/providers/content_access_provider.dart';
-import 'package:book_mobile/providers/order_status_provider.dart';
-import 'package:book_mobile/screens/author_screen.dart';
-import 'package:book_mobile/screens/book_reader_screen.dart';
-import 'package:book_mobile/screens/buy_book_screen.dart';
-import 'package:book_mobile/screens/review_screen.dart';
-import 'package:book_mobile/screens/view_order_status_screen.dart';
-import 'package:book_mobile/widgets/animated_rating_button.dart';
-import 'package:book_mobile/widgets/custom_button.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
+import 'package:bookreader/models/order_model.dart';
+import 'package:bookreader/providers/content_access_provider.dart';
+import 'package:bookreader/providers/order_status_provider.dart';
+import 'package:bookreader/screens/author_screen.dart';
+import 'package:bookreader/screens/book_reader_screen.dart';
+import 'package:bookreader/screens/buy_book_screen.dart';
+import 'package:bookreader/screens/review_screen.dart';
+import 'package:bookreader/screens/view_order_status_screen.dart';
+import 'package:bookreader/widgets/animated_rating_button.dart';
+import 'package:bookreader/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:book_mobile/services/device_info.dart';
+import 'package:bookreader/services/device_info.dart';
 
 class BookDetailScreen extends StatefulWidget {
   final Map<String, dynamic> book;
@@ -52,7 +52,6 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     String deviceType = _getDeviceType(context);
     deviceName =
         "Brand: $brand Board: $board Model: $model deviceId: $deviceId DeviceType: $deviceType";
-    // print('device information is: $deviceName');
   }
 
   Future<Map<String, dynamic>?> fetchOrderForCurrentUser() async {
@@ -90,25 +89,29 @@ class _BookDetailScreenState extends State<BookDetailScreen> {
     return null;
   }
 
-Future<void> _fetchSubscriptionStatus() async {
-  final SharedPreferences prefs = await SharedPreferences.getInstance();
-  final String? userId = prefs.getString('userId');
-  if (userId != null) {
-    final accessProvider = Provider.of<AccessProvider>(context, listen: false);
-    await accessProvider.fetchSubscriptionStatus(userId, "books");
-    if (context.mounted) {
-      setState(() {}); // Trigger a rebuild after fetching the subscription status
+  Future<bool> _fetchSubscriptionStatus() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? userId = prefs.getString('userId');
+    if (userId != null) {
+      final accessProvider =
+          Provider.of<AccessProvider>(context, listen: false);
+      await accessProvider.fetchSubscriptionStatus(userId, "books",widget.book['id']);
+      print(
+          "isSubscribed value in fetch substat: ${accessProvider.hasReachedLimitAndApproved}");
+      return accessProvider.hasReachedLimitAndApproved;
     }
+    return false;
   }
-}
+
   void _handleButtonPress(BuildContext context) async {
     final currentBookId = widget.book['id'];
     final order = await fetchOrderForCurrentUser();
+    final isSubscribed = await _fetchSubscriptionStatus();
+    print("isSubscribed value in handle button press: ${isSubscribed}");
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? userId = prefs.getString('userId');
 
-
-    final accessProvider = Provider.of<AccessProvider>(context, listen: false);
     if (userId == null) {
       showDialog(
         context: context,
@@ -128,16 +131,15 @@ Future<void> _fetchSubscriptionStatus() async {
       return;
     }
 
-    await accessProvider.fetchSubscriptionStatus(userId,"books");
     if (context.mounted) {
-    setState(() {});  // This ensures the UI rebuilds after fetching the subscription status
-  }
-    final bool isSubscribed = accessProvider.hasReachedLimitAndApproved;
-
+      setState(
+          () {}); // This ensures the UI rebuilds after fetching the subscription status
+    }
+   
     if (order != null) {
       final orderedBookId = order['bookId'];
 
-      if (order['status'] == 'PENDING' && orderedBookId == currentBookId) {
+      if ((order['status'] == 'PENDING' && orderedBookId == currentBookId)&& !isSubscribed) {
         if (context.mounted) {
           Navigator.push(
             context,
@@ -146,7 +148,7 @@ Future<void> _fetchSubscriptionStatus() async {
         }
       } else if ((order['status'] == 'APPROVED' &&
               orderedBookId == currentBookId) ||
-          isSubscribed ) {
+          isSubscribed) {
         if (context.mounted) {
           Navigator.push(
             context,
@@ -159,7 +161,21 @@ Future<void> _fetchSubscriptionStatus() async {
           );
         }
       }
-    } else {
+    } else  if(isSubscribed){
+      if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BookReaderScreen(
+                  bookId: widget.book['id'],
+                  filePath: '${Network.baseUrl}/${widget.book['pdfFilePath']}',
+                  bookTitle: widget.book['title']),
+            ),
+          );
+        }
+        
+    }
+     else {
       if (context.mounted) {
         Navigator.push(
           context,
@@ -175,12 +191,11 @@ Future<void> _fetchSubscriptionStatus() async {
   Widget build(BuildContext context) {
     double width = AppSizes.screenWidth(context);
     double height = AppSizes.screenHeight(context);
-    final accessProvider = Provider.of<AccessProvider>(
-      context
-    );
+    final accessProvider = Provider.of<AccessProvider>(context);
     // final reviewProvider = Provider.of<ReviewProvider>(context);
 
     final isSubscribed = accessProvider.hasReachedLimitAndApproved;
+    print("isSubscribed value in build: $isSubscribed");
 
     return SafeArea(
       child: Scaffold(
@@ -265,9 +280,6 @@ Future<void> _fetchSubscriptionStatus() async {
                               children: [
                                 TextButton(
                                   onPressed: () {
-                                    // print(
-                                    //     'Author id: ${widget.book['author_id']}');
-
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -323,10 +335,11 @@ Future<void> _fetchSubscriptionStatus() async {
                                 Expanded(
                                   child: ElevatedButton(
                                     style: ButtonStyle(
-                                      backgroundColor: WidgetStateProperty.all(
-                                          AppColors.color2),
-                                      elevation: WidgetStateProperty.all(5),
-                                      shape: WidgetStateProperty.all(
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                              AppColors.color2),
+                                      elevation: MaterialStateProperty.all(5),
+                                      shape: MaterialStateProperty.all(
                                           RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(8),
                                       )),
@@ -369,31 +382,39 @@ Future<void> _fetchSubscriptionStatus() async {
                   SizedBox(height: height * 0.03),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: width * 0.03),
-                    child: FutureBuilder<Map<String, dynamic>?>(
-                      future: fetchOrderForCurrentUser(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.color3),
-                            ),
-                          ); // Show loading
-                        } else if (snapshot.hasError) {
-                          return const Text('Error loading data');
-                        } else {
-                          final order = snapshot.data;
-                          final buttonText = _determineButtonText(order,
-                              isSubscribed: isSubscribed );
-                          return CustomButton(
-                            text: buttonText,
-                            onPressed: () => _handleButtonPress(context),
-                            backgroundColor: AppColors.color2,
-                            borderColor: AppColors.color3,
-                            textStyle: AppTextStyles.buttonText,
-                          );
-                        }
+                    child: Consumer<AccessProvider>(
+                      builder: (context, accessProvider, child) {
+                        final isSubscribed =
+                            accessProvider.hasReachedLimitAndApproved;
+                        print("isSubscribed value in Consumer: $isSubscribed");
+
+                        return FutureBuilder<Map<String, dynamic>?>(
+                          future: fetchOrderForCurrentUser(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      AppColors.color3),
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Text('Error loading data');
+                            } else {
+                              final order = snapshot.data;
+                              final buttonText = _determineButtonText(order,
+                                  isSubscribed: isSubscribed);
+                              return CustomButton(
+                                text: buttonText,
+                                onPressed: () => _handleButtonPress(context),
+                                backgroundColor: AppColors.color2,
+                                borderColor: const Color.fromARGB(255, 179, 158, 134),
+                                textStyle: AppTextStyles.buttonText,
+                              );
+                            }
+                          },
+                        );
                       },
                     ),
                   ),
@@ -409,10 +430,13 @@ Future<void> _fetchSubscriptionStatus() async {
 
   String _determineButtonText(Map<String, dynamic>? order,
       {required bool isSubscribed}) {
+          if (isSubscribed) {
+    return 'Read Book';
+  }
     if (order != null) {
       if (order['status'] == 'PENDING') {
         return 'Check Order Status';
-      } else if (order['status'] == 'APPROVED' || isSubscribed == true) {
+      } else if (order['status'] == 'APPROVED' ) {
         return 'Read Book';
       }
     }

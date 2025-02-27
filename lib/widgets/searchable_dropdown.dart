@@ -1,5 +1,5 @@
-import 'package:book_mobile/constants/size.dart';
-import 'package:book_mobile/constants/styles.dart';
+import 'package:bookreader/constants/size.dart';
+import 'package:bookreader/constants/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_dropdown_search_codespark/animated_dropdown_search_codespark.dart';
 
@@ -26,7 +26,7 @@ class _CoustomSearchableDropdownState extends State<CoustomSearchableDropdown> {
       onSelected: (value) => widget.onChanged(value),
       hint: widget.hintText ?? 'Select Country',
       enableSearch: true,
-      
+
       enableAdaptivePositioning: true,
       shouldHighlightMatchedText: true,
       matchedTextHighlightColor: AppColors.color1,
@@ -36,9 +36,7 @@ class _CoustomSearchableDropdownState extends State<CoustomSearchableDropdown> {
       border: OutlineInputBorder(
         borderSide: BorderSide(color: AppColors.color1),
         borderRadius: BorderRadius.circular(10),
-
       ),
-      
     );
   }
 }

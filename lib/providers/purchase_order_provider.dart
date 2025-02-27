@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/models/order_model.dart';
-import 'package:book_mobile/widgets/modal.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/models/order_model.dart';
+import 'package:bookreader/widgets/modal.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;

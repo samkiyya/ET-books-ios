@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:book_mobile/constants/constants.dart';
-import 'package:book_mobile/providers/login_provider.dart';
-import 'package:book_mobile/providers/notification_provider.dart';
-import 'package:book_mobile/routes.dart';
+import 'package:bookreader/constants/constants.dart';
+import 'package:bookreader/providers/login_provider.dart';
+import 'package:bookreader/providers/notification_provider.dart';
+import 'package:bookreader/routes.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';

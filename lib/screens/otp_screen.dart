@@ -1,4 +1,4 @@
-import 'package:book_mobile/providers/login_provider.dart';
+import 'package:bookreader/providers/login_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -84,9 +84,11 @@ class OtpForm extends StatefulWidget {
 }
 
 class _OtpFormState extends State<OtpForm> {
-  final List<TextEditingController> _controllers = List.generate(5, (_) => TextEditingController());
+  final List<TextEditingController> _controllers =
+      List.generate(5, (_) => TextEditingController());
 
-  String get _otpCode => _controllers.map((controller) => controller.text).join();
+  String get _otpCode =>
+      _controllers.map((controller) => controller.text).join();
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +130,8 @@ class _OtpFormState extends State<OtpForm> {
                       FocusScope.of(context).previousFocus();
                     }
                   },
-                  textInputAction: index < 4 ? TextInputAction.next : TextInputAction.done,
+                  textInputAction:
+                      index < 4 ? TextInputAction.next : TextInputAction.done,
                   keyboardType: TextInputType.number,
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(1),

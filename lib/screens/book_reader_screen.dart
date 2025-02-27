@@ -1,7 +1,7 @@
-import 'package:book_mobile/screens/book_reader_screens/docx_reader_screen.dart';
-import 'package:book_mobile/screens/book_reader_screens/epub_reader_screen.dart';
-import 'package:book_mobile/screens/book_reader_screens/pdf_reader_screen.dart';
-import 'package:book_mobile/widgets/loading_widget.dart';
+import 'package:bookreader/screens/book_reader_screens/docx_reader_screen.dart';
+import 'package:bookreader/screens/book_reader_screens/epub_reader_screen.dart';
+import 'package:bookreader/screens/book_reader_screens/pdf_reader_screen.dart';
+import 'package:bookreader/widgets/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -130,7 +130,7 @@ class _BookReaderScreenState extends State<BookReaderScreen> {
           bookId: widget.bookId);
     } else if (_localFilePath!.endsWith('.epub')) {
       return EpubReaderScreen(
-          filePath: _localFilePath!, bookTitle: widget.bookTitle);
+          filePath: _localFilePath!, bookTitle: widget.bookTitle,bookId: widget.bookId);
     } else if (_localFilePath!.endsWith('.docx')) {
       return DocxReaderScreen(
           filePath: _localFilePath!,

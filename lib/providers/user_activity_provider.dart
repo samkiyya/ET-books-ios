@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:book_mobile/constants/constants.dart';
+import 'package:bookreader/constants/constants.dart';
 import 'package:http/http.dart' as http;
 
 class UserActivityTracker {

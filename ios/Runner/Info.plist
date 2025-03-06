@@ -2,48 +2,125 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
-	<key>CFBundleDisplayName</key>
-	<string>EtBooks Reader</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>bookreader</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
+    <!-- General App Information -->
+    <key>CFBundleDevelopmentRegion</key>
+    <string>$(DEVELOPMENT_LANGUAGE)</string>
+    <key>CFBundleDisplayName</key>
+    <string>ET-Books</string> <!-- The app name, used for both iOS and Android -->
+    <key>CFBundleExecutable</key>
+    <string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.etbooks.et.bookreader</string> <!-- Your App Bundle Identifier -->
+    <key>CFBundleName</key>
+    <string>ET-Books</string> <!-- The app name -->
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$(FLUTTER_BUILD_NAME)</string>
+    <key>CFBundleVersion</key>
+    <string>$(FLUTTER_BUILD_NUMBER)</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+
+    <!-- Launch and Orientation Settings -->
+    <key>UILaunchStoryboardName</key>
+    <string>LaunchScreen</string>
+    <key>UIMainStoryboardFile</key>
+    <string>Main</string>
+    <key>UISupportedInterfaceOrientations</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+    <key>UISupportedInterfaceOrientations~ipad</key>
+    <array>
+        <string>UIInterfaceOrientationPortrait</string>
+        <string>UIInterfaceOrientationPortraitUpsideDown</string>
+        <string>UIInterfaceOrientationLandscapeLeft</string>
+        <string>UIInterfaceOrientationLandscapeRight</string>
+    </array>
+
+    <!-- Permissions -->
+    <key>NSCameraUsageDescription</key>
+    <string>We need access to your camera to capture photos for your profile.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>We need access to your microphone for voice interactions.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to upload photos.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location for location-based services.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location for location-based services even when the app is in the background.</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>We need access to Bluetooth for connecting with accessories.</string>
+    <key>NSMotionUsageDescription</key>
+    <string>We need access to motion sensors for enhanced app features.</string>
+    <key>NSCalendarsUsageDescription</key>
+    <string>We need access to your calendar for scheduling and reminders.</string>
+    <key>NSRemindersUsageDescription</key>
+    <string>We need access to your reminders for event scheduling.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We need access to your photo library to save images you upload.</string>
+
+    <!-- URL Schemes for Deep Linking -->
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>sam</string> <!-- Custom scheme for samdeeplink -->
+                <string>https</string> <!-- Supporting HTTPS scheme -->
+                <string>http</string> <!-- Supporting HTTP scheme -->
+            </array>
+        </dict>
+    </array>
+
+    <!-- Deep Linking Configuration for Handling HTTP/S and Custom Scheme -->
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>http</string> <!-- Supporting HTTP -->
+        <string>https</string> <!-- Supporting HTTPS -->
+        <string>sam</string> <!-- Custom scheme (replace with your app's custom scheme) -->
+    </array>
+
+    <!-- Facebook SDK Configuration -->
+    <key>FacebookAppID</key>
+    <string>492237580533079</string> <!-- Your Facebook App ID -->
+    <key>FacebookClientToken</key>
+    <string>c2425f1470bae7e1c099bd70ada5d1e7</string> <!-- Your Facebook Client Token -->
+    <key>FacebookDisplayName</key>
+    <string>ET-Books</string> <!-- Replace with your app's display name -->
+    <key>FacebookURLSchemeSuffix</key>
+    <string>fb1234</string> <!-- Your Facebook URL scheme suffix -->
+
+    <!-- Push Notifications -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>remote-notification</string>
+    </array>
+
+    <!-- iOS App Transport Security Settings (for insecure domains) -->
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+
+    <!-- Application Launch Modes -->
+    <key>UIApplicationSupportsIndirectInputEvents</key>
+    <true/>
+
+    <!-- Background Fetch and Remote Notification Handling -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>fetch</string>
+        <string>remote-notification</string>
+    </array>
+
+    <!-- Additional Features for iOS -->
+    <key>CADisableMinimumFrameDurationOnPhone</key>
+    <true/>
 </dict>
 </plist>

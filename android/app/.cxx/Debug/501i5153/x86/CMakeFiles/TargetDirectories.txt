@@ -1,0 +1,2 @@
+/home/sam/Desktop/abyssinia/book_mobile/android/app/.cxx/Debug/501i5153/x86/CMakeFiles/edit_cache.dir
+/home/sam/Desktop/abyssinia/book_mobile/android/app/.cxx/Debug/501i5153/x86/CMakeFiles/rebuild_cache.dir

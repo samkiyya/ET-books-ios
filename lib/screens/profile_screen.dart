@@ -10,6 +10,7 @@ import 'package:bookreader/screens/password_change_screen.dart';
 import 'package:bookreader/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -42,6 +43,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+String formatDate(String? expirationDate) {
+  if (expirationDate == null || expirationDate.isEmpty) {
+    return 'Expired';
+  }
+
+  try {
+    // Parse the ISO 8601 date string into a DateTime object
+    DateTime parsedDate = DateTime.parse(expirationDate);
+
+    // Get the current date and time
+    DateTime currentDate = DateTime.now();
+
+    // Check if the expiration date is in the past
+    if (parsedDate.isBefore(currentDate)) {
+      return 'Expired';
+    }
+
+    // Format the DateTime object using a custom format
+    String formattedDate = DateFormat('MMMM dd, yyyy h:mm a').format(parsedDate);
+    return formattedDate;
+  } catch (e) {
+    // In case of an error (invalid date), return 'Expired'
+    return 'Expired';
+  }
+}
   void _showLogoutDialog(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
@@ -307,6 +333,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 'Periodicals: ${subLimitsLeft['periodicals'] ?? 0}',
                                 style: AppTextStyles.bodyText,
                               ),
+                              Text('expiration Date: ${formatDate(userProfile['expirationDate']) ?? 'expired'}',
+                                  style: AppTextStyles.bodyText,
+
+                                  ),
                             ],
                           ),
                         ),

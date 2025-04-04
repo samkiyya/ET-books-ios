@@ -1,6 +1,6 @@
 name: bookreader
 description: "A new Flutter project."
-publish_to: "none" # Remove this line if you wish to publish to pub.dev
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -26,7 +26,6 @@ dependencies:
   share_plus: ^10.1.2
   connectivity_plus: ^6.1.0
   flutter_local_notifications: ^18.0.1
-  workmanager: ^0.5.2
   dio: ^5.7.0
   flutter_secure_storage: ^9.2.2
   syncfusion_flutter_pdfviewer: ^28.1.33
@@ -38,6 +37,11 @@ dependencies:
   audio_session: ^0.1.21
   flutter_slidable: ^4.0.0
   archive: ^3.6.1
+  workmanager:
+    git:
+      url: https://github.com/fluttercommunity/flutter_workmanager.git
+      path: workmanager
+      ref: main
   # flutter_quill: ^10.8.5
   video_player: ^2.9.2
   docx_viewer: ^0.2.1
@@ -51,6 +55,7 @@ dependencies:
   # vocsy_epub_viewer:
   cosmos_epub: ^0.0.2
   cached_network_image: ^3.4.1
+  flutter_epub_viewer: ^1.2.1
 
 dev_dependencies:
   flutter_test:

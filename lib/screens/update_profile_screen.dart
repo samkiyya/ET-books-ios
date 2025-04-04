@@ -26,7 +26,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final cityController = TextEditingController();
   final countryController = TextEditingController();
   String? formattedDate;
-  bool isLoading = true; // To track profile loading state
+  bool isLoading = true;
   String profileUrl = '';
 
   @override

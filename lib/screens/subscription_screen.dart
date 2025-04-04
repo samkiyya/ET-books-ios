@@ -269,7 +269,7 @@ class _SubscriptionOrderScreenState extends State<SubscriptionOrderScreen> {
                                                 initialDate:
                                                     provider.startDate ??
                                                         DateTime.now(),
-                                                firstDate: DateTime.now(),
+                                                firstDate: DateTime.now().subtract(const Duration(days:1)),
                                                 lastDate: DateTime(2100),
                                               );
                                               if (selectedDate != null) {

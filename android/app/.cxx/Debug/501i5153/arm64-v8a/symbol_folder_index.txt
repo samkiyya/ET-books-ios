@@ -1,0 +1,1 @@
+/home/sam/Desktop/abyssinia/book_mobile/build/app/intermediates/cxx/Debug/501i5153/obj/arm64-v8a

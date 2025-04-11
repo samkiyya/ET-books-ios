@@ -605,7 +605,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                                                                       // Audio Book Author
                                                                       Text(
-                                                                        '${audioBook['audio_price'] ?? "N/A"} ETB',
+                                                                        '${audioBook['price'] ?? "N/A"} ETB',
                                                                         style:
                                                                             TextStyle(
                                                                           fontSize:
